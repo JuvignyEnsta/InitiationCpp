@@ -1,0 +1,2 @@
+#include "rationnel.hpp"
+#include "rationnel_impl.hpp"
