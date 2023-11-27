@@ -80,3 +80,120 @@ affichera
 
 ## Les entiers
 
+Les entiers comme leurs noms indiquent représentent des valeurs *entières* positives et également négatives pour certains types.
+
+La mémoire étant limitée et le nombre d'entiers possibles infinis, il est bien sûr impossible de représenter tous les entiers sur un ordinateur. 
+
+Le C++ possède des types d'entiers dont le nombre d'octets occupés en mémoire est fixé par le langage. Les bornes inférieure et supérieure pour un type sont donc d'avance connues et une des problématiques de l'ingénieur est de s'assurer que le type choisi pour représenter ses entiers contient la plage de valeurs que peut valoir ses entiers dans son programme.
+
+Les entiers en mémoire sont représentés sous la forme *binaire*, c'est à dire en base deux. Chaque octet contenant 8 bits (un bit est une partie de l'octet pouvant seulement prendre les valeurs 0 ou 1), il est possible pour un type d'entiers uniquement positifs ou nuls représentés sur *n* octets d'écrire un entier en base deux sur *8.n* bits. Il est donc possible de définir pour ce type d'entier des valeurs comprises entre 0 et $2^{8n}$ où $n$ est le nombre d'octets.
+
+Si le type d'entier peut représenter des valeurs négatives ou nulles, le processeur réserve un bit *s* dit *bit de signature* permettant de définir si l'entier est positif (*s=0*) ou négatif (*s=1*). Si l'entier est négatif, on choisit pour représentation de sa valeur *le complément à un* permettant de faciliter pour le processeur l'addition d'un nombre positif et négatif. Un nombre négatif sur *n* octets avec cette représentation peut avoir une valeur comprise entre $-2^{8n-1}$ et $2^{8n-1}-1$
+
+Il existe dans le langage même cinq types différents d'entiers signés :
+
+| **Type** |  **Intervalle** | **Remarque** |
+|:-------:|:-------:|:----:|
+|`signed char`| $[-128;127]$ | |
+|`short` | $[-32768;32767]$ | |
+|`int` | $[-32768;32767]$ ou $[-2^{31};2^{31}-1]$ | Dépend du système et/ou du processeur |
+|`long` | $[-2^{31};2^{31}-1]$ ou $[-2^{63};2^{63}-1]$ | Dépend du système et/ou du processeur |
+|`long long` | $[-2^{63};2^{63}-1]$ | |
+
+et de même pour les entiers non signés :
+
+| **Type** |  **Intervalle** | **Remarque** |
+|:-------:|:-------:|:----:|
+|`unsigned char`| $[0;255]$ | |
+|`unsigned short` | $[0;65535]$ | |
+|`unsigned` | $[0;65535]$ ou $[0;2^{32}-1]$ | Dépend du système et/ou du processeur |
+|`unsigned long` | $[0;2^{32}-1]$ ou $[0;2^{64}-1]$ | Dépend du système et/ou du processeur |
+|`unsigned long long` | $[0;2^{64}-1]$ | |
+
+*Remarque* : Il est possible de déclarer un entier de type *char*, cependant cela est vivement déconseillé car il n'est pas spécifié dans la norme qu'un entier de type *char* doit être signé ou non signé !
+
+On peut remarquer que pour le type *int* et le type *long*, les valeurs représentées vont dépendre du type de processeur ou du système d'exploitation utilisé. Cela peut mener à des dépassements d'entiers (on cherche à calculer un entier qui n'est pas représentable par le type d'entier employé). Ainsi le code pourra bien marcher sur un os donné (linux par exemple ou *long* est représenté sur huit octets et ne pas marcher sous windows ou *long* est représenté sur quatre octets).
+
+C'est pourquoi il est important d'utiliser une extension des types d'entier proposée par la composante `cstdint` de la `std`.
+
+On pourra à l'aide de cette composante utiliser un type d'entier dont le nombre de bits est contenu dans le nom : 
+
+  - `std::int8_t`  pour un entier signé représenté sur un octet;
+  - `std::int16_t` pour un entier signé représenté sur deux octets;
+  - `std::int32_t` pour un entier signé représenté sur quatre octets;
+  - `std::int64_t` pour un entier signé représenté sur huit octets.
+  - `std::uint8_t` pour un entier non signé représenté sur un octet;
+  - `std::uint16_t` pour un entier non signé représenté sur deux octets;
+  - `std::uint32_t` pour un entier non signé représenté sur quatre octets;
+  - `std::uint64_t` pour un entier non signé représenté sur huit octets.
+
+Il existe également un entier représentant le type d'entier le plus volumineux géré par le processeur utilisé pour compiler : `std::size_t`.
+
+### Opérations sur les entiers
+
+Les opérations possibles sur les entiers sont :
+
+  - l'addition : `k = i + j;`
+  - l'addition *sur place* : `i += j;` qui affecte ici à $i$ la somme de $i+j$;
+  - la soustraction : `k = i - j`;
+  - la soustraction *sur place* : `i -= j;` qui retrance la valeur contenue dans $j$ à la valeur contenue dans $i$;
+  - la multiplication : `k = i * j;`
+  - la multiplication *sur place* : `i  *= j;` qui affecte à $i$ le résultat de $i * j$;
+  - la division entière : `k = i / j;`
+  - la division entière *sur place* : `i /= j;` qui affecte à $i$ le résultat de la division entière de $i$ par $j$;
+  - le modulo : `k = i % j;` reste de la division entière de $i$ par $j$;
+  - le module *sur place* : `i %= j;` qui affecte à $i$ le reste de la division entière de $i$ par $j$;
+  - la pré-incrémentation : `++i;` qui consiste à incrémenter de un la valeur de $i$ et de retourner la **nouvelle** valeur pour résultat. Ainsi dans le code suivant :
+    ```cpp
+    int i = 3;
+    int j = ++i;
+    ```
+    $i$ vaudra $4$ et $j$ vaudra $4$;
+  - la post-incrémentation : `i++;` qui consiste à incrémenter de un la valeur de $i$ et de retourner l'**ancienne** valeur pour résultat. Ainsi, dans le code suivant :
+    ```cpp
+    int i = 3;
+    int j = i++;
+    ```
+    $i$ vaudra $4$ et $j$ vaudra $3$;
+  - La pré-décrémentation : `--i;` qui consiste à décrémenter de un la valeur de $i$ et de retourner la **nouvelle** valeur pour résultat.
+  Ainsi, dans le code suivant :
+    ```cpp
+    int i = 3;
+    int j = --i;
+    ```
+    $i$ vaudra $2$ et $j$ vaudra $2$;
+  - La post-décrémentation : `i--;` qui consiste à décrémenter de un la valeur de $i$ et de retourner l'**ancienne** valeur pour résultat.
+  Ainsi, dans le code suivant :
+    ```cpp
+    int i = 3;
+    int j = i--;
+    ```
+    $i$ vaudra $2$ et $j$ vaudra $3$;
+
+Il est également possible de transformer une chaîne de caractère représentant un entier sous forme de chiffre en un entier à l'aide des fonctions 
+  - `std::stoi(s)` pour transformer en `int` la chaîne de caractère $s$ passée en argument;
+  - `std::stol` pour transformer en `long` la chaîne de caractère $s$ passée en argument; 
+  - `std::stoll` pour transformer en `long long` la  chaîne de caractère $s$ passée en argument; 
+  - `std::stou`, std::stoul, std::stoull`
+
+**Exemple de programme utilisant des entiers**
+
+```cpp
+#include <iostream>
+
+int main( int nargs, char *argv[])
+{
+  int x = std::stoi(argv[1]);
+  int y = std::stoi(argv[2]);
+  std::cout << x << " + " << y << x+y << std::endl;
+  std::cout << x << " - " << y << x-y << std::endl;
+  std::cout << x << " * " << y << x*y << std::endl;
+  if (y != 0)
+  {
+    std::cout << x << " / " << y << x/y << std::endl;
+    std::cout << x << " % " << y << x%y << std::endl;
+  }
+  return EXIT_SUCCESS;
+}
+```
+
