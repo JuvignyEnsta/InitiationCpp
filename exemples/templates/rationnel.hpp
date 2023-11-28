@@ -42,6 +42,11 @@ public:
      * @param[in] dénominateur  Entier strictement positif
     */
     Rationnel( Integer numérateur, Integer dénominateur = 1LL);
+
+    template<typename Integer2>
+    Rationnel( Integer2 numérateur, Integer2 dénominateur = Integer2(1))
+        : Rationnel(Integer(numérateur), Integer(dénominateur))
+    {}
     // Approche un réel par une fraction à epsilon près
     /**
      * @brief Construit un rationnel approchant un réel

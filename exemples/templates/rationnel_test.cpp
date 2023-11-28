@@ -20,6 +20,8 @@ int main()
     std::cout << "cos( π/3 ) = " << std::cos(πs3) << std::endl;
     std::cout << "cos( π/3 ) = " <<  std::string(Rationnel<std::int32_t>{std::cos(πs3)}) << std::endl << std::flush;
 
+    Rationnel<long long> p5(1,7);
+
     Rationnel p1{1LL,7LL};
     Rationnel p2{5LL,14LL};
 
