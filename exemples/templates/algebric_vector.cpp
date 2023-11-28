@@ -147,8 +147,8 @@ template<typename K> Vector<K> operator * ( K const& alpha, Vector<K> const& u )
 
 int main()
 {
-    Vector u(std::vector{ 1., 2., 3., 4.});
-    Vector v(std::vector{ -1.,1.,-1.,1.} );
+    Vector u(std::vector<double>{ 1., 2., 3., 4.});
+    Vector v(std::vector<double>{ -1.,1.,-1.,1.} );
 
     auto w = v - (u|v)*u;
 
