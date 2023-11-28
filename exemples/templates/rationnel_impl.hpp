@@ -1,4 +1,4 @@
-#include "Rationnel.hpp"
+#include "rationnel.hpp"
 #include <assert.h>
 #include <stdexcept>
 

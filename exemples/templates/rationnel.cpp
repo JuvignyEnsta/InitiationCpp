@@ -1,5 +1,7 @@
 #include "rationnel"
+#include <cstdint>
 
-template class arithmetic::Rationnel<std::int16_t>;
-template class arithmetic::Rationnel<std::int32_t>;
-template class arithmetic::Rationnel<std::int64_t>;
+template class arithmetic::Rationnel<short>;
+template class arithmetic::Rationnel<int>;
+template class arithmetic::Rationnel<long>;
+template class arithmetic::Rationnel<long long>;
