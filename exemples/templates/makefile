@@ -1,6 +1,6 @@
 CXX = g++
 CPPVERSION = 23
-CXXFLAGS = -std=c++${CPPVERSION} -Wall -g
+CXXFLAGS = -std=c++${CPPVERSION} -Wall -g -pedantic
 
 all: fonctions_templates.exe classe_template.exe variadic_templates.exe \
      algebric_vector.exe rationnel_test.exe introspection.exe
@@ -21,10 +21,10 @@ variadic_templates.exe : variadic_templates.cpp
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 algebric_vector.exe : algebric_vector.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ $<
 
 rationnel_test.exe : rationnel_test.cpp  rationnel.o
 	$(CXX) $(CXXFLAGS) -o $@ $^
 
 introspection.exe : introspection.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -o $@ $<
