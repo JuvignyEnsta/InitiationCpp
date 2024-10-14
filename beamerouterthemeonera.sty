@@ -1,0 +1,181 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% beamerouterthemeonera.sty : fichier de style 'outer' du style ONERA 	      %
+%													      %
+% Fichiers de style inclus :									      %
+%	- beamerthemeonera.sty							              %
+%	- beamerinnerthemeonera.sty							      %
+%	- beamercolorthemeonera.sty							      %
+%	- beamerfontthemeonera.sty							      %
+% Mise en forme de la bibliographie :							      %
+%	- onera.bst de Frédéric Cassaing, DOTA					      %
+%													      %
+% ========= Olivier Boisot, DEMR, TERE -- ONERA 2019 ========== %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mode<presentation>
+
+%%%%%%%%%%%%%%%
+% TITRE DES DIAPOSITIVES %
+%%%%%%%%%%%%%%%
+\defbeamertemplate*{frametitle}{onera theme}[1][]
+{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.5cm]{frametitle} 
+  \begin{tikzpicture}
+       \useasboundingbox (0,0) rectangle (\paperwidth,1.5cm);
+       \draw[onera_dark,line width=0.15mm] (0.5,0) -- (\paperwidth,0);
+	\ifx\insertframesubtitle\@empty%
+            {\node[anchor=west,inner sep=0pt] at (0.5,0.7) {
+                \usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\insertframetitle};}
+        \else%
+            {\node[anchor=west,inner sep=0pt] at (0.5,0.8){
+                \usebeamercolor[fg]{frametitle}\usebeamerfont{frametitle}\insertframetitle};%
+             \node[anchor=west,inner sep=0pt] at (0.5,0.3){
+                 \usebeamercolor[fg]{framesubtitle}\usebeamerfont{framesubtitle}\insertframesubtitle};}%
+        \fi
+  \end{tikzpicture}
+  \end{beamercolorbox}
+}
+%%%%%%%%%%%%%%%
+% PIEDS DES DIAPOSITIVES %
+%%%%%%%%%%%%%%%
+\defbeamertemplate*{footline}{onera theme}[1][]
+{
+    % Test si il y a une page de titre
+    \ifONERA@maketitlepage%
+        \ifnum\thepage>1\MakeFooterTemplate\fi
+    \else
+        \MakeFooterTemplate
+    \fi
+}
+% Le template est défini à part afin de pouvoir gérer la présence ou non de la page de titre
+\def\MakeFooterTemplate{%
+    \leavevmode%
+    \vskip-0.6cm%
+%    \pgfmathsetmacro{\ht}{0.089\paperheight};
+    \begin{beamercolorbox}[wd=\paperwidth,ht=1cm]{footer}
+        \begin{tikzpicture}
+            % Fond du footer
+            \useasboundingbox (0,0) rectangle (\paperwidth,1cm);
+ 	     % Logo ONERA
+ 	     \draw[onera_dark,line width=0.15mm] (0.5,1) -- (\paperwidth,1);
+ 	     \node[anchor=west,inner sep=0pt] (logo) at (0.5,0.5) {
+ 	         \includegraphics[height=0.8cm,keepaspectratio=true]{./figbeameronera/Logo_RF+ONERA_PANTONE.pdf}
+ 	     };
+ 	     % Numérotation des diapositives
+ 	             % Cas de la numérotation 'custom'
+	     \ifONERA@customnumbering%
+ 	         \ifnum\inserttotalframenumber<20%
+        	     \pgfmathsetmacro{\cornerradius}{0.3}
+ 	             \pgfmathsetmacro{\sep}{4}
+	        \else%
+    		    \pgfmathsetmacro{\cornerradius}{0.15}
+   		    \pgfmathsetmacro{\sep}{3}
+	        \fi
+	        \pgfmathsetmacro{\radius}{0.25}
+	        \pgfmathsetmacro{\anglebase}{90} % Direction du premier indicateur
+	        \pgfmathsetmacro{\deltaangle}{360/\inserttotalframenumber} % Angle de décalage du centre de chaque indicateur
+	        \pgfmathsetmacro{\deltaanglesepdemi}{0.5*(\deltaangle-\sep)}
+	        \pgfmathsetmacro{\nmax}{\inserttotalframenumber-1}
+	        \foreach \n in {0,...,\nmax} {
+    	            \pgfmathsetmacro{\angle}{\anglebase - \n*\deltaangle}
+    		    \ifnum \n < \insertframenumber%
+        	        \fill[color=onera_dark,rounded corners=\cornerradius,xshift=\paperwidth-0.5cm,yshift=0.5cm]
+        		    (\angle+\deltaanglesepdemi:\radius)
+			    arc(\angle+\deltaanglesepdemi:\angle-\deltaanglesepdemi:\radius) -- (\angle-\deltaanglesepdemi:0.55*\radius)
+			    arc(\angle-\deltaanglesepdemi:\angle+\deltaanglesepdemi:0.55*\radius) --cycle;
+		    \else
+       		        \fill[color=onera_dark,rounded corners=\cornerradius,xshift=\paperwidth-0.5cm,yshift=0.5cm,opacity=0.15] 
+       		    	    (\angle+\deltaanglesepdemi:\radius)
+			    arc(\angle+\deltaanglesepdemi:\angle-\deltaanglesepdemi:\radius) -- (\angle-\deltaanglesepdemi:0.55*\radius)
+			    arc(\angle-\deltaanglesepdemi:\angle+\deltaanglesepdemi:0.55*\radius) --cycle;
+		    \fi
+	        };
+	        \node (nframe) at (\paperwidth-0.5cm,0.5) {\textbf{\color{black}\insertframenumber}}; % N° de la diapo active
+	    	    % Cas de la numérotation 'classic'
+	    \else%
+	        \node[anchor=east,inner sep=0pt] (nframe) at (\paperwidth-0.5cm,0.5) {\textbf{\color{black}\insertframenumber/\inserttotalframenumber}}; % N° de la diapo active
+            \fi
+            % Ajout du titre court (si présent)
+            \ifx\beamer@shorttitle\@empty%
+            	   \node[onera_gray] (shorttitle) at (\paperwidth-2.5cm,0.5) {};
+            \else%
+                \node[onera_gray] (shorttitle) at (\paperwidth-2.5cm,0.5) {
+                    \let\hyperlink\@secondoftwo\textit{\scriptsize\insertshorttitle}
+	          };
+		% \let\hyperlink\@secondoftwo permet de s'affranchir de l'hyperlien sur le titre
+	    \fi%
+	    \ifx\beamer@shortauthor\@empty%
+                \node[onera_gray,left=0.1cm of shorttitle] (shortauthor) {};
+            \else%
+                %\node[left=0.1cm of shorttitle] (shortauthor) {\usebeamercolor[fg]{shortauthor}\insertshortauthor};
+                \node[onera_gray,left=0.1cm of shorttitle] (shortauthor) {\scriptsize\insertshortauthor};
+	    \fi%
+	    \ifx\beamer@shortdate\@empty%
+	        \node[onera_gray,left=0.1cm of shortauthor] (shortdate) {};
+	    \else%
+	        \node[onera_gray,left=0.1cm of shortauthor] (shortdate) {\scriptsize\insertshortdate};
+	    \fi%
+	    % Mention Spécial France
+	    \ifONERA@SF%
+		\node (SF) [draw,blue,line width=1mm,shape=rectangle,minimum height=0.5cm,right=1mm of logo] {
+		    \scriptsize SP\'ECIAL FRANCE
+		};
+		% Mention Spécial France et DR, CD ou SD
+                \ifONERA@DR%
+	            \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.25mm of SF] {
+		        \scriptsize DIFFUSION RESTREINTE
+		    };
+		\fi
+		\ifONERA@CD%
+		    \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.25mm of SF] {
+		        \scriptsize CONFIDENTIEL D\'EFENSE
+		    };
+	        \fi
+		\ifONERA@SD%
+		    \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.25mm of SF] {
+		        \scriptsize SECRET D\'EFENSE
+		    };
+	        \fi
+	        \ifONERA@S%
+                   \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.25mm of SF] {
+		        \scriptsize SECRET
+		    };
+	        \fi
+		  \ifONERA@TS%
+                   \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.25mm of SF] {
+		        \scriptsize TR\`ES SECRET
+		    };
+	        \fi
+	    \else%
+	        % Mention DR, CD ou SD seule
+                \ifONERA@DR%
+	    	    \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.5cm of logo] {
+		        \scriptsize DIFFUSION RESTREINTE
+		    };
+	        \fi
+	         \ifONERA@CD%
+	    	    \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.5cm of logo] {
+		        \scriptsize CONFIDENTIEL D\'EFENSE
+		    };
+	        \fi
+	         \ifONERA@SD%
+	    	    \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.5cm of logo] {
+		        \scriptsize SECRET D\'EFENSE
+		    };
+	        \fi
+	        \ifONERA@S%
+                   \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.5cm of logo] {
+		        \scriptsize SECRET
+		    };
+	        \fi
+		  \ifONERA@TS%
+                   \node[draw,red,line width=0.5mm,shape=rectangle,minimum height=0.55cm,right=0.5cm of logo] {
+		        \scriptsize TR\`ES SECRET
+		    };
+	        \fi
+	    \fi
+            \end{tikzpicture}
+        \end{beamercolorbox}
+    \vskip0pt%
+}
+
+\mode<all>

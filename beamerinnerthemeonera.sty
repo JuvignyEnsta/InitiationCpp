@@ -1,0 +1,179 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% beamerinnerthemeonera.sty : fichier de style 'inner' du style ONERA 	      %
+%													      %
+% Fichiers de style inclus :									      %
+%	- beamerthemeonera.sty							              %
+%	- beamerouterthemeonera.sty							      %
+%	- beamercolorthemeonera.sty							      %
+%	- beamerfontthemeonera.sty							      %
+% Mise en forme de la bibliographie :							      %
+%	- onera.bst de Frédéric Cassaing, DOTA					      %
+%													      %
+% ========= Olivier Boisot, DEMR, TERE -- ONERA 2021 ========== %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mode<presentation>
+
+%%%%%%%%%%
+% PAGE DE TITRE %
+%%%%%%%%%%
+\def\MakeTitlePage{%
+    \ONERA@maketitlepagetrue % Déclare à `true' le MakeTitlePage
+    \begin{frame}[plain,noframenumbering]
+        \titlepage
+    \end{frame}
+}
+% Fond de la page de titre (l'ajout de `institute' se fait ici avec tikz pour faciliter le positionnement)
+\setbeamertemplate{background}{%
+    \ifONERA@maketitlepage%
+    % On teste si on est sur la première page
+    \ifnum\thepage=1\relax%
+	\begin{tikzpicture}
+    	    \useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
+    	    % Ajout du fond ONERA pour la page de titre
+	    \node[anchor=north west,inner sep=0pt] at (0.5,\paperheight-0.5cm) {
+	        \includegraphics[height=1.5cm]{./figbeameronera/Logo_Republique_Francaise_CMJN.pdf}
+	    };
+           \node[anchor=north east,inner sep=0pt] (logo) at (\paperwidth-0.5cm,\paperheight-0.5cm) {
+	        \includegraphics[height=1.5cm]{./figbeameronera/logo-onera-ident-pantone660-HD.pdf}
+           };
+	    % Ajout  du speech sur la propriété intellectuelle
+	    \node[anchor=south west, inner sep=0pt] (Penglish) at (0.3,0.2) {
+	        \begin{varwidth}{0.94\paperwidth}
+	        \tiny\color{onera_gray}
+	        \textit{This document and the information contained herein is proprietary information of ONERA and shall not be disclosed or reproduced without the prior authorization of ONERA.}
+	        \end{varwidth}
+	    };
+	    \node[anchor=west,inner sep=0pt,above= 0.05cm of Penglish]  {
+	        \begin{varwidth}{0.94\paperwidth}
+	        \tiny\color{onera_gray}
+	        Ce document est la propriété de l'ONERA. Il ne peut être communiqué à des tiers et/ou reproduit sans l'autorisation préalable écrite de l'ONERA, et son contenu ne peut être divulgué.
+	        \end{varwidth}
+	    };
+           % Ajout de(s) institut(s) si il y a lieu
+           \ifx\insertinstitute\@empty\else%
+    	         \node[anchor=west] at (0.25,1.25) {
+    	             \usebeamercolor[fg]{institute}\usebeamerfont{institute}\insertinstitute};
+	    \fi
+        \end{tikzpicture}
+    \fi
+    \fi
+}
+% Modèle de la page de titre
+\defbeamertemplate*{title page}{onera}[1][]
+{ 
+   \vskip3cm%
+    \begin{beamercolorbox}[wd=0.95\paperwidth,#1]{title page header}
+      \usebeamerfont{title}\inserttitle%
+    \end{beamercolorbox}%
+    \vskip0.2cm%
+    \begin{beamercolorbox}[wd=0.95\paperwidth,#1]{subtitle}
+      \usebeamerfont{subtitle}\insertsubtitle%
+    \end{beamercolorbox}%
+    \vskip1cm%
+    \begin{beamercolorbox}[wd=0.95\paperwidth,#1]{author}
+      \usebeamerfont{author}\insertauthor%
+    \end{beamercolorbox}
+     \vskip0.2cm%
+    \begin{beamercolorbox}[wd=0.95\paperwidth,#1]{date}
+      \usebeamerfont{date}\insertdate%
+    \end{beamercolorbox}
+    \vfill
+}
+
+%%%%%%%%
+% Boîte block %
+%%%%%%%%%
+\@ifpackagelater{tcolorbox}{2019/03/02}{% Version 4.20 de tcolorbox du 02/03/2019, à changer les tcbcol@frame -> tcbcolframe
+    \newtcolorbox{onerablock}[2][]{
+        enhanced,
+        left=5pt,
+        right=5pt,
+        colframe=onera,
+        boxrule=1pt,
+        colback=white,
+        #1, % Options supplémentaires si désirées
+        overlay={
+            \def\onerablock@temp{#2}
+            \ifx\onerablock@temp\@empty\else%
+                \node [
+                    color=tcbcolframe,
+                    fill=white,
+                    anchor=west,
+                    inner sep=5pt,
+                    outer sep=0pt
+                ] at ([xshift=10pt] frame.north west) {\Large#2};
+            \fi
+        },
+    }
+}{%
+    \newtcolorbox{onerablock}[2][]{% Version <4.20 de tcolorbox
+        enhanced,
+        left=5pt,
+        right=5pt,
+        colframe=onera,
+        boxrule=1pt,
+        colback=white,
+        #1, % Options supplémentaires si désirées
+        overlay={
+            \def\onerablock@temp{#2}
+            \ifx\onerablock@temp\@empty\else%
+                \node [
+                    color=tcbcol@frame,
+                    fill=white,
+                    anchor=west,
+                    inner sep=5pt,
+                    outer sep=0pt
+                ] at ([xshift=10pt] frame.north west) {\Large#2};
+            \fi
+        },
+    }
+}%
+
+%%%%%%%%%%%%%%%
+% PAGE DE REMERCIEMENTS %
+%%%%%%%%%%%%%%%
+\def\ThankYouFrame#1{%
+    \usebackgroundtemplate{
+    \begin{tikzpicture}
+	\useasboundingbox (0,0) rectangle (\paperwidth,\paperheight);
+	\node[color=onera_dark] at (0.5\paperwidth,0.2\paperheight) {\Large
+           \ifONERA@english%
+               \href{https://www.onera.fr/en}{\texttt{www.onera.fr}}
+	    \else%
+               \href{https://www.onera.fr/fr}{\texttt{www.onera.fr}}
+	    \fi
+        };
+    \end{tikzpicture}
+    }
+    \begin{frame}[plain,noframenumbering,c]
+        \centering\vskip25pt%
+	\textcolor{black}{\LARGE\bf#1}
+    \end{frame}
+    \usebackgroundtemplate{}
+}
+%%%%%%%%%%%%%%%
+% PAGES DE BIBLIOGRAPHIE %
+%%%%%%%%%%%%%%%
+\def\ReferencesFrames#1{%
+    \begin{frame}[plain,allowframebreaks,t]
+        \vskip20pt%
+        \begin{center}
+            \textcolor{onera}{\LARGE\bf\ifONERA@english References\else Bibliographie\fi}
+        \end{center}
+        \bibliographystyle{onera}
+        \bibliography{#1}
+    \end{frame}
+    % Régule le compteur de diapositives manuellement car les options 'allowframebreaks' et 
+    % 'noframenumbering' comptent le nombre de frame si il y a plus d'1 framebreak...
+    \ifnum\insertcontinuationcount>0 % Si il y a un 'allowframebreaks'
+        \addtocounter{framenumber}{-\insertcontinuationcount} % On enlève le nombre de frames correspondantes du compteur
+    \fi
+    \usebackgroundtemplate{}
+}
+
+
+% Items
+\setbeamertemplate{items}[circle]
+\setbeamertemplate{sections/subsections in toc}[circle]
+
+\mode<all>

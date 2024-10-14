@@ -1,0 +1,1706 @@
+\documentclass[compress,10pt,aspectratio=169]{beamer}
+\usetheme[customnumbering]{onera}
+
+\usepackage{amsmath,amsfonts,graphicx}
+\usepackage{pifont}
+\usepackage{etoolbox}
+\usepackage{multicol}
+\usepackage{anyfontsize}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{colortbl}
+\usepackage{tcolorbox}
+\usepackage{fontspec}
+%\setlength{\columnseprule}{1pt}
+%\def\columnseprulecolor{\color{blue}}
+\usepackage{minted} % syntax coloring. 
+\setminted{encoding=utf-8, autogobble, fontsize=\scriptsize, frame=single}
+\usemintedstyle{xcode}
+
+\usepackage{stackengine}
+%\AtBeginEnvironment{minted}{\fontsize{8}{8}\selectfont}
+
+%\usepackage{dsfont}
+\usepackage{ifdraft}
+\ifdraft{
+  \usepackage{fancyvrb}
+  \DefineVerbatimEnvironment{cppcode}{Verbatim}{}
+}{
+\newminted{cpp}{}
+}
+\usepackage{hyperref}
+\usetikzlibrary{shadows, arrows, decorations.pathmorphing, fadings, shapes.arrows, positioning, calc, shapes, fit, matrix,math}
+
+\definecolor{lightblue}{RGB}{0,200,255} 
+\definecolor{paper}{RGB}{255,247,197}
+\definecolor{ocre}{RGB}{243,102,25} % Define the orange color used for highlighting throughout the book
+\definecolor{BurntOrange}{RGB}{238,154,0}
+\definecolor{darkorange}{RGB}{119, 77, 0}
+\definecolor{OliveGreen}{RGB}{188,238,104}
+\definecolor{DarkGreen}{RGB}{0,128,0}
+\definecolor{BrickRed}{RGB}{238,44,44}
+\definecolor{Tan}{RGB}{210,180,140}
+\definecolor{Aquamarine}{RGB}{127,255,212}
+\definecolor{NavyBlue}{RGB}{0,64,128}
+\definecolor{DarkYellow}{RGB}{192,192,0}
+\definecolor{Yellow}{RGB}{255,255,0}
+
+\title[Initiation C++\hspace{2em}]{Templates}
+\subtitle{Introduction C++}
+\author[X. JUVIGNY]{Xavier JUVIGNY, AKOU, DAAA, ONERA \href{mailto:xavier.juvigny@onera.fr}{\texttt{xavier.juvigny@onera.fr}} }
+\date[04/11/2023]{Initiation au C++ \\- 4 Novembre 2023 -}
+\institute{\inst{1}ONERA,\inst{2}DAAA}
+
+\AtBeginSection[]{
+  \begin{frame}{Overview}
+  \begin{multicols}{2}
+  \small \tableofcontents[currentsection, hideallsubsections]
+  \end{multicols}
+  \end{frame} 
+}
+\usepackage{polyglossia}
+
+\begin{document}
+
+\begin{frame}
+ \titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Plan du cours}
+\tableofcontents
+\end{frame}
+
+\section{C++ et généricité}
+
+\begin{frame}[fragile]{Généricité}
+    \scriptsize\vspace*{-3mm}
+  \begin{block}{\small Définition}
+    \begin{itemize}
+    \item Pouvoir définir des \textbf{algorithmes} ou des \textbf{types} pouvant opérer ou gérer
+          sur plusieurs types de données différents;
+    \item Permet d'abstraire un ensemble de concepts cohérents pour construire des algorithmes 
+          au--dessus;
+    \item \underline{\textbf{\textcolor{darkorange}{Exemple}}} : Fonction de tri besoin d'accès aléatoires à 
+          une collection de valeurs et une fonction de comparaison;
+    \item La fonction devient utilisable dans un très grand nombre de contextes;
+    \end{itemize}
+  \end{block}
+  
+  \begin{block}{\small Principe}
+    \begin{itemize}
+    \item Générer du code à partir d'un patron ($\equiv$ patron de couture) et de divers paramètres;
+    \item {\color{blue}Généricité fonctionelle} : un patron de fonction utilisé pour des types 
+          différents.\\ \textcolor{NavyBlue}{Exemple en C} : 
+          \mintinline{c}{#define MAX(a,b) ((a)>(b) ? (a) : (b))}
+    \item Macros outil primaire, peut être dangereux. Que penser de \mintinline{c++}{MAX(i++,j)} ?
+    \item {\color{blue}Généricité structurelle} : une liste d'entier même gestion qu'une liste de 
+          réels, de vecteurs, de capteurs,etc.
+    \item \textcolor{red}{Difficile à gérer par macro};
+    \item \textcolor{orange}{Solution la plus générale} : générer code à partir d'un langage à balise ou d'un DSL 
+          ( Domain Specific Language ).
+    \end{itemize}
+  \end{block}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Généricité en C++}
+    \scriptsize\vspace*{-3mm}
+    \begin{block}{\small Généricité en C++}
+      \begin{itemize}
+      \item Généricité en C++ définie à partir de patrons ( comme un patron de couture : 
+            template en anglais );
+      \item \textbf{\textcolor{DarkGreen}{Syntaxe}} : Mot clef  \mintinline{c++}{template} suivi de 
+            la liste des paramètres variables du patron entre les signes \mintinline{c++}{<}
+            et \mintinline{c++}{>}, suivi de la définition de la fonction ou de la classe patron;
+      \item \textbf{Instanciation} : 
+        \begin{itemize}
+        \scriptsize
+        \item On fait suivre le type de la valeur ou le nom de la fonction par la liste des paramètres 
+              templates entre $<$ et $>$;
+        \item Pour les fonctions, on laisse le C++ déduire les paramètres templates en fonction du type
+              des paramètres passés en argument;
+        \item Depuis C++ 17, si une valeur est initialisée à sa déclaration, le C++ déduit les 
+              paramètres passés à partir du type des paramètres passés pour l'initialisation;
+        \end{itemize}
+      \item Lors d'une instanciation de template, le compilateur doit avoir accès à la déclaration 
+            mais aussi à la définition de la fonction ou de la classe : impossible de compiler 
+            une fonction ou une classe template sans l'instancier pour des paramètres donnés;
+      \item On peut néanmoins "précompiler" des fonctions ou classes templates pour des types
+            spécifiques.
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}[fragile]{Généricité fonctionnelle}
+    \scriptsize\vspace*{-4mm}
+    \begin{block}{\small Généricité fonctionnelle en C++}
+    \begin{itemize}
+    \item Définie un modèle de fonction ou de méthode de classe;
+    \item \textcolor{DarkGreen}{\textbf{Syntaxe}} : modèle précédé du mot clef \mintinline{c++}{template} et de la liste 
+          des paramètres du patron entre les signes $<$ et $>$;
+    \item {\color{blue}Exemple de fonction retournant le max de deux valeurs de type comparable}
+    \begin{minted}{c++}
+    template<typename K> inline K max_val( const K& a, const K& b ) { return (a > b ? a : b ); }
+    int main() { ...
+        std::cout << max_val(1,3) << max_val(1.2,4.3-2.1) << max_val('t','l') << std::endl; ... }
+    \end{minted}
+    \item \verb@K@ est le paramètre du template : \mintinline{c++}{typename} précise qu'ici \verb@K@ est 
+          un paramètre représentant un type de variable;
+    \item Dans ce cas simple, lors de l'appel d'une fonction à partir du 
+          template, le paramètre \verb@K@ déduit du type de paramètre passé;
+    \item \mintinline{c++}{max_val(1.3.5)} ne compile pas, car types $\neq$,
+          idem pour \mintinline{c++}{max_val("tintin","milou")} ( \mintinline{c++}{char[6]} et 
+          \mintinline{c++}{char[5]} );
+    \item On peut passer deux paramètres types :
+    \begin{minted}{c++}
+    template<typename K1,typename K2> auto max_val(const K1& a,const K2& b){return (a>b?a:b);}
+    \end{minted}
+    \item Il faut que les types \verb@K1@ et \verb$K2$ soient comparables : 
+          \mintinline{c++}{max_val(1.3.5)}  et \mintinline{c++}{max_val("tintin","milou")} compilent.
+    \item On renvoit \mintinline{c++}{auto} car déduction de type non trivial avant instanciation de la 
+          fonction templatée;
+    \item \mintinline{c++}{max_val("tintin","milou")} peut renvoyer la valeur \mintinline{c++}{"milou"}
+          car comparaison sur adresse chaîne de caractère.
+    \end{itemize}
+    \end{block}
+  \end{frame}
+    
+  \begin{frame}[fragile]{Template et surcharge de fonctions}
+    \scriptsize
+    \begin{block}{\small Surcharge de fonctions}
+    \begin{itemize}
+    \item On a vu que la fonction template \mintinline{c++}{max_val} ne renvoie pas la bonne chaîne 
+          de caractère car n'effectue pas la bonne comparaison;
+    \item C++ autorise qu'on définisse la fonction \mintinline{c++}{max_value} pour les chaînes de 
+          caractère de type \mintinline{c++}$char*$ :
+    \begin{minted}{c++}
+    std::string max_value( const char* s1, const char* s2 ) {
+        if ( strcmp(s1,s2) > 0 ) return std::string(s1); else return std::string(s2);
+    }
+    \end{minted}
+    \item C++ n'instanciera pas une fonction template si une fonction non template existe déjà 
+          pour un ou des types de variables données;
+    \item On parle alors de {\bf\color{red}spécialisation template};
+    \item Dans notre cas, la fonction \mintinline{c++}{max_value}, grâce à la spécialisation, 
+          renvoie bien maintenant la bonne chaîne de caractère\ldots
+    \item \textbf{\underline{Remarque}} : Bien que la fonction soit spécialisée pour des 
+          \mintinline{c++}{const char*}, elle est également appelée pour des 
+          \mintinline{c++}{char[5]} ou \mintinline{c++}{char[6]} car ces types sont trivialement 
+          convertissables en pointeur ( sans créer une variable temporaire pour la conversion ).
+    \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Paramètres templates}
+    \scriptsize
+    \begin{block}{\small Les types des paramètres}
+    Les types de paramètres templates autorisés :
+    \begin{itemize}
+    \item  \textcolor{DarkGreen}{\textbf{Type générique}} : Paramètre précédé du mot clef \verb@typename@ ( recommandé ) 
+           ou \verb@class@;
+  \begin{minted}{c++}
+  template<typename K> auto sum( std::vector<K> const &u ) {
+    K s(0);
+    for (auto const& valeur : u ) s += valeur;
+    return s; 
+  }
+  ...
+  std::vector<double> u; ... auto vsomme = sum(u.begin(), u.end());
+  \end{minted}
+    \item \textcolor{DarkGreen}{\textbf{Type intégral}} : entier, booléen, pointeur, pointeur de fonctions, références, 
+          etc\ldots mais interdiction type réel, etc\ldots
+  \begin{minted}{c++}
+  template<std::size_t dim> auto sqNorm( std::array<double,dim> const& u ) {
+    double s = 0; 
+    for (std::size_t i=0; i < dim; ++i ) s += u[i]*u[i]; 
+    return s; 
+  }
+  \end{minted}
+  \end{itemize}
+  \end{block}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Paramètres templates...}
+  \scriptsize\vspace*{-3mm}
+  \begin{block}{\small }
+  \begin{itemize}
+  \item Possible d'avoir des types génériques et intégraux :
+  \begin{minted}{c++}
+  template<typename K, std::size_t dim> K sqNorm( std::array<K,dim> const& u ) {
+    K s = 0; 
+    for (std::size_t i=0; i < dim; ++i ) s += u[i]*u[i]; 
+    return s;
+  }
+  \end{minted}
+  \item \underline{\alert{Beaucoup de subtilités}} quand on utilise les templates :
+  \vspace*{-3mm}
+  \begin{multicols}{2}
+  \textcolor{red}{Ne compile pas}
+  \begin{minted}{c++}
+  template<typename Iterator> 
+  auto sum( Iterator const &itBeg, 
+            Iterator const &itEnd ) {
+    decltype(*itBeg) s=0;
+    for (Iterator it = itBeg; it != itEnd; ++it ) 
+      s += *it;
+    return s;
+  } ...
+  std::vector<double> u; ...
+  auto vsomme = sum(u.begin(), u.end()); 
+  \end{minted}
+  \columnbreak
+  \textcolor{green}{Compile}
+  \begin{minted}{c++}
+  template<typename Iterator> 
+  auto sum( Iterator const &itBeg, 
+            Iterator const &itEnd ) {
+    std::remove_reference_t<decltype(*itBeg)> s=0;
+    for (Iterator it = itBeg; it != itEnd; ++it ) 
+      s += *it;
+    return s;
+  } ...
+  std::vector<double> u; ...
+  auto vsomme = sum(u.begin(), u.end());
+  \end{minted}
+  \end{multicols}
+    \end{itemize}
+    \end{block}
+  \end{frame}
+   
+  \begin{frame}[fragile]{Paramètres templates par défaut}
+  \scriptsize
+  
+  \begin{itemize}
+  \item Comme pour les fonctions, il est possible de passer des valeurs par défaut aux paramètres template.
+  \item Les paramètres ayant des valeurs par défaut doivent être déclarés à la fin de la liste des paramètres template;
+  \end{itemize}
+  \begin{minted}{c++}
+  template<typename K, int dim=3> auto createCanonicalBase() {
+    std::vector<std::array<K,dim>> base; base.reserve(dim);
+    for (int i=0; i<dim; ++i) {
+      std::array<K,dim> ei;
+      ei.fill(0); ei[i] = 1;
+      base.push_back(ei);
+    }
+    return base;
+  }
+  ... 
+  auto base3D = createCanonicalBase<double>();
+  auto base2D = createCanonicalBase<int,2>();
+  \end{minted}
+  \alert{Remarque} : Dans cet exemple, 
+                     on ne peut pas déduire les paramètres templates à partir des paramètres de
+                     la fonction. On est donc obligé d'expliciter ici au moins le type.
+\end{frame}
+
+\begin{frame}[fragile]{Cas d'utilisation des templates}
+  \scriptsize\vspace*{-4mm}
+  \begin{block}{\small Passage de fonctions lambdas}
+  \begin{itemize}
+  \item En C++, chaque fonction lambda possède son propre type inconnu du programmeur;
+  \item Problème pour pouvoir passer une fonction lambda en paramètre d'une fonction;
+  \item En C++ 20, on peut utiliser un paramètre déclaré \texttt{auto};
+  \item Sinon, on doit passer par un template :
+  \end{itemize}
+  \begin{minted}{c++}
+  template<typename EvalFctType> auto
+  computeVector( int dim, EvalFctType const& evalFct ) {
+    std::vector<decltype(evalFct(0))> u(dim);
+    for (std::size_t i=0; i<dim; ++i) u[i] = evalFct(i);
+    return u; } ...
+  auto u1 = computeVector(5, [](int i){ return 1.5*i; } );
+  \end{minted}
+  Avec cette technique, on peut également passer des foncteurs (des objets avec opérateur d'évaluation) :
+  \begin{minted}{c++}
+  struct Kernel { double kWave; std::vector<double>  radius;
+    std::complex<double> operator () (int i) const  { return std::polar(1./radius[i], kWave*radius[i]); }
+  };
+  Kernel kernelFct{ 1.1, std::vector{1.,3.,5.,7.,13.}};
+  auto u2 = computeVector( kernelFct.radius.size(), kernelFct );
+  \end{minted}
+  \end{block}
+  \end{frame}
+  
+\begin{frame}[fragile]{Spécialisation template}
+    \scriptsize
+    \begin{block}{\small Spécialisation template}
+    Possibilité de définir une mise en {\oe}uvre particulière pour 
+    des types ou valeurs particuliers des paramètres templates.
+  
+    Deux possibilités :
+    \begin{itemize}
+    \item Si les paramètres templates ne portent que sur des types associés 
+          aux types des arguments passés à la fonction, on peut spécialiser
+          le template avec une fonction "classique"
+  
+  \underline{\textcolor{violet}{Exemple}} :
+  \begin{minted}{c++}
+  template<typename K> 
+  auto dot( std::vector<K> const& u, std::vector<K> const& v ) {
+    assert(u.size() == v.size()); 
+    typename std::vector<K>::value_type sum = 0;
+    for (std::size_t i=0; i< u.size(); ++i ) sum += u[i]*v[i];
+    return sum;
+  }
+  double dot( std::vector<double> const& u, std::vector<double> const& v) {
+    return ddot_(u.size(), u.data(), 1, v.data(), 1);// Utilisation du BLAS
+  }
+  \end{minted}
+  \end{itemize}
+    \end{block}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Spécialisation template (suite)}
+    \scriptsize
+  
+    \begin{block}{\small Spécialisation template (suite)}
+    \begin{itemize}
+      \item Sinon, il faut utiliser un template "spécialisé"\\ 
+      \underline{\textcolor{orange}{Syntaxe}}:
+      \begin{minted}{c++}
+    template<> (retour fonction) (fonction)<param1,param2,...>( arguments... ) {
+      ...
+    }  
+    \end{minted}
+    \end{itemize}
+      \underline{\textcolor{violet}{Exemple de spécialisation template sur une valeur entière}} :
+      \begin{minted}{c++}
+      template<long n> long fact() { return n * fact<n-1>(); }
+      template<> long fact<0>() { return 1L; }
+      // L'évaluation de la factorielle peut se faire à la compilation (mais pas obligatoire)...
+      std::cout << fact<10>() << std::endl; 
+      \end{minted}
+      \textbf{\underline{Remarque 1}} : Pour évaluer une factorielle à la compilation,
+      il est préférable d'utiliser une fonction \texttt{constexpr} !
+    
+      \textbf{\underline{Remarque 2}} : Néanmoins, pour des algorithmes plus complexes,
+      cette technique template peut avoir son utilité.
+    \end{block}
+\end{frame}
+  
+\begin{frame}[fragile]{Spécialisation partielle}
+    \scriptsize\vspace*{-4mm}
+    \begin{block}{\small Spécialisation partielle}
+    \begin{itemize}
+    \item En spécifiant uniquement qu'une partie des paramètres templates
+  \begin{minted}{c++}
+  template<typename K1, typename K2>  auto prod(std::vector<K1> const& u, std::vector<K2> const& v) {
+        std::vector<decltype(std::conj(u[0])*v[0])> res(u.size());
+        for (std::size_t i=0; i<u.size(); ++i) res[i] = std::conj(u[i])*v[i];
+        return res; }  
+    template<typename K2> auto prod( std::vector<double> const& u, std::vector<K2> const& v ) {
+        std::vector<decltype(K2(0)*1.)> res(u.size());
+        for (std::size_t i=0; i<u.size(); ++i) res[i] = u[i]*v[i];
+        return res; }
+  \end{minted}
+    \item En spécialisant la fonction pour une sous-classe de type
+  \begin{minted}{c++}
+  template<typename K> auto dot( std::vector<K> const& u, std::vector<K> const& v ) {
+    K sum = 0; for (std::size_t i=0; i< u.size(); ++i ) sum += u[i]*v[i];
+    return sum; }
+  template<typename K> auto dot( std::vector<std::complex<K>> const& u,
+                                 std::vector<std::complex<K>> const& v ) {
+    std::complex<K> sum = 0.; for (std::size_t i=0; i<u.size(); ++i) sum += std::conj(u[i])*v[i];
+    return sum; }
+  \end{minted}
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Spécialisation template et constexpr ( C++14 )}
+  \scriptsize
+  \begin{block}{\small Template et constexpr}
+  \begin{itemize}
+  \item À partir de C++14, il est possible de templater les expressions constantes
+  \item Permet de définir des valeurs associées à des types génériques;
+  \item Mais aussi de calculer des expressions à l'aide des templates;
+  \end{itemize}
+  \begin{minted}{c++}
+  template<typename I, long n> constexpr I factoriel = I(n) * factoriel<I,n-1>;
+  template<typename I> constexpr I factoriel<I,0> = I(1);
+  ...
+  std::cout << factoriel<double,20> << std::endl;
+  \end{minted}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Spécialisations partielles}
+  \begin{block}{\small Règles sur les spécialisations partielles}
+  \begin{itemize}
+  \item Permet de spécialiser une fonction, une expression constante ou une classe/structure ( voir plus loin );
+  \item Permet également de spécialiser selon la nature du type ( par exemple spécialiser dans le cas où c'est un pointeur );
+  \item Une valeur ne peut pas être exprimée en fonction d'un paramètre template de la spécialisation :
+  \begin{minted}{c++}
+  template<int I, int J> struct B { ... };
+  template<int I> struct B<I,2*I> { ... }; // Erreur, dépendance entre paramètres templates
+  \end{minted}
+  \item Le type d'une des valeurs de la spécialisation ne peut pas dépendre d'un autre paramètre :
+  \begin{minted}{c++}
+  template<typename T, T t> class B { ... };
+  template<typename T> class B<T,1> { ... }; // Erreur, t dépend de T !
+  \end{minted}
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Spécialisation template : principe de fonctionnement (SFINAE)}
+  \scriptsize
+  \begin{block}{\small Principe d'instanciation d'un compilateur pour les spécialisations template}
+  \begin{itemize}
+  \item Le compilateur recherche si une fonction sans paramètre template est définie et l'instancie le cas échéant;
+  \item Si ce n'est pas le cas, recherche si une version partiellement spécialisée est définie et  peut être utilisée sans échec
+  par le compilateur. Si c'est le cas, le compilateur instancie la fonction à partir de cette spécialisation partielle.
+  \item Enfin, en dernier lieu, le compilateur cherche à instancier la fonction à partir d'une version template générale ( il peut
+  y en avoir plusieurs ). Si cela se traduit par un échec, le compilateur renvoie une erreur;
+  \item Le comportement du compilateur est largement utilisé par les programmeurs C++ pour contrôler le comportement du compilateur;
+  \item Cela permet entre autre de faire de l'introspection avec C++ durant la compilation.
+  \end{itemize}
+  \end{block}
+\end{frame}
+
+% CONTINUER ICI
+\begin{frame}[fragile]{Exercice sur les template de fonction}
+  \scriptsize\vspace*{-3mm}
+  \begin{exampleblock}{\small Puissance nième}
+  Calculer la puissance $n$ ième ( $n$ entier $>0$ ) d'une valeur de type $K$ ( pouvant être un scalaire, une matrice... )
+  \end{exampleblock}
+  
+  \vspace*{-3mm}
+  \begin{exampleblock}{\small Puissance nième (2)}
+  Calculer la puissance $n$ ième ( $n$ entier positif ) d'un double par succession d'appels récursifs résolus à la compilation;
+  \end{exampleblock}
+  
+  \vspace*{-3mm}
+  \begin{exampleblock}{\small Norme 2D}
+  Écrire une fonction calculant la norme d'un vecteur 2D sur un corps K ( réel, complexe, etc\ldots)
+  \end{exampleblock}
+  
+  \vspace*{-3mm}
+  \begin{exampleblock}{\small Problème}
+  On définit la suite de \textsl{fibraction} :
+  \[
+  \left\{
+  \begin{array}{rcl}
+  u_{1} & = & 1 \\
+  u_{2} & = & 2 \\
+  u_{n} & = & u_{n-2} - u_{n-1}
+  \end{array}
+  \right.
+  \]
+  Le but est de calculer $u_{32}$ à la compilation et afficher le résultat à l'exécution
+  \vspace*{-2mm}
+  \begin{block}{\small Astuce}
+  Les fonctions templatées ne sont générées qu'une fois pour une valeur donnée dans le cadre de la récursion.
+  \end{block}
+  \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Généricté structurelle}
+  \scriptsize
+  \begin{block}{\small Déclaration d'une structure template}
+  \begin{itemize}
+  \item Déclaration et définition semblables à celles d'une fonction template
+  \begin{minted}{c++}
+  template<paramètres templates> class|struct|union;
+  \end{minted}
+  \item Tous les attributs et méthodes peuvent utiliser les paramêtres templates 
+        déclarés au niveau de la classe;
+  \item Les constructeurs sont déclarés avec le nom de la classe \textbf{sans les paramètres templates};
+  \item On peut définir les méthodes au sein de la déclaration de la classe mais aussi en dehors de la déclaration;
+  \item Les méthodes définies hors classe doivent être elles-mêmes déclarées la classe portant la méthode template :
+  \begin{minted}{c++}
+  template<typename K> class A { ...
+      K func( const K& k ) const;
+  }; ...
+  template<typename K> K A<K>::func( const K& k ) const { ... }
+  \end{minted}
+  \item les chevrons $<$ et $>$ sont là pour spécifier que c'est la classe qui est template et non la méthode de la classe;
+  \item De même, une structure ou une classe déclarée dans une classe template peut
+        utiliser les paramètres de la classe template;
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Instanciation d'une classe template}
+\scriptsize\vspace*{-3mm}
+
+\begin{block}{\small Règles à suivre pour l'instanciation}
+\begin{itemize}
+\item Une partie du code déclarant une valeur, instanciation de la classe template, 
+      doit avoir accès à toutes les déclarations et définition de la classe 
+      et de ses méthodes !
+\item Lors de la déclaration d'une valeur de type la classe template :
+\begin{itemize}
+\scriptsize
+\item On peut éviter de passer les paramètres templates pour la classe si la 
+      déclaration est faite au sein de la classe ou d'une de ses méthodes.
+\item Dans ce cas, les paramètres templates sont implicitement les mêmes que
+      celles déclarées pour la méthode ou la classe au sein où elle est déclarée;
+\item Dans les autres cas : en dehors de la classe ou une de ses méthodes ou si 
+      les paramètres doivent être différents de celles déclarées pour la méthode
+      ou la classe au sein desquelles elle est déclarée;
+\end{itemize}
+\end{itemize}
+\end{block}
+\begin{minted}{c++}
+  template<typename K> class A {...
+    A( A const& a ) = default; // Constructeur de copie
+  
+    A& operator = ( A const& ) const = default; // Opérateur de copie
+    A f( A const& a ) const;
+  };
+  template<typename K> auto A<K>::f( A const& a ) -> A { A b; ... return b; }
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Constructeurs et méthodes templates}
+  \scriptsize
+
+  \begin{itemize}
+\item Il est possible de déclarer et définir des méthodes et constructeurs 
+      templates dans une classe (qu'elle soit elle-même templatée ou non);
+\item Il est par contre impossible de définir des méthodes virtuelles templates !
+  \end{itemize}
+
+\begin{multicols}{2}
+\underline{\textcolor{violet}{\bf Exemple avec classe non templatée}}:
+\begin{minted}{c++}
+class A { ...
+  template<typename K> A( K const& valeur );
+  ... 
+  template<typename K> K f( K const& valeur );
+};
+template<typename K> A::A( K const& valeur ) {...}
+template<typename K> K f ( K const& valeur ) {...}
+...
+A a1(3.);
+A a2("Valeur");
+a1.f("Trois");
+a2.f(4.+3.i);
+\end{minted}
+\columnbreak
+\underline{\textcolor{violet}{\bf Exemple avec classe templatée}}:
+\begin{minted}{c++}
+template<typename K1> class B { ...
+  template<typename K2> B( K2 const& valeur );
+  template<typename K2> K2 f( K2 const& valeur );
+};    
+template<typename K1> template<typename K2>
+B<K1>::B( K2 const& valeur ) { ... }
+
+template<typename K1> template<typename K2> 
+K2 B<K1>::f( K2 const& valeur  ) { ... }
+
+B<int> b1(3.); B<double> b2("Trois");
+b1.template f<double>(3.); b2.f(3.+2.i);
+\end{minted}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Instance de template}
+\scriptsize
+
+\begin{itemize}
+\item Lors de la compilation d'un fichier de mise en {\oe}uvre (fichier \texttt{.cpp})
+      le compilateur C++ ne compile qu'une seule fois pour un jeux de paramêtres template
+      donné la classe templatée;
+\item Pour chaque fichier de mise eu {\oe}uvre, le C++ recompile une classe templatée même
+      si on l'a instanciée avec le même jeu de paramètre;
+\item Possible d'instancier explicitement une classe template :
+\begin{minted}{c++}
+#include "rationnelImpl.hpp"
+
+template class Rationnel<std::int16_t>;
+template class Rationnel<std::int32_t>;
+template class Rationnel<std::int64_t>;
+\end{minted}
+\item En séparant déclaration et définition, on peut ne compiler qu'une seule fois 
+      chaque instance de la classe templatée pour un jeu de parmêtre templatée donnée :
+\begin{itemize}
+\scriptsize
+\item \texttt{rationnel.hpp} : Déclaration de la classe template \texttt{Rationnel};
+\item \texttt{rationnelImpl.hpp} : Définition des méthodes de la classe template : inclu la classe \texttt{rationnel.hpp};
+\item \texttt{rationnel.cpp} : Instanciations de la classe template : inclu le fichier \texttt{rationnelImpl.hpp}
+\item Pour instancier la classe template avec des paramêtres non instanciés : include le fichier \texttt{rationnelImpl.hpp}
+      sinon inclure le fichier \texttt{rationnel.hpp}.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Architecture fichiers pour bien gérer les templates}
+  \scriptsize
+  \begin{minipage}{0.35\textwidth}
+  \begin{tikzpicture}
+  \node[draw] (decl) {\texttt{rationnel.hpp}};
+  \node[draw, right = 4ex of decl.east] (def) {\texttt{rationnelImpl.hpp}};
+  \node[draw, below = 6em of decl.south east] (inc) {\texttt{rationnel}};
+  \node[draw, right = 7ex of inc.east] (gen) {\texttt{rationnel.cpp}};
+  \draw[->, red] (inc) -- node[sloped,above]{\tiny include} (decl);
+  \draw[->, red] (inc) -- node[sloped,above]{\tiny include} (def);
+  \draw[->, red] (gen) -- node[above]{\tiny include} (inc);
+  \end{tikzpicture}
+  \end{minipage}\hfill
+  \begin{minipage}{0.63\textwidth}
+  \begin{block}{\small Description des fichiers}
+  \begin{itemize}
+  \item Fichier de déclaration \texttt{rationnel.hpp}
+\begin{minted}{c++}
+template<typename Int> class Rationnel { ... };
+\end{minted}
+  \item Fichier de définition \texttt{rationnelImpl.hpp}
+\begin{minted}{c++}
+template<typename Int> Rationnel<Int>::Rationnel(...) {...}
+\end{minted}
+  \item Fichier d'inclusion ( pour générer nouveaux types de vecteurs ) 
+  \texttt{rationnel}
+\begin{minted}{c++}
+#include "Vecteur.hpp"
+#include "Vecteur.tpp"
+\end{minted}
+\item Fichier d'instanciation de types "standards" \texttt{rationnel.cpp}
+\begin{minted}{c++}
+# include "rationnel"
+template Rationnel<std::int_32>;
+template Rationnel<std::int_64>;
+\end{minted}
+\end{itemize}
+\end{block}
+\end{minipage}
+\end{frame}
+
+\begin{frame}[fragile]{Exemple complet classe template : nombres rationnels}
+  \scriptsize\vspace*{-3mm}
+
+  \begin{block}{\small Déclaration : \texttt{rationnel.hpp}}
+  Partie concernant les constructeurs :
+\begin{minted}{c++}
+template<typename Integer> class Rationnel {
+public:
+  // Constructeurs et destructeur
+  Rationnel()                   = default;
+  Rationnel( Integer t_numérateur, Integer t_dénominateur = 1 );
+  explicit Rationnel( double t_réel, double t_epsilon = 1.E-14 );
+  template<typename Integer2> Rationnel( Rationnel<Integer2> const& q );
+  Rationnel( Rationnel const& ) = default;
+  Rationnel( Rationnel     && ) = default;
+  ~Rationnel()                  = default;
+  ...
+};
+\end{minted}
+\end{block}
+\alert{Remarque} : Noter l'emploi du mot clef \texttt{explicit} pour le 
+                   $3^{\mbox{ème}}$ constructeur, utilisé uniquement lors 
+                   de la déclaration. Précise au C++ qu'il lui est 
+                   \textbf{interdit de convertir implicitement} un réel en
+                   rationnel. La conversion devra être déclarée explicitement.
+\end{frame}
+
+\begin{frame}[fragile]{Exemple complet classe template : nombres rationnels (2)}
+\scriptsize
+\begin{block}{\small Déclaration : \texttt{rationnel.hpp}}
+\begin{minted}{c++}
+template<typename Integer> class Rationnel {
+public:
+  // Constructeurs et destructeur... 
+  // Opérateurs arithmétiques
+  Rationnel& operator += ( Rationnel const& );
+  Rationnel& operator -= ( Rationnel const& );
+  Rationnel& operator *= ( Rationnel const& );
+  Rationnel& operator /= ( Rationnel const& );
+  Rationnel operator +   ( Rationnel const& ) const;
+  Rationnel operator -   ( Rationnel const& ) const;
+  Rationnel operator *   ( Rationnel const& ) const;
+  Rationnel operator /   ( Rationnel const& ) const;
+  Rationnel operator -   (                  ) const;
+  ... 
+};
+\end{minted}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exemple complet classe template : nombres rationnels (3)}
+\scriptsize\vspace*{-5mm}
+\begin{block}{\small Déclaration : \texttt{rationnel.hpp}}
+\begin{minted}{c++}
+template<typename Integer> class Rationnel {
+public:
+  // Constructeurs et destructeur ...
+  // Opérateurs arithmétiques ...
+  // Autres opérateurs
+  Rationnel& operator = ( Rationnel const& ) = default;
+  Rationnel& operator = ( Rationnel     && ) = default;
+  // Opérateur spatial (spaceship operator) pour les comparaisons (C++ 20)
+  decltype(Int(1)<=>Int(2)) operator <=> ( Rationnel const& ) const;
+  // Pour dire qu'on utilise l'opérateur <=> sinon faut le redéfinir
+  bool operator == ( Rationnel const& ) const 
+  { return ((numérateur() == q.numérateur()) && (dénominateur() == q.dénominateur())); };
+  explicit operator double() const { return double(m_numérateur)/m_dénominateur; }
+  explicit operator std::string() const 
+  { return "(" + std::to_string(this->m_numérateur) + "/" + std::to_string(this->m_dénominateur) + ")"; }
+  ... };
+\end{minted}
+\end{block}
+\vspace*{-3mm}
+\alert{Remarque} : L'opérateur $<=>$ permet en une seule fonction de définir les 
+opérarateurs de comparaison (sauf l'égalité si on ne le met pas à défaut). Le type 
+renvoyé par l'opérateur $<=>$ décrit l'ordonnancement entre les deux valeurs comparées.
+\end{frame}
+
+\begin{frame}[fragile]{Exemple complet classe template : nombres rationnels (4)}
+\scriptsize\vspace*{-5mm}
+\begin{block}{\small Déclaration : \texttt{rationnel.hpp}}
+  \begin{minted}{c++}
+template<typename Integer> class Rationnel {
+public:
+  // Constructeurs et destructeur ...
+  // Opérateurs arithmétiques ...
+  // Autres opérateurs ...
+  // Accesseurs et modifieurs ... 
+  struct ValeurStruct { Integer numérateur, dénominateur; };
+  ValeurStruct  valeurs() const;
+private:
+  ValeurStruct m_valeurs;
+};
+\end{minted}
+\end{block}
+\alert{Remarque} : On a choisit de créer une structure interne portant les deux 
+entiers numérateur et dénominateur. Cela permet de renvoyer la paire d'entier en
+précisant sémantiquement leurs rôles :
+\begin{minted}{c++}
+auto vals = q.valeurs();
+std::cout << "numérateur : " << vals.numérateur << std::endl;
+auto [p,q] = q.valeurs(); 
+std::cout << "numérateur : " << p << std::endl;
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Exemple complet classe template : nombres rationnels (5)}
+\scriptsize\vspace*{-5mm}
+\begin{block}{\small Déclaration : \texttt{rationnel.hpp}}
+\begin{minted}{c++}
+template<typename Integer> class Rationnel { ... };
+// Opérateurs définis à l'extérieur de la classe
+template<typename Integer> inline Rationnel<Integer> operator + (Integer val,Rationnel<Integer> const& p)
+{ return p + val; }
+
+template<typename Integer> inline Rationnel<Integer> operator - (Integer val,Rationnel<Integer> const& p)
+{ return -(p - val); }
+
+template<typename Integer> inline Rationnel<Integer> operator * (Integer val,Rationnel<Integer> const& p)
+{ return p * val; }
+
+template<typename Integer> inline Rationnel<Integer> operator / (Integer val,Rationnel<Integer> const& p)
+{ return Rationnel<Integer>(val)/p; }
+
+template<typename Integer> inline 
+std::ostream& operator << (std::ostream& out,Rationnel<Integer> const& p) {
+    auto [pn,pd] = p.valeurs();
+    out << pn << " " << pd;
+    return out;                                                           }
+\end{minted}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Espace de nommage anonyme (suite exemple nombres rationnels)}
+\scriptsize
+
+\begin{itemize}
+\item Déclarer dans la partie définition un espace de nommage (\texttt{namespace})
+      n'ayant aucun nom. 
+\item Les fonctions et les variables "globales" définies dans cet espace de
+      nommage ne seront visibles que pour les fonctions qui seront définies dans
+      le même fichier (au include près);
+\end{itemize}
+
+\begin{block}{\small Mise en {{\oe}uvre} : \texttt{rationnelImpl.hpp}}
+\begin{minted}{c++}
+#include "rationnel.hpp"
+...      
+namespace {
+// Calcul du pgcd par algorithme d'Euclide
+template<typename Int> Int pgcd( Int p, Int q) { ... 
+}
+// Calcul une approximation rationnelle d'un nombre réel
+template<typename Int> Rationnel<Int> 
+approximation_rationnelle(double x, const Rationnel<Int>& pn, 
+                                    const Rationnel<Int>& qn, double tol ) {
+...
+}
+}// Fin espace de nommage anonyme
+\end{minted}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exemple complet classe template : nombres rationnels (6)}
+\scriptsize\vspace*{-5mm}
+\begin{block}{\small Mise en {{\oe}uvre} : \texttt{rationnelImpl.hpp}}
+\begin{minted}{c++}
+#include "rationnel.hpp"
+...
+template<typename Int> Rationnel<Int>::rationnel( Int num, Int dénom)
+  :   m_valeurs{num, dénom}
+{ ... }
+template<typename Int> Rationnel<Int>::rationnel( double real, double epsilon)
+  :   m_valeurs{0, 1}
+{ ... }
+...
+template<typename Int>  decltype(Int(1)<=>Int(2)) 
+Rationnel<Int>::operator <=> ( const rationnel& p) const {
+  assert(m_valeurs.dénominateur != 0); assert(p.valeurs().dénominateur != 0);
+  if ((m_valeurs.numérateur==p.valeurs().numérateur)&&(m_valeurs.dénominateur==p.valeurs().dénominateur))
+    return std::strong_ordering::equal;
+  if (m_valeurs.numérateur*p.valeurs().dénominateur<p.valeurs().numérateur*m_valeurs.dénominateur)
+    return std::strong_ordering::less;
+  assert(m_valeurs.numérateur*p.valeurs().dénominateur>p.valeurs().numérateur*m_valeurs.dénominateur);
+  return std::strong_ordering::greater;  
+}  
+\end{minted}
+\end{block}
+\end{frame}  
+
+%
+
+\begin{frame}[fragile]{Référence universelle \hspace*{9cm}\textcolor{red}{\Huge\bf +}}
+  \scriptsize
+  \begin{block}{\small Problématiques}
+  \begin{itemize}
+  \item Considérons le code suivant :
+  \begin{minted}{c++}
+  template<typename K> class Wrapper : public Base_wrapper
+  { public:
+    Wrapper( K& a1 ) : m_obj(a1,a1) {}
+    Wrapper( K& a1, K& a2) : m_obj(a1,a2) {}
+  private:
+    K m_obj; };
+   Wrapper<std::pair<double>> p{3., 4.};
+  \end{minted}
+    \item Le constructeur de \texttt{Wrapper} a besoin de passer une liste 
+          arbitraire d'arguments à l'objet de type \texttt{K};
+    \item Le code ne compile pas car on ne peut pas passer des valeurs par référence;
+    \item Une solution est de passer plutôt des références constantes, mais si 
+          l'objet K demande une référence non constante ?
+    \item On peut alors convertir a1 et a2 en référence non constante : 
+          \mintinline{c++}{const_cast<K&>(a1)};
+    \item \alert{Problème}:  maintenant, Wrapper peut modifier des valeurs 
+          constantes ( au travers de l'objet \texttt{K} ).
+  \end{itemize}
+  \end{block}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Référence universelle\ldots\hspace*{9cm}\textcolor{red}{\Huge\bf +}}
+  \scriptsize
+  
+  \begin{block}{\small Solution non satisfaisante à la problématique précédente}
+  \begin{itemize}
+    \item \textcolor{DarkGreen}{Une solution qui marche} : considérer toutes les 
+          combinaisons de références constantes ou non :
+  \begin{minted}{c++}
+  template<typename K> class Wrapper : public Base_wrapper
+  {
+  public:
+    ...
+    Wrapper( K& a1, K& a2) : m_obj(a1,a2) {}
+    Wrapper( const K& a1, K& a2) : m_obj(a1, a2) {}
+    Wrapper( K& a1, const K& a2) : m_obj(a1, a2) {}
+    Wrapper( const K& a1, const K& a2 ) : m_obj(a1, a2) {} ... 
+  \end{minted}
+    \item Problème : $2^{N}$ combinaisons à écrire ( N = nbre arguments )
+  \end{itemize}
+  \end{block}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Référence universelle\hspace*{9cm}\textcolor{red}{\Huge\bf +}}
+  \scriptsize
+  \begin{block}{\small Référence universelle}
+  \begin{minted}{c++}
+    Wrapper( K&& a1 ) : m_obj(a1) {}
+    Wrapper( K&& a1, K&& a2 ) : m_obj(a1, a2) {}
+  \end{minted}
+  \begin{itemize}
+    \item Passage d'une variable : passée par référence
+    \item Passage d'une valeur   : passée par rvalue ( id. référence constante )
+  \end{itemize}
+  \end{block}
+  \begin{block}{Forwarding}
+  \begin{itemize}
+    \item On veut parfois garder le type de passage d'un argument ( pour faire un 
+          retour par déplacement par exemple ou si la fonction appelée demande une 
+          référence universelle );
+  \begin{minted}{c++}
+  Wrapper( K&& a1 ) : m_obj(std::forward<K>(a1)) {}
+  \end{minted}
+  \end{itemize}
+  \end{block}
+  \end{frame}
+    
+  \begin{frame}[fragile]{Exercices}
+  \scriptsize
+  \begin{exampleblock}{\small Matrice de rotation 2D}
+  \'Ecrire une classe représentant une rotation 2D d'angle $\alpha$ ( le corps de 
+  base pouvant être réel ou complexe );
+  \end{exampleblock}
+    
+  \begin{exampleblock}{\small Polynôme}
+  Écrire une classe représentant un polynôme ( l'anneau considéré pouvant être non 
+  commutatif comme pour les matrices ou les quaternions par exemple ).
+  \begin{itemize}
+    \item Calcul dérivée et primitive;
+    \item Évaluation du polynôme en une valeur;
+    \item Addition, soustraction et multiplication de deux polynôme
+    \item Sauvegarde et affichage des polynômes.
+  \end{itemize}
+  \end{exampleblock}
+  \end{frame}
+
+\section{Template avancé}
+
+\subsection{Templatex variadiques}
+
+\begin{frame}[fragile]{Notion de fonctions variadiques en C}
+  \scriptsize\vspace*{-3mm}
+  
+  \begin{block}{\small Notions}
+  \begin{itemize}
+  \item Pour certaines fonctions, la liste des arguments peuvent ne pas être fixe.\\
+  \underline{\textcolor{NavyBlue}{\bf Exemple}} : la fonction \texttt{printf} en C
+  \begin{minted}{c++}
+  #include <cstdio>
+  ... 
+  printf("Hello world\n");
+  printf("On est le %d, du mois %d, de l'annee %d\n",jour, mois, annee);
+  printf("La distance entre les deux points sont : %lg\n", distance);
+  ...
+  \end{minted}
+  \item \underline{\textcolor{violet}{Syntaxe à la déclaration/définition}} : 
+  \begin{itemize}
+  \scriptsize
+  \item Passer en premier les paramètres fixes;
+  \item Pour les paramètres variables (variadiques), on passe simplement \texttt{...};
+  \end{itemize}
+  \item \underline{\textcolor{violet}{Principe}}:
+  \begin{itemize}
+  \scriptsize 
+  \item À l'appel, parcourir la liste des paramètres variadiques;
+  \item Pour chaque paramètre parcouru, lire sa valeur en précisant le type attendu;
+  \end{itemize}
+  \end{itemize}
+  \end{block}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Notion de fonctions variadiques en C\ldots}
+  \scriptsize\vspace*{-3mm}
+  
+  \begin{block}{\small Macros définies dans la composante \texttt{stdarg} de la std}
+  \begin{itemize}
+  \item \texttt{va\_list lst\_params} : Structure permettant de parcourir les $\neq$ 
+        paramêtres variadiques passées à la fonction;
+  \item \texttt{va\_start(lst\_params,last\_arg)} : Initialise liste paramètres
+        var. en donnant dernier paramètre fixe dans \texttt{last\_arg};
+  \item \texttt{val = va\_arg(lst\_params, type)} : Lire valeur paramètre courant. Passe ensuite paramètre suivant;
+  \item \texttt{va\_end(lst\_params)} : À appeler après avoir parcouru paramètres variadiques pour détruire la structure;
+  \end{itemize}
+  \end{block}
+  \begin{exampleblock}{\small Exemple code C}
+  \begin{minted}{c++}
+  void createKeywords( std::list<std::string>> keys, ... ) {
+    va_list params; va_start(params, keys);
+    std::string s = va_arg(params, std::string);
+    while (s != "\0") { keys.push_back(s); s = va_arg(params, std::string); }
+    va_end(params);
+  }
+  ... 
+  std::list<std::string> keywords;
+  createKeywords(keywords, "Tintin"s, "Milou"s, "Spirou"s, "\0"s);
+  \end{minted}
+  \end{exampleblock}
+  \end{frame}  
+  
+  \begin{frame}[fragile]{Problèmes des fonctions variadiques en C\ldots}
+    \scriptsize\vspace*{-3mm}
+  \begin{block}{Problèmes posés par les fonctions variadiques en C}
+  \begin{itemize}
+  \item On ne peut pas connaître le nombre de variables variadiques : une variable
+  fixe doit permettre de savoir quand arrêter de lire des variables variadiques;
+  \item Il n'y a aucun contrôle sur les types des paramètres passés !
+  \item Donc, possibilité de faire un grand nombre de bogue avec les fonctions
+       variadiques en C !
+  \end{itemize}
+  \end{block}
+  \begin{alertblock}{\small Exemple de bogues possibles avec l'exemple précédent}
+  \begin{minted}{c++}
+  // Oubli de passer le "\0" à la fin : pas d'arrêt dans le parcours des templates variadiques
+  createKeywords(keywords, "Tintin"s, "Milou"s, "Spirou"s);
+  // On passe des arguments qui ne sont pas des std::string (un char * et un int)
+  createKeywords(keywords, "Tintin"s, "Milou", "Spirou"s, 0);
+  \end{minted}
+  \end{alertblock}
+  \end{frame}
+  
+  \begin{frame}[fragile]{template variadique}
+  \scriptsize\vspace*{-3mm}
+  \begin{block}{\small Définition}
+  \begin{itemize}
+  \item Avant C++ 11, utilisation des fonctions variadiques du C indispensables;
+  \item Traitement des arguments variadiques résolus à l'exécution alors que les 
+        arguments variadiques étaient connus à la compilation d'un exécutable;
+  \item C++ 11 introduit les templates variadiques;
+  \item Permet entre autre de gérer les fonctions à nombre variable d'arguments à 
+        la compilation;
+  \item Gestion des templates variadiques en général pensée de façon récursive;
+  \item Fonction déployée à la compilation
+  \end{itemize}
+  \end{block}
+  \vspace*{-4mm}
+  \begin{exampleblock}{\small Exemple}
+  \begin{minted}{c++}
+  template<typename K> K adder( K val ) { return val; }
+  template<typename K,typename ... Ts> K adder(K first, Ts ... args) { return first + adder(args...); }
+  int main() { ...
+    std::cout << adder(1,3,5,7,13) << std::endl;
+    std::string a1("tin"), a2("et"), a3("milou");
+    std::cout << adder(a1, a1, a2, a3) << std::endl;
+    ... }
+  \end{minted}
+  \end{exampleblock}
+  \end{frame}
+  
+\begin{frame}[fragile]{Comment ça marche ?}
+\scriptsize 
+\begin{block}{Exemple de déploiement de la fonction adder}
+\begin{minted}{c++}
+  adder(1,3,5,7,13) 
+  => { 1 + adder(3,5,7,13) }                    first = 1, args... = 3,5,7,13
+  => { 1 + { 3 + adder(5,7,13)} }               first = 3, args... = 5,7,13
+  => { 1 + { 3 + { 5 + adder(7,13) } } }        first = 5, args... = 7,13
+  => { 1 + { 3 + { 5 + { 7 + adder(13) } } } }  first = 7, args... = 13
+  => { 1 + { 3 + { 5 + { 7 + { 13 } } } } }     Appel fonction spécialisée
+\end{minted}
+\end{block}
+\begin{itemize}
+  \item Dans le cas où on a passé des options d'optimisation, il est quasi sûr 
+        que l'appel de adder sera réduit à la valeur finale obtenue
+  \item Si il y a des variables passées dans la fonction \texttt{adder}, le C++
+        rendra une expression déployée sous forme de somme :
+  \begin{minted}{c++}
+  adder(x,y,z)
+  => { x + adder(y,z) }      first = x, args... = y,z
+  => { x + {y + adder(z)} }  first = y, args... = z
+  => { x + { y + { z } } }   // Appel fonction spécialisée
+  \end{minted}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Paquet de paramètres et paquet d'arguments}
+  \scriptsize 
+  \begin{itemize}
+  \item \texttt{Ts} est le paquet de paramètres templates;
+  \item \texttt{Ts...} déploie les types contenus dans \texttt{Ts}:\\
+  \textcolor{DarkGreen}{
+  Si \texttt{Ts} contient \texttt{\{int, std::string, double\}}, alors 
+  \texttt{Ts... args} sera remplacé pour instancier la fonction par :\\
+  \mintinline{c++}{int arg1, std::string arg2, double arg3} \\et 
+  \texttt{arg} contiendra donc à l'appel de cette fonction \\
+  \mintinline{c++}{ arg1 : int, arg2 : std::string, arg3 : double};
+  }
+  \item \texttt{args} est le paquet de paramètres de la fonction;
+  \item \texttt{args...} déploie les paramètres :\\
+  \textcolor{blue}{Si \texttt{args} contient \texttt{\{3, "tintin", 3.14\}} alors 
+  \texttt{args...} sera remplacé par \texttt{3,"tintin",3.14};}\\
+  avec les types associés (comme plus haut);
+  \item \underline{\textcolor{NavyBlue}{\bf Exemple}} :
+  \begin{minted}{c++}
+  template<typename... Ts> void printError(const char* fmt, Ts ... args )
+  { fprintf(stderr, fmt, args... ); }
+  ... 
+  // Ts : int, double | args = 3, 3.1415
+  printError("Une erreur etrange : %d => %g", 3, 3.1415 );
+  \end{minted}
+  \end{itemize}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Paquet d'arguments (déploiement général)}
+  \scriptsize 
+  \begin{itemize}
+  \item En fait, les \texttt{...} peuvent ne pas suivre immédiatement le paquet
+  d'argument \texttt{args} (peut porter un autre nom que args);
+  \item Par défaut, un \textbf{motif} suivi par \texttt{...}, contenant au moins un 
+        paquet de paramètres est \textsl{déployé} en zéro à plusieurs instanciations 
+        du motif où le nom du paquet de paramètre est remplacé par chaque élément 
+        du paquet, dans l'ordre. 
+  \item L'expansion se fera avec une virgule ou un espace pour séparer chaque élément 
+        du paquet de paramètres; 
+  \begin{itemize}
+  \scriptsize 
+  \item Avec \texttt{sizeof}. \'Evalue à la compilation nombre d'éléments dans 
+        le paquet de paramètre : \mintinline{c++}{sizeof...(args)};
+  \item Utilisé comme liste d'arguments pour l'appel d'une fonction :
+  \begin{minted}{c++}
+  f(args...);            // Déployé comme f(arg1,arg2,...,argN);
+  f(n,++args...);        // Déployé comme f(n, ++arg1, ++arg2, ..., ++argN);
+  f(h(args...)+args...); // Déployé comme f(g(arg1)+arg1,...,g(argN)+argN)
+  \end{minted}
+  \item Utilisé dans liste de paramètres servant d'initialisation entre parenthèses. 
+  Mêmes règles que appel de fonctions :
+  \begin{minted}{c++}
+  A a(n, args...); // Déployé comme A a(n,arg1,arg2,...,argN);
+  \end{minted}
+  \item Utilisé dans une liste d'initialisation :
+  \begin{minted}{c++}
+  std::array<int,sizeof...(args)  > indices{args...};
+  std::array<int,sizeof...(args)+2> indices{-1,args...,5};
+  int dummy[sizeof...(Ts)] = { (std::cout << args, 0)...};
+  \end{minted}
+  \end{itemize}
+  \end{itemize}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Exemple d'utilisation des templates variadiques}
+    \scriptsize
+    \begin{itemize}  
+  \item Par défaut, les \texttt{...} remplacent le \textbf{motif} contenant le paquet 
+        d'argument \texttt{args} par une liste de ce motif répliqué plusieurs fois,
+        chaque membre séparé par une virgule
+  \item \underline{\textcolor{NavyBlue}{Exemple}}:
+  \begin{minted}{c++}
+  template<typename HeadType, typename... Ts> std::ostream& 
+  print(std::ostream& out, HeadType const& head, Ts const& ...args) {
+    out << head;
+    // Déploiement->{(out << ", " << arg1,0),(out << ", " << arg2,0),...,(out << ", " << argn),0}
+    auto tmp = { (out << " " << args,0)... };
+    return out; }
+  print("Message : ", 404, " est ", 4.04, "\n");
+  \end{minted}
+  \item \texttt{args} passé en référence constante pour éviter copie;
+  \item Impossible d'écrire directement \mintinline{c++}{std::cerr << args...;} car
+        serait remplacé par \mintinline{c++}{std::cerr << arg1,arg2,...,argn;} 
+  \item Utilise les caractéristiques de l'opérateur \texttt{,} : retourne dernière
+        valeur. Exemple \mintinline{c++}{auto a = (3.14,4);} $\Rightarrow$ \texttt{a : int = 4} . 
+  \item Pour d'autres contextes d'emplois des paquets de paramètres, voir 
+  \href{https://en.cppreference.com/w/cpp/language/parameter_pack}{\beamergotobutton{\scriptsize ce lien}}
+  \end{itemize}
+\end{frame}  
+
+\begin{frame}[fragile]{Déploiement d'expressions (C++ 17)}
+  \scriptsize
+
+\begin{itemize}
+\item Déploie un paquet de paramètre en utilisant un opérateur binaire;
+\item \textcolor{blue}{\underline{Principe}} : remplace l'opérateur \texttt{,} par 
+      un autre opérateur binaire (+, *, \ldots);
+\item Permet de beaucoup simplifier l'emploie des templates variadiques;
+\item \textcolor{violet}{\underline{Syntaxe}} :\\
+(\texttt{\textcolor{blue}{pack} = \{\textcolor{blue}{$e_{1}$},\ldots,\textcolor{blue}{$e_{n}$}\}}
+expression de paquet de paramètres, \textcolor{red}{op} opérateur binaire,
+\texttt{\textcolor{DarkGreen}{init} $\rightarrow$ \textcolor{DarkGreen}{I}} expression sans variadiques)
+\begin{itemize}
+\scriptsize 
+\item \textbf{Déploiement unitaire droit :} \texttt{(\textcolor{blue}{pack} 
+\textcolor{red}{op} ...)} 
+remplacé par \texttt{(\textcolor{blue}{$e_{1}$}\textcolor{red}{op} ( 
+  ... \textcolor{red}{op} (\textcolor{blue}{$e_{n-1}$} \textcolor{red}{op}
+  \textcolor{blue}{$e_{n}$})))}
+\item \textbf{Déploiement unitaire gauche :} \texttt{(... \textcolor{red}{op} 
+\textcolor{blue}{pack})} remplacé par 
+\texttt{(((\textcolor{blue}{$e_{1}$} \textcolor{red}{op} \textcolor{blue}{$e_{2}$})  
+\textcolor{red}{op} ... ) \textcolor{red}{op} \textcolor{blue}{$e_{n}$})}
+\item \textbf{Déploiement binaire droit :} \texttt{(\textcolor{blue}{pack} 
+\textcolor{red}{op} ... \textcolor{red}{op} \textcolor{DarkGreen}{init})}
+remplacé par 
+\texttt{(\textcolor{blue}{$e_{1}$} \textcolor{red}{op} ( ... \textcolor{red}{op} 
+(\textcolor{blue}{$e_{n-1}$} \textcolor{red}{op} (\textcolor{blue}{$e_{n}$} 
+\textcolor{red}{op} \textcolor{DarkGreen}{I}))))}
+\item \textbf{Déploiement binaire gauche :} 
+\texttt{(\textcolor{DarkGreen}{init} \textcolor{red}{op} ... 
+\textcolor{red}{op} \textcolor{blue}{pack})}
+remplacé par 
+\texttt{((((\textcolor{DarkGreen}{I} \textcolor{red}{op} \textcolor{blue}{$e_{1}$})
+\textcolor{red}{op} \textcolor{blue}{$e_{2}$}) \textcolor{red}{op} ... ) 
+\textcolor{red}{op} \textcolor{blue}{$e_{n}$})}
+\end{itemize}
+\item \underline{\textcolor{NavyBlue}{\bf Exemples}} :
+\begin{minted}{c++}
+template<typename... Ts> auto adder( Ts const& ...args) { return (args + ...); }
+
+template<typename HeadType, typename... Ts> std::ostream& 
+print(std::ostream& out, HeadType const& head, Ts const& ... args ) {
+  out << head; ((out << " " << args),...);
+  return out;
+}
+\end{minted}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Exercices sur les fonctions templates variadiques}
+  \scriptsize
+  \begin{itemize}
+  \item Modifier la fonction \texttt{adder} (version avec déploiement d'expression)
+        en donnant une valeur initiale à laquelle on rajoute les valeurs passées dans 
+        le paquet de paramètre; 
+  \item En s'inspirant de la fonction \texttt{adder} donné avec et sans déploiement d'expression,
+        écrire une fonction qui concatène $n$ chaîne de caractères en une chaîne, en insérant 
+        entre chaque chaîne un espace (avec et sans déploiement);
+  \item \'Ecrire une fonction recherchant le maximum parmi $n$ valeurs de types comparables;
+  \item Une fonction vérifiant que les valeurs passées (de types comparables) sont bien
+        données dans l'ordre croissant. \\
+        On écrira une version sans déploiement d'expression et une version avec
+        déploiement d'expression;
+  \item Une fonction \texttt{testAny} qui prend $n$ booléens (ou valeurs assimilables
+  à un booléen) et teste si au moins un booléen est vrai; \'Ecrire de même une fonction
+  \texttt{testAll} qui prend $n$ booléens (ou assimilables) et teste si tous sont vrais.
+  \end{itemize}
+  \end{frame}
+
+\section{Techniques classiques utilisant les templates}
+
+\subsection{Politiques et restrictions de type}
+
+\begin{frame}[fragile]{Stratégies template}
+  \scriptsize\vspace*{-3mm}
+  \begin{block}{\small Politique template}
+  \begin{itemize}
+  \item \underline{\textcolor{orange}{\bf Principe}} : Changer le "comportement" d'une fonction en fonction du type passé comme paramètre template
+  \item \underline{\textcolor{DarkGreen}{\bf Exemple simple}} : 
+\begin{minted}{c++}
+template<typename K> struct MPI_Type { static MPI_Datatype id_type() { return MPI_PACKED; } };
+template<> struct MPI_Type<short> { static MPI_Datatype id_type() { return MPI_SHORT; } };
+template<> struct MPI_Type<double> { static MPI_Datatype id_type() { return MPI_DOUBLE; } };
+...
+template<typename K> bool send( std::vector<K> const& buffer, int dest, int tag = MPI_ANY_TAG )
+{    MPI_Send( buffer.data(), nbItems, MPI_Type<K>::id_type(), dest, tag, MPI_COMM_WORLD);    }
+\end{minted}
+  \item \underline{\textcolor{DarkGreen}{\bf Exemple plus compliqué}} :
+\begin{minted}{c++}
+class OpenGLRenderer { ... static void render( ... ); ... };
+class VulkanRenderer { ... static void render( ... ); ... }
+... 
+template<typename HardwareRenderer>
+class SceneRenderer { ... 
+void display( ... ) { ... HardwareRenderer::render(...); ... }
+};
+\end{minted}
+\end{itemize}
+\end{block}
+\end{frame}
+  
+\begin{frame}[fragile]{Stratégies templates : comment restreindre les types possibles ?}
+\scriptsize
+  
+  \begin{itemize}
+  \item Se base sur le SFINAE (\textbf{S}ubstitution \textbf{F}ailure 
+  \textbf{I}s \textbf{N}ot \textbf{A}n \textbf{E}rror)
+  \item \underline{\textcolor{orange}{\bf Principe}} : 
+  Définir par défault une structure template générant une erreur mais qu'on
+  spécialise pour les types permis pour un paramètre template
+  \item \underline{\textcolor{DarkGreen}{\bf Exemple simple}} : 
+\begin{minted}{c++}
+template<typename K> struct restrictor        {                        };
+template<>           struct restrictor<float> { using result = float ; };
+template<>           struct restrictor<double>{ using result = double; };
+        
+template<typename Real> typename restrictor<Real>::result
+distance( K a1, K a2, K b1, K b2 ) { ... }
+\end{minted}
+  \item \textbf{Note} : En C++ 20, cette stratégie template est devenue inutile 
+   car le C++ 20 introduit la notion de \texttt{\textcolor{blue}{concept}}
+\begin{minted}{c++}
+#include <concepts>
+std::floating_point auto distance( std::floating_point auto a1, std::floating_point auto a2,
+                                   std::floating_point auto b1, std::floating_point auto b2 ) 
+{    ...    }
+// Autre façon d'utiliser un concept :
+template<std::floating_point Real> Real distance( Real a1, Real a2, Real b1, Real b2 ) {    ...    }
+\end{minted}
+\end{itemize}
+\end{frame}
+  
+\begin{frame}[fragile]{Restreindre des types possibles à l'aide des concepts (C++ 20)?}
+  \scriptsize
+  
+  \begin{itemize}
+  \item La composante \texttt{concepts} de la bibliothèque standard contient :
+  \begin{itemize}
+  \scriptsize 
+  \item \texttt{std::derived\_from<BaseClass>} : Restreint aux types dérivant d'une classe passée en argument template;
+  \item \texttt{std::convertible\_to<Type>} : Restreint aux types convertibles en \texttt{Type};
+  \item \texttt{std::integral} : Restreint aux entiers;
+  \item \texttt{std::signed\_integral} : Restreint aux entiers signés;
+  \item \texttt{std::unsigned\_integral} : Restreint aux entiers non signés;
+  \item \texttt{std::totally\_ordered} : Restreint aux types appartenant à un ensemble totalement ordonné;
+  \item \texttt{std::copyable} : Restreint aux type copyable;
+  \item \texttt{std::invocable} : Restreint aux types foncteurs (possédant un opérateur d'évaluation);
+  \end{itemize}
+  \item Possible de concevoir ses propres concepts (mais pas abordé dans ce cours);
+  \item \underline{\textcolor{DarkGreen}{\bf Exemples}} : 
+  \begin{minted}{c++}
+  template<std::integral I> I pgcd( I a, I b ) { ... }
+  template<std::totally_ordered K> void sort( std::vector<K>& a ) { ... } 
+  \end{minted}
+  \item Permet de mieux documenter sa fonction ou type template !
+  \end{itemize}
+\end{frame}
+
+\subsection{Introspection}
+
+\begin{frame}[fragile]{Introspection par template (outils nécessaires)}
+  \scriptsize\vspace*{-4mm}
+  \begin{block}{\small Techniques nécessaires}
+  \vspace*{-1mm}
+  \begin{itemize}
+  \item On va utiliser le principe SFINAE et des expressions constantes (constexpr);
+  \item Utilisation de \mintinline{c++}{std::declval<K>()} et \mintinline{c++}{std::decltype(expr)} :
+  \item \mintinline{c++}{std::decltype(expr)} permet de déclarer un type (pour une valeur par exemple)
+  à partir d'une expression donnée;
+  \item Pour récupérer type renvoyé par méthode dans une classe,
+  créer valeur via constructeur par défaut et appeler la méthode:
+  \begin{minted}{c++}
+  struct Default { int foo() { return 1; } };// Struct avec constructeur par défaut...
+  decltype(Default().foo()) n1 = 1; //ok, n1 est un entier
+  \end{minted}
+  \item Que faire si classe sans constructeur par défaut ? Données nécessaires
+        pour construire valeur ? Effets de bords possibles...
+  \begin{minted}{c++}
+  struct NonDefault { NonDefault(int i) {} // Struct sans constructeur par défaut
+                      int foo() { return 1; } }; ...
+  decltype(NonDefault().foo()) n2 = 2;// Erreur, NonDefault n'a aucun constructeur par défaut
+  \end{minted}
+  \item \mintinline{c++}{std::declval<K>()} (dans \texttt{utility} de la std) permet de "créer" 
+  virtuellement valeur de type classe et 
+  permettre d'appeler méthode dont on veut connaître type de retour :
+  \begin{minted}{c++}
+  #include <utility>
+  // std::declval transforme un type en référence sur obj de ce type
+  decltype(std::declval<NonDefault>().foo()) n3 = 3;// ok, n3 est un entier
+  \end{minted}
+  \end{itemize}
+  \end{block}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Introspection (principe)}
+  \scriptsize\vspace*{-4mm}
+  \begin{exampleblock}{\small Principe introspection}
+  \begin{itemize}
+  \item On veut une structure permettant de tester à la compilation si une 
+        classe contient une méthode ou non;
+  \item Cette structure va contenir 
+  \begin{itemize}
+  \scriptsize
+  \item une méthode de classe templatée (pour utiliser le SFINAE) tentant 
+        d'appeler la méthode en question dans le retour et retournant \texttt{true};
+  \item une méthode de classe templatée du même nom que la précédente
+        avec signature différente (mais compatible) retournant simplement 
+        \texttt{false};
+  \item Une valeur booléenne constexpr initialisée en appelant la méthode de classe
+        avec le paramètre de la classe pour paramètre de la méthode;
+  \end{itemize}
+  \item \underline{\textcolor{DarkGreen}{\bf Exemple}} :
+  \begin{minted}{c++}
+  template<class K> struct has_serialize {
+      template<typename C> static constexpr 
+      decltype(std::declval<C>().serialize(std::cout), bool()) test(int){ return true; }
+      template<typename C> static constexpr bool test(...) { return false; }
+      // La valeur booléenne finale évaluée par le compilateur pour savoir si 
+      // C contient une méthode serialize
+      static constexpr bool value = test<K>(int());
+  };
+  \end{minted}
+  \end{itemize}
+  \end{exampleblock}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Utilisation de l'instrospection}
+  \scriptsize
+  
+  \begin{itemize}
+  \item L'instrospection ne peut se faire qu'au moment de la compilation;
+  \item Impossible de l'utiliser dans un \texttt{if} évalué à l'exécution
+  \item Le code ci-dessous ne pourra jamais compilé :
+  \begin{minted}{c++}
+  template<typename C> std::ostream& save(C const& obj, std::ostream& out) {
+        if (has_serialize<C>::value) return obj.serialize(out);
+        else return obj.fmtSave(out);                                           }
+  \end{minted}
+  \item Utiliser \mintinline{c++}{if constexpr} pour évaluer la branche de compilation :
+  \begin{minted}{c++}
+  template<typename K> std::ostream& save( K const& obj, std::ostream& out) {
+        if constexpr (has_serialize<K>::value) {
+              return obj.serialize(out);
+        } else {
+              return obj.fmtSave(out);
+        }
+  }        
+  \end{minted}
+  \end{itemize}
+  \end{frame}
+  
+\begin{frame}[fragile]{Exercice sur l'introspection}
+  \scriptsize
+  \begin{itemize}
+  \item \'Ecrire une fonction calculant le median d'un ensemble de valeurs contenues 
+        dans un conteneur;
+  \item Cette fonction devra marcher pour tout conteneur ayant une méthode 
+        \mintinline{c++}{size()} et des itérateurs;
+  \item On optimisera cette fonction pour tous les conteneurs à accés direct, 
+        c'est à dire possédant l'opérateur \texttt{[]}.
+  \item \alert{Astuce} : Regarder les fonctions \mintinline{c++}{std::begin}, 
+        \mintinline{c++}{std::advance} et \mintinline{c++}{std::next}.
+  \end{itemize}
+  % \end{exampleblock}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Curiously Reccuring Template Pattern (CRTP)}
+    \scriptsize
+    \begin{block}{\small Principes}
+    \begin{itemize}
+    \item Formalisé dans les années 1980 comme le \textsl{F-bounded quantification};
+    \item Une classe \verb@X@ dérive d'une classe template ayant pour argument template la classe \verb@X@ elle-même;
+    \begin{minted}{c++}
+    // La classe Base est templatée pour pouvoir accèder aux membres des classes dérivées
+    template<typename K> struct Base 
+    { 
+          ...
+    };        
+    // 
+    class Derivée : public Base<Dérivée> 
+    { 
+          ... 
+    };
+    \end{minted}
+    \end{itemize}
+    \end{block}
+\end{frame}
+    
+\begin{frame}[fragile]{Utilisation courante du CRTP}
+    \scriptsize
+    \begin{exampleblock}{\small Exemple d'utilisation}
+    \begin{itemize}
+    \item Polymorphisme statique
+    \begin{minted}{c++}
+    template <typename T> struct Base { 
+      void implementation() { ... static_cast<T*>(this)->implementation(); ... } 
+      static void static_func() { ... T::static_sub_func(); ... } }; 
+    struct Derived : Base<Derived> { void implementation(); 
+      static void static_sub_func(); };
+    \end{minted}
+    \item Compteur d'objets :
+    \begin{minted}{c++}
+    template <typename T> struct counter {
+      static int objects_created; static int objects_alive;
+      counter() { ++objects_created; ++objects_alive; }
+      counter(const counter&) { ++objects_created; ++objects_alive; }
+    protected: // objects should never be removed through pointers of this type
+      ~counter() { --objects_alive; } };
+    template <typename T> int counter<T>::objects_created( 0 );
+    template <typename T> int counter<T>::objects_alive( 0 );
+    class X : counter<X> { ... };
+    class Y : counter<Y> { ... };
+    \end{minted}
+    \end{itemize}
+    \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Autre exemple utilisation CRTP}
+  \scriptsize
+  \begin{exampleblock}{\small Autre exemple}
+  \begin{itemize}
+  \item Constructeur de copie polymorphique
+  \begin{minted}{c++}
+  class Shape {// Base class has a pure virtual function for cloning 
+  public: 
+    virtual ~Shape() {}; 
+    virtual std::shared_ptr<Shape> clone() const = 0; }; 
+  template <typename Derived> class Shape_CRTP : public Shape { 
+  public: // This CRTP class implements clone() for Derived 
+    virtual std::shared_ptr<Shape> clone() const override 
+    { return std::make_shared<Derived>(static_cast<Derived const&>(*this)); } }; 
+  // Nice macro which ensures correct CRTP usage 
+  #define Derive_Shape_CRTP(Type) class Type: public Shape_CRTP<Type> 
+  Derive_Shape_CRTP(Square) {};// Every derived class inherits from Shape_CRTP instead of Shape
+  Derive_Shape_CRTP(Circle) {};
+  \end{minted}
+  % \item Chaînage polymorphique
+  % \begin{lstlisting}
+  % template <typename ConcretePrinter> class Printer { // Base class 
+  % public: 
+  %     Printer(ostream& pstream) : m_stream(pstream) {} 
+  %     template <typename T> ConcretePrinter& print(T&& t) { 
+  %         m_stream << t; return static_cast<ConcretePrinter&>(*this); } 
+  %     template <typename T> ConcretePrinter& println(T&& t) { 
+  %         m_stream << t << endl; return static_cast<ConcretePrinter&>(*this); } 
+  % private: 
+  %     ostream& m_stream; }; 
+  % class CoutPrinter : public Printer<CoutPrinter> { // Derived class 
+  % public: 
+  %     CoutPrinter() : Printer(cout) {} 
+  %     CoutPrinter& SetConsoleColor(Color c) { ... return *this; } }; 
+  % // usage CoutPrinter().print("Hello ").SetConsoleColor(Color.red).println("Printer!");
+  % \end{lstlisting}
+  \end{itemize}
+  \end{exampleblock}
+  \end{frame}
+  
+
+\subsection{Expressions templates}
+
+\begin{frame}[fragile]{Expressions templates : problématique}
+  \scriptsize\vspace*{-4mm}
+  
+  \begin{alertblock}{Problématiques}
+  \begin{itemize}
+  \item Imaginons que nous avons mise en {\oe}uvre un vecteur algébrique doté
+        de la sosutraction, du produit par un scalaire et du produit scalaire;
+  \begin{minted}{c++}
+  template<typename K> class Vecteur<K> { ...
+    Vecteur operator - ( const Vecteur& u ) const;
+    K operator | ( const Vecteur& u ) const;
+    Vecteur homothetie( const K& alpha ) const;
+  ...};
+  template<typename K> Vecteur<K> operator * ( const K& alpha, const Vecteur<K>& u ) 
+  { return u.homothetie(alpha); }
+  \end{minted}
+  \item Que fait dans ce cas le C++ avec l'expression : \mintinline{c++}{auto w = v - (v|u)*u} ?
+  \begin{itemize}
+  \scriptsize 
+  \item $(u|v)$ range le résultat dans un scalaire $\alpha$ sur la pile;
+  \item $\alpha.u$ range le résultat dans un vecteur $u'$ sur la pile;
+  \item $v-u'$ range le résultat dans un vecteur $v'$ sur la pile;
+  \item $w=v'$ déplace les données de $v'$ dans $w$.
+  \end{itemize}
+  \item \alert{Bilan} : Au moins un vecteur intermédiaire non nécessaire de créer :
+  \begin{minted}{c++}
+  auto scal = (v|u); for (std::size_t i=0; i<v.dim(); ++i) w[i] = v[i] - scal*u[i];
+  \end{minted}
+  \end{itemize}
+  \end{alertblock}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Comment éviter le vecteur intermédiaire ?}
+  \scriptsize\vspace*{-4mm}
+  
+  \begin{itemize}
+  \item Jouer avec les déplacements;
+  \item Remarquer qu'un vecteur intermédiaire (temporaire) peut être modifié
+        pour mettre à jour le calcul;
+  \begin{minted}{c++}
+  template<typename K> class Vecteur<K> { ...
+  template<typename K> Vecteur<K>&& operator - ( Vecteur<K>&& u ) {
+    for (std::size_t i=0; i<dim(); ++i) u[i] = m_coefs[i] - u[i];
+    return std::move(u);
+  }...
+  };
+  \end{minted}
+  \item Que fait dans ce cas le C++ avec l'expression : \mintinline{c++}{auto w = v - (v|u)*u} ?
+  \begin{itemize}
+  \scriptsize 
+  \item $(u|v)$ range le résultat dans un scalaire $\alpha$ sur la pile;
+  \item $\alpha.u$ range le résultat dans un vecteur $u'$ sur la pile;
+  \item $v-u'$ stocke le résultat dans  $u'$;
+  \item $w=u'$ déplace les données de $u'$ dans $w$.
+  \end{itemize}
+  \item On voit qu'on ne crée pas le vecteur intermédiaire par rapport à l'ancienne version;
+  \item Mieux, mais performance toujours $<$ à :
+  \begin{minted}{c++}
+  auto scal = (v|u); for (std::size_t i=0; i<v.dim(); ++i) w[i] = v[i] - scal*u[i];
+  \end{minted}
+  \end{itemize}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Expressions templates : Idée}
+  \scriptsize\vspace*{-4mm}
+  
+  \begin{itemize}
+  \item \textbf{\textcolor{NavyBlue}{Idée}} : Utiliser les templates pour construire
+        un arbre abstrait syntaxique (principe des compilateurs); 
+  \item Technique avancée et pas toujours facile à mettre en place;
+  \item Plusieurs bibliothèque proposent des bibliothèques d'expression templates :
+  \begin{itemize}
+  \scriptsize
+  \item Dans \texttt{boost-Yap}: Permet de construire soi-même des expressions templates
+        assez "naturellement";
+  \item Dans \texttt{Eigen} : Les expressions mathématiques sur des vecteurs ou des matrices
+        sont automatiquement optimisés par la bibliothèque en utilisant si possible du BLAS par derrière;
+  \item \ldots
+  \end{itemize}
+  \item Nous allons voir le principe sur des exemples très simples où on peut s'affranchir
+        de construire un arbre syntaxique.
+  \end{itemize}
+
+  \begin{minted}{c++}
+  template<unsigned long n> unsigned long long factoriel = n * factoriel<n-1>;
+  template<> unsigned long long factoriel<0UL> = 1ULL;
+  \end{minted}
+  \end{frame}
+
+  \begin{frame}[fragile]{Les expressions templates\ldots}
+    \scriptsize
+    \begin{exampleblock}{\small Autre exemple un peu plus complexe}
+    Calcul de l'approximation entière supérieure d'une racine carrée par encadrement
+    \begin{itemize}
+    \item Cas un peu plus complexe : il faut utiliser d'autres variables templates intermédiaires;
+    \item Qu'on peut regrouper au sein d'une structure : allège et clarifie le code;
+    \end{itemize}
+    \begin{minted}{c++}
+  template<std::size_t N, std::size_t Low, std::size_t Upp>
+  struct IRoot_gen                                         {
+    static constexpr std::size_t mean = (Low+Upp)/2;
+    static constexpr std::size_t down = ((mean*mean)>=N);  };
+  template<std::size_t N, std::size_t Low=1, std::size_t Upp=N> constexpr std::size_t IRoot = 
+        IRoot<N, (IRoot_gen<N,Low,Upp>::down ? Low : IRoot_gen<N,Low,Upp>::mean+1), 
+                 (IRoot_gen<N,Low,Upp>::down ? IRoot_gen<N,Low,Upp>::mean : Upp)>;
+  template<std::size_t N, std::size_t Mean> constexpr std::size_t IRoot<N,Mean,Mean> = Mean;
+  ...
+  std::cout << "Racine entiere superieure de 24 = " << IRoot<24> << std::endl;
+  \end{minted}
+    % \includepartcode{iroot_template.cpp}{3}{14}
+  \end{exampleblock}
+  
+  \vspace*{-6mm}
+  \begin{alertblock}{\small Remarques}
+  \begin{itemize}
+  \item Pour l'intant, les exemples donnés auraient pu être programmés plus simplement à l'aide d'expressions constantes\ldots
+  \item Mais les templates permettent bien plus que cela\ldots
+  \end{itemize}
+  \end{alertblock}
+  \end{frame}
+
+  \begin{frame}[fragile]{Les expressions templates\ldots}
+    \scriptsize\vspace*{-4mm}
+    \begin{exampleblock}{\small Produit scalaire déroulé à la compilation}
+  \begin{itemize}
+  \item On va se baser sur le fait que le produit scalaire de deux vecteurs de dimension $N$ peut être calculer par le produit de deux scalaires sommé au produit scalaire de deux vecteurs de dimension $N-1$\ldots
+  \item La boucle sur les éléments des deux vecteurs sera ainsi complètement déroulée par le compilateur !
+  \item Plus d'appel de fonction, le produit scalaire sera directement remplacé par l'expression arithmétique correspondante.
+  \end{itemize}
+  \begin{minted}{c++}
+  template<typename InputIterator, std::size_t N> struct DotProduct_generator {
+    static auto eval( const InputIterator& iter_a, const InputIterator& iter_b ) {
+        return DotProduct_generator<InputIterator,1>::eval(iter_a,iter_b) + 
+               DotProduct_generator<InputIterator,N-1>::eval(std::next(iter_a),std::next(iter_b)); } };
+  template<typename InputIterator> struct DotProduct_generator<InputIterator,1> {
+    static auto eval( const InputIterator& iter_a, const InputIterator& iter_b ) 
+    {  return (*iter_a)*(*iter_b); } };
+  template<std::size_t N, typename InputIterator> inline auto dot( const InputIterator& u, const InputIterator& v ) 
+  { return DotProduct_generator<InputIterator,N>::eval(u,v); }
+  ...
+  std::array<double,4> u = {1.,2.,3.,4.}, v = {4.,3.,2.,1.};
+  std::cout << "(u|v) = " << dot<4>(u.begin(),v.begin()) << std::endl;
+  std::list<int> li = {1,2,3,4}, lj = {4,3,2,1};
+  std::cout << "(u|v) = " << dot<4>(li.begin(),lj.begin()) << std::endl;
+  \end{minted}
+  \end{exampleblock}
+  \end{frame}
+
+  \begin{frame}[fragile]{Les expressions templates\ldots}
+    \scriptsize
+  \begin{block}{\small expression template et arbre AST}
+  \begin{itemize}
+  \item Généralement, les expressions templates génèrent un arbre AST ( Abstract Syntax Tree ) à partir d'un chaînage d'opérateurs ( +, -, x, /, etc\ldots )
+  \item Permet, pour les vecteurs, par exemple, d'exprimer simplement par la suite le calcul à faire sur chaque composante, sans calcul de vecteurs intermédiaires;
+  \item Mise en {\oe}uvre complexe mais de nombreuses littératures sur le sujet;
+  \item Il existe une librairie générale permettant "facilement" de mettre en {\oe}uvre des expressions templates : Boost.Proto d'\'Eric Niebler ;
+  \item De nombreux tutorials et exposés là dessus sur internet : Serge Sanspaille (\url{http://linuxfr.org/users/serge_ss_paille/journaux/c-14-expressions-template-pour-les_nuls} et Joël Falcou ( \href{https://www.google.fr/url?sa=t&source=web&rct=j&url=https://www.youtube.com/watch%3Fv%3DIiVl5oSU5B8&ved=0ahUKEwiDlZeHlffWAhXEORoKHaRvAiMQwqsBCCEwAA&usg=AOvVaw1SAydGHQAXoJVZ-RdvW1TT}{CppCon 2014} ) ainsi que le tutorial d'Eric Niebler sur Boost.Proto ( \url{http://ericniebler.com/category/proto/} )
+  \end{itemize}
+  \end{block}
+  \end{frame}
+  
+  \end{document}

@@ -1,0 +1,482 @@
+\documentclass[handout,10pt]{beamer}
+\usetheme{Copenhagen}
+\usepackage{amsmath,amsfonts,graphicx}
+\usepackage{listings}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\setitemize{label=\usebeamerfont*{itemize item}%
+            \usebeamercolor[fg]{itemize item}
+            \usebeamertemplate{itemize item}}
+            
+\setlist[description]{style = multiline, labelwidth = 60pt}
+
+\usepackage{tikz} % Required for drawing custom shapes
+\usetikzlibrary{shadows, arrows, decorations.pathmorphing, fadings, shapes.arrows, positioning, calc, shapes, fit, matrix}
+
+\usepackage{polyglossia}
+
+
+\definecolor{lightblue}{RGB}{0,200,255} 
+\definecolor{paper}{RGB}{245,241,207}
+\definecolor{ocre}{RGB}{243,102,25} % Define the orange color used for highlighting throughout the book
+\definecolor{BurntOrange}{RGB}{238,154,0}
+\definecolor{OliveGreen}{RGB}{188,238,104}
+\definecolor{DarkGreen}{RGB}{0,128,0}
+\definecolor{BrickRed}{RGB}{238,44,44}
+\definecolor{Tan}{RGB}{210,180,140}
+\definecolor{Aquamarine}{RGB}{127,255,212}
+\definecolor{NavyBlue}{RGB}{0,64,128}
+
+\title[C++\hspace{2em}]{Programmation fonctionnelle avec C++ 2014}
+\author[Xavier JUVIGNY]{Xavier JUVIGNY}
+\date{22 Juillet 2017}
+
+\institute{ONERA}
+
+\begin{document}
+
+\lstset{language=C++,
+  frame=single,
+  backgroundcolor=\color{paper},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{blue}\tiny\ttfamily,
+  commentstyle=\color{red}\tiny\ttfamily,
+  stringstyle=\color{brown}\tiny\ttfamily,
+  keepspaces=true,
+  showspaces=false,
+  tabsize=4
+}
+
+\begin{frame}
+ \titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Plan du cours}
+\tableofcontents
+\end{frame}
+
+\section{Programmation fonctionnelle}
+
+\begin{frame}[fragile]{Le C++ : un langage principalement orienté objet ?}
+\tiny
+\begin{block}{Cas de la STL}
+\begin{itemize}
+\item Beaucoup de classes;
+\item Très peu de classes sont conçues pour être dérivées;
+\item Très peu de fonctions virtuelles ( pures ou non );
+\item Bien plus de POO dans \lstinline$iostream$...
+\end{itemize}
+\end{block}
+\begin{alertblock}{Questions}
+\begin{itemize}
+\item Le commité de normalisation de C++ a-t'il oublié de concervoir la STL en orienté objet ?
+\item Est-e que le C++ est un langage orienté objet ?
+\begin{exampleblock}{Ben, ça dépend...}
+\begin{itemize}
+\item Oui si vous suggérez que le C++ supporte la programmation orienté objet;
+\item Non si vous suggérez que c'est son principal paragdime de programmation.
+\end{itemize}
+\end{exampleblock}
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Problèmes liés avec la POO}
+\begin{block}{Ne répond pas à des questions essentielles}
+\begin{itemize}
+ \item {\color{DarkGreen}Comment écrire de meilleurs algorithmes composables ?} :\\ La POO est basé sur le vieux principe
+ de la programmation impérative;
+ \item {\color{DarkGreen}Comment écrire du code rapide et de haut niveau ?} :\\ Les structures de données de la POO souvent
+ trop lents à cause des indirections et de la perte d'info sur le type à la compilation ( type erasure );
+ \item {\color{DarkGreen}Comment maîtriser la complexité dans des logiciels multithreadés ?} :\\ La POO ne dit rien à ce sujet. 
+\end{itemize}
+\alert{On a donc besoin d'un autre paradigme} :\\ la plupart des programmeurs C++ le savent déjà...
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Qu'est ce que la programmation fonctionnelle ?}
+\tiny
+\begin{exampleblock}{Principes de base}
+\begin{itemize}
+\item Les fonctions sont les acteurs principaux;
+\item On ne peut pas changer l'état des objets du programme;
+\item Les fonctions sont pures, composables, génériques et reutilisables;
+\item Fait un lourd usage du système de typage;
+\item Exemple de langage fonctionnel : {\color{blue}Scheme ( 1975 ), Lisp ( 1984 ), Haskell (1987), Caml, \ldots}
+\end{itemize}
+\end{exampleblock}
+
+\begin{block}{Et en C++ ?}
+\begin{itemize}
+ \item C++ n'est pas vraiment un langage fonctionnel;
+ \item Mais beaucoup d'applications ont besoin d'être très rapides tout en gérant beaucoup de complexité;
+ \item C++ est rapide et la programmation fonctionnelle aide à gérer la complexité.
+ \item Les programmeurs C++ peuvent souvent bénéficier de fonctionnalités ( et de codage ) bien pensées;
+ \item Le C++ 11 a introduit un nombre intéressant d'éléments de programmation fonctionnelle.
+\end{itemize}
+\end{block}
+
+\end{frame}
+
+\section{Programmer en fonctionnel avec C++ 14}
+
+\begin{frame}[fragile]{Programmer dans un style fonctionnel}
+\tiny
+\begin{block}{Les services proposés par le C++}
+\begin{itemize}
+\item Déduction automatique de type avec \lstinline$auto$ et \lstinline$decltype$;
+\item Support les \textsl{fonctions lambda} :
+\item Application partielle fonctionnelle : \lstinline$std::function$ et \lstinline$std::bind$ + fonctions lambdas
+\item Fonctions de plus grand ordre dans la STL;
+\item \textsl{Manipulation de listes} au travers des \textbf{variadic templates};
+\item Correspondance de motif à l'aide de la spécialisation partielle ou non des templates;
+\item \'Evaluation paresseuse avec \lstinline$std::async$;
+\item Template avec types contraints ( en utilisant \lstinline$static_assert$ ).
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Déduction automatique de type}
+\tiny
+\begin{block}{Déduction automatique de type avec auto}
+\begin{itemize}
+ \item \lstinline$auto$ joue le rôle d'un paramètre template :
+ \begin{lstlisting}
+int x = 22;             // as before
+const int cx = x;       // as before
+const int& rx = x;      // as before
+auto& v1 = x;           // v1's type ≡ int& (auto ≡ int)
+auto& v2 = cx;          // v2's type ≡ const int&  (auto ≡ const int)
+auto& v3 = rx;          // v3's type ≡ const int&  (auto ≡ const int)
+const auto& v4 = x;     // v4's type ≡ const int&  (auto ≡ int)
+const auto& v5 = cx;    // v5's type ≡ const int&  (auto ≡ const int)
+const auto& v6 = rx;    // v6's type ≡ const int&  (auto ≡ const int)\end{lstlisting}
+\end{itemize}
+\end{block}
+
+\begin{block}{Déduction des types par observation}
+\begin{itemize}
+ \item Utilisation du mot clef \lstinline$decltype$ $\equiv$ type déclaré pour nom
+ \item Contrairement à \lstinline$auto$, ne supprime jamais les const/volatile/references.
+\begin{lstlisting}
+int x = 10;         // decltype(x)  ≡ int
+const auto& rx = x; // decltype(rx) ≡ const int& 
+int arr[10];
+arr[0] = 5;         // decltype(arr[0]) ≡ int&
+\end{lstlisting}
+\item Mais si on met une variable en ``expression'' :
+\begin{lstlisting}
+int x; // decltype(x) ≡ int, decltype((x)) ≡ int&
+\end{lstlisting}
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Niveau d'abstraction des fonctions}
+ \begin{block}{Qu'est ce donc ?}
+  \begin{itemize}
+   \item Une fonction d'ordre plus élevé est une fonction qui prend pour argument des fonctions et retourne
+   d'autres fonctions;
+   \item Les fonctions dans \lstinline$algorithm$ en sont de bon exemples
+   \item L'introduction de fonctions lambdas dans C++ 11 permet de dire officiellement que cette approche est
+   encouragée en C++.
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Les fonctions lambdas}
+\tiny
+\begin{block}{Définition}
+ \begin{itemize}
+  \item Les fonctions lambdas sont des objets fonctions anonymes;
+\begin{lstlisting}
+// Trie par valeur absolue avec std::sort de algorithm :
+std::sort(std::begin(v),std::end(v), [](double x, double y){ return std::abs(x)<std::abs(y); });
+auto func = [] () { cout << "Hello world"; };
+func();
+\end{lstlisting}
+  \item Capture de variables, plusieurs modes :
+  \begin{itemize}
+  \item \lstinline$[]$ Ne capture rien ( fonction standard )
+  \item \lstinline$[&]$ Capture les variables visibles par référence
+  \item \lstinline$[=]$ Capture les variables visibles en les copiant
+  \item \lstinline$[=,&foo]$ : Capture les variables visibles en les copiant sauf \lstinline$foo$ capturée par référence
+  \item \lstinline$[bar]$ : Ne capture que la variable \lstinline$bar$;
+  \item \lstinline$[this]$ : Capture le pointeur sur l'objet courant.
+  \end{itemize}
+\begin{lstlisting}
+double scal;
+auto homothetie = [scal](double x){return scal*x;};
+scal = 2; std::cout << homothetie(3.) << std::endl;// Affiche 6
+scal = 4; std::cout << homothetie(3.) << std::endl;// Affiche 12
+\end{lstlisting}
+  \item Pour prendre un lambda en paramètre, utiliser un paramètre template :
+\begin{lstlisting}
+template<typename Iterator, typename F> void for_each(Iterator b, Iterator e, F f ) {
+    for (; b != e; ++b ) f(*b);
+}
+\end{lstlisting}
+
+ \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Propriétés des fonctions lambda}
+\tiny
+\begin{exampleblock}{Avantages}
+\begin{itemize}
+ \item N'introduisent pas de surcout supplémentaire en temps d'appel;
+ \item Chaque lambda est mis dans son propre type anonyme;
+ \item Le corps de la fonction est mis dans l'opérateur membre \lstinline$operator()$ du type;
+ \item Les variables capturées sont mises comme attributs de la classes
+ \item les lambdas jouent subtilement entre comment les templates marchent et comment les compilateurs font
+ du inlining pour l'appel des fonctions.
+\end{itemize}
+\end{exampleblock}
+\begin{alertblock}{Inconvénients en C++ 11}
+\begin{itemize}
+ \item Ne peuvent pas avoir d'arguments génériques;
+ \item Ils ne peuvent pas capturer des variables par déplacement;
+ \item Le type anonyme ne peut pas être nommé donc les lambdas ne peuvent pas être retournées d'une fonction;
+ \item \alert{Une fonction lambda ne peut pas être utilisée dans une constexpr}.
+\end{itemize}
+\end{alertblock}
+\begin{block}{Améliorations en C++ 14}
+\begin{itemize}
+ \item Les arguments peuvent être génériques : 
+ \lstinline$auto f= [] ( auto& a, auto& b ) { return a*b; };$
+ \item Déduction du type de retour automatique dans les fonctions standards : les lambdas peuvent être maintenant retournées
+ par une fonction ( dont les fonctions lambda ! )
+ \item Capture des listes généralisées;
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Manipulation des fonctions lambdas}
+\tiny
+\begin{block}{\lstinline$std::function$}
+\begin{itemize}
+ \item Permet de passer une fonction lambda à une fonction non template ou bien de stocker une fonction lambda pour
+ une utilisation ultérieure
+\begin{lstlisting}
+std::function<int(int)> f = [] (int x) { return x * 2; };
+\end{lstlisting}
+\item C'est un wrapper polymorphique autour de tout objet appelable;
+\item Mis en {\oe}uvre autour de technique d'oublie de types;
+\item Rajoute un surcoût de fait de l'appel indirect et du non inlining;
+\item Ce surcoût est le même que pour tout autre langage supportant les fonctions lambdas;
+\item Pour le passage d'une fonction en argument, préférer passer la fonction en template.
+\end{itemize}
+\end{block}
+\begin{block}{Combinaison d'ordre plus élevé}
+\begin{itemize}
+ \item Style fonctionnel pour combiner des fonctions pour ordre plus élevé possible en C++
+ \item Les ingrédient clefs : fonctions lambdas, type automatique, déduction, etc.
+ \item C++ rend les choses un peu plus complexe : gérer le passage parfait aux suivants, réduire les opérations de copie/
+ déplacement, etc.
+ \item Beaucoup de librairies nous permettent d'avoir du fun sans trop de mal de tête : Boost Fusion, Boost Hana, Fit, range \ldots
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exemple : Composition de fonctions}
+ \begin{block}{Ce qu'on aimerait avoir}
+\begin{lstlisting}
+auto f(std::vector<float>) -> float;
+auto g(std::string)        -> std::vector<float>
+auto h(std::istream&)      -> std::string
+
+auto fgh = compose(f,g,h);
+int x = fgh(std::cin); // x = f(g(h(std::cin)));
+\end{lstlisting}
+\end{block}
+
+\begin{block}{Facile à faire en C++ 14}
+\begin{lstlisting}
+template<typename F> auto compose(F f) { return [=](auto x) { return f(x); } };
+template<typename F, typename... Fs> auto compose(F f, Fs... fs) {
+    return [=](auto x){ return f(compose(fs...)(x)); };    
+}
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Curryfication}
+\begin{block}{Curryfication}
+\begin{itemize}
+ \item Une fonction ``curryfiée'' est invoquée avec un seul paramêtre, même si elle en attend plusieurs;
+ \item Dans ce cas, elle renvoie une fonction qui attend les arguments manquant.
+\end{itemize}
+\end{block}
+\begin{block}{Avec la STL}
+\begin{lstlisting}
+using namespace std::placeholders;
+auto f = std::function<int(int,int,int)>([](int x, int y, int z) { return x*y+z; });
+auto s = std::bind(f,4,_1,_2);  auto t = std::bind(s,5,_1);
+auto w = t(6);
+std::cout << "w = " << w << std::endl;
+\end{lstlisting}
+\end{block}
+\begin{block}{Avec Boost Hana ( gratuit, template, compatible C++98, \ldots ) }
+\begin{lstlisting}
+using namespace boost::hana;
+auto f = curry<3>([](int x, int y, int z) { return x*y + z; });
+auto s = f(4); auto t = s(5);
+auto w = t(6);
+std::cout << "w = " << w << std::endl;
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Fonction de mappage}
+\tiny
+\begin{block}{La fonction \lstinline$transform$}
+ \begin{itemize}
+  \item Tout langage fonctionnel a une fonction \lstinline$map$
+  \item L'équivalent de la STL C++ est la fonction \lstinline$std::transform$.
+\begin{lstlisting}
+std::vector<int> v = {1,2,3,4};
+std::transform(std::begin(v),std::end(v), std::begin(v), [](int x) { return x * 2; });
+\end{lstlisting}
+  \item Simple, rapide\ldots
+  \item \alert{Mais si vous voulez changer le type d'éléments} ?
+\begin{lstlisting}
+std::vector<int> v = {1,2,3,4};
+std::vector<std::string> outs;
+std::transform(std::begin(v),std::end(v),std::back_inserter(outs), 
+               static_cast<std::string(*)(int)>(std::to_string));
+std::for_each(std::begin(outs),std::end(outs),[](std::string s) { std::cout << s << " "; });
+std::cout << std::endl;
+\end{lstlisting}  
+  \item Gestion explicite de la taille du vecteur de sortie\ldots (\lstinline$std::back_inserter$);
+  \item \alert{Puis je composer ces fonctions} ?
+\begin{lstlisting}
+std::vector<T1> input;
+std::vector<T2> step_one;
+std::vector<T3> output;
+std::transform(std::begin(input),std::end(input),std::back_inserter(step_one), &f);
+std::transform(std::begin(step_one),std::end(step_one),std::back_inserter(output), &g);
+\end{lstlisting}
+  \item Peu lisible et lent !
+\end{itemize}
+\end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{Utilitaires fonctionnels}
+  \tiny
+\begin{block}{Fonction objet surchargée ( uniquement avec hana )}
+\begin{itemize}
+ \item Fonction spécialisant ses actions selon le type tout en restant générique
+\end{itemize}
+\begin{lstlisting}
+auto f = boost::hana::overload( [] (std::string s) { return s + s; },
+                                [] ( auto       x) { return x * 2; });
+std::vector<int> vint = {1,3,5,7,9,11};
+std::vector<std::string> vstr {"Tin", "Ouaf", "Cou" };
+std::transform(std::begin(vint), std::end(vint), std::begin(vint), f);
+std::transform(std::begin(vstr), std::end(vstr), std::begin(vstr), f);
+std::for_each(vint.begin(),vint.end(),[](int i) { std::cout << i << " "; });
+std::cout << std::endl;
+std::for_each(vstr.begin(),vstr.end(),[](std::string s) { std::cout << s << " "; });
+std::cout << std::endl;                         
+\end{lstlisting}
+\end{block}
+\begin{block}{Application partielle d'opérateurs binaires}
+\begin{lstlisting}
+using hana::_;
+std::vector<int> v = {1,2,3};
+std::transform(std::begin(v),std::end(v), std::begin(v), _ * 2);
+std::for_each(v.begin(),v.end(),[](int i) { std::cout << i << " "; });
+std::cout << std::endl;
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Filtres et réductions}
+\tiny
+\begin{block}{filtres}
+\begin{itemize}
+\item Enlève des éléments d'un ensemble
+\item Utilise \lstinline$std::remove_if$
+\begin{lstlisting}
+auto it= std::remove_if(vec.begin(),vec.end(), [](int i){ return !((i < 3) or (i > 8)) }); 
+auto it2= std::remove_if(str.begin(),str.end(), [](string s){ return !(isupper(s[0])); });
+\end{lstlisting}
+\end{itemize}
+\end{block}
+\begin{block}{Réductions}
+\begin{itemize}
+\item Réduit un ensemble de valeur à une seule valeur en appliquant successivement un opérateur binaire;
+\end{itemize}
+\begin{lstlisting}
+std::accumulate(vec.begin(),vec.end(),1, [](int a, int b){ return a*b; }); 
+std::accumulate(str.begin(),str.end(),string(""),[](string a,string b){ return a+":"+b; });   
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Fonctions pures et impures}
+\tiny
+\begin{block}{Caractéristiques des fonctions pures}
+\begin{itemize}
+\item Fonctions pures : Fonctions ne modifiant pas les valeurs de ses variables;
+\item Fonctions impures: les autres fonctions.
+\begin{tabular}{|c|c|}\hline
+\rowcolor{blue}\textbf{Fonction pure} & \textbf{Fonction impure} \\ \hline
+\rowcolor{cyan}Produit toujours même résultat avec les mêmes paramêtres & Peut produire des résultats différents avec même paramètres \\
+\rowcolor{white}Aucun  effet de bord & Peut avoir des effets de bord \\
+\rowcolor{cyan}N'altère jamais des états & peut altérer des états même globaux\\
+\rowcolor{white}Facile à reordonner ou exécuter multithread & Analyse difficile de reordonnancement \\ \hline
+\end{tabular}
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Fonctionalités manquantes}
+\tiny
+\begin{block}{Évaluation paresseuse}
+\begin{itemize}
+\item N'évalue une expression que si nécessaire;
+\item Exemple marchant en Haskell : 
+\begin{lstlisting}[language=haskell]
+length [ 1\2, 4-3, 2*3+1, 1/0, 7*3 ]
+\end{lstlisting}
+\item On peut faire de même en C++, mais uniquement à la compilation
+\begin{lstlisting}
+ template <typename... Args> void mySize(Args... args) { 
+    cout << sizeof...(args) << endl; } 
+mySize("Rainer",1/0);  \end{lstlisting}
+\end{itemize}
+\end{block}
+\begin{block}{Compréhension de listes}
+\begin{itemize}
+\item Manque une fonction range donnant une étendue ( comme Haskell, Python, ...)
+\begin{lstlisting}[language=python]
+a = [ i for i in range(1000) if i%3==0 and i%5==0 ]
+\end{lstlisting}
+\item Prévu initialement pour C++17, mais reporté pour C++ 20;
+\item Néanmoins, on peut utiliser Boost.Range ou range d'\'Eric Niebler ( prévu pour être la future norme )
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exercices}
+\tiny
+\begin{exampleblock}{Trie selon l'axe des abcisses}
+\begin{itemize}
+\item \'Ecrire un programme "minimaliste" permettant de trier des vecteurs de dimension 3 \lstinline$std::array<double,3>$ selon les abcisses;
+\item Pour l'algorithme de tri, on regardera la fonction \lstinline$std::sort$ proposée par la STL ( dans \lstinline$algorithm$ ).
+\end{itemize}
+\end{exampleblock}
+
+\begin{block}{Composition de fonctions et vecteur}
+\begin{itemize}
+\item Utiliser la composition de template vu dans ce chapitre pour construire des expressions arithmétiques pouvant être appliquées
+sur chaque composante de vecteurs de dimension $N$.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\end{document}

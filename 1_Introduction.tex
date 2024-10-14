@@ -1,0 +1,2878 @@
+\documentclass[compress,10pt,aspectratio=169]{beamer}
+\usetheme[customnumbering]{onera}
+
+\usepackage{amsmath,amsfonts,graphicx}
+\usepackage{pifont}
+\usepackage{etoolbox}
+\usepackage{multicol}
+\usepackage{anyfontsize}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{colortbl}
+\usepackage{tcolorbox}
+\usepackage{fontspec}
+\usepackage{stackengine}
+%\setlength{\columnseprule}{1pt}
+%\def\columnseprulecolor{\color{blue}}
+\usepackage{minted} % syntax coloring. 
+\setminted{encoding=utf-8, autogobble, fontsize=\scriptsize, frame=single}
+\usemintedstyle{xcode}
+%\AtBeginEnvironment{minted}{\fontsize{8}{8}\selectfont}
+
+%\usepackage{dsfont}
+\usepackage{ifdraft}
+\ifdraft{
+  \usepackage{fancyvrb}
+  \DefineVerbatimEnvironment{cppcode}{Verbatim}{}
+}{
+\newminted{cpp}{}
+}
+\usepackage{hyperref}
+\usetikzlibrary{shadows, arrows, decorations.pathmorphing, fadings, shapes.arrows, positioning, calc, shapes, fit, matrix,math}
+
+\definecolor{lightblue}{RGB}{0,200,255} 
+\definecolor{paper}{RGB}{255,247,197}
+\definecolor{ocre}{RGB}{243,102,25} % Define the orange color used for highlighting throughout the book
+\definecolor{BurntOrange}{RGB}{238,154,0}
+\definecolor{darkorange}{RGB}{119, 77, 0}
+\definecolor{OliveGreen}{RGB}{188,238,104}
+\definecolor{DarkGreen}{RGB}{0,128,0}
+\definecolor{BrickRed}{RGB}{238,44,44}
+\definecolor{Tan}{RGB}{210,180,140}
+\definecolor{Aquamarine}{RGB}{127,255,212}
+\definecolor{NavyBlue}{RGB}{0,64,128}
+\definecolor{DarkYellow}{RGB}{192,192,0}
+\definecolor{Yellow}{RGB}{255,255,0}
+
+\title[Initiation C++\hspace{2em}]{Introduction}
+\subtitle{Introduction}
+\author[X. JUVIGNY]{Xavier JUVIGNY, AKOU, DAAA, ONERA \href{mailto:xavier.juvigny@onera.fr}{\texttt{xavier.juvigny@onera.fr}} }
+\date[04/11/2023]{Initiation au C++ \\- 4 Novembre 2023 -}
+\institute{\inst{1}ONERA,\inst{2}DAAA}
+
+\AtBeginSection[]{
+  \begin{frame}{Overview}
+  \begin{multicols}{2}
+  \small \tableofcontents[currentsection, hideallsubsections]
+  \end{multicols}
+  \end{frame} 
+}
+
+\begin{document}
+
+\MakeTitlePage
+
+\begin{frame}
+\frametitle{Table of contents}
+\begin{multicols}{2}
+\tableofcontents[hideallsubsections]
+\end{multicols}
+\end{frame}
+
+\section{Introduction}
+
+\begin{frame}{Historique}
+    \scriptsize
+
+    \begin{itemize}
+        \item \textbf{\textcolor{blue}{1969}} : Première version d'UNIX écrit en assembleur sur DEC PDP-7
+        \item \textbf{\textcolor{blue}{1970}} : Tentative de porter UNIX sur autre machine avec langage B : trop lent et dépendant machine
+        \item \textbf{\textcolor{blue}{1971}} : Création du langage C par D. Richtie et portage d'UNIX en langage C 
+        \item \textbf{\textcolor{blue}{1980}} : Création du C++ par Bjarne Stroustrup
+        \item \textbf{\textcolor{blue}{1983}} : Standardisation ANSI du langage C 
+        \item \textbf{\textcolor{blue}{1998}} : Première norme ISO du C++
+        \item \textbf{\textcolor{blue}{2011}} : Seconde norme ISO du C++ : beaucoup de nouvelles caractéristiques 
+        \item \textbf{\textcolor{blue}{2014, 2017, 2020, 2023,\ldots}} : Evolution de la norme tous les trois ans depuis 2011
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Caractéristiques du langage C++}
+    \scriptsize
+    \begin{itemize}
+        \item \textbf{\textcolor{blue}{Langage compilé}} : Le langage C++ nécessite un compilateur qui traduit un fichier texte en langage machine
+                                                     directement interprétable par le processeur;
+        \item \textbf{\textcolor{blue}{Performant}} : Aujourd'hui, le C++ est aussi, voir plus performant que le langage C;
+        \item \textbf{\textcolor{blue}{Multi-paradigme}} : Différentes méthodologies de programmation peuvent être appliquées en C++,
+                                                           au sein d'un même code :
+            \begin{itemize}
+                \scriptsize
+                \item \textsl{\textcolor{DarkGreen}{La programmation structurée}} : On décompose un problème en structures et fonctions;
+                \item \textsl{\textcolor{DarkGreen}{La programmation orientée objet}} : On se concentre sur la gestion des données, à
+                               savoir comment gérer ces données (\textcolor{orange}{protocole}) et la manière dont elles sont gérées (\textcolor{orange}{interface})
+                \item \textsl{\textcolor{DarkGreen}{La programmation fonctionnelle}} : On décompose le problème en un ensemble de fonctions (au sens mathématiques du terme) qu'on manipule (en les composant, etc.) afin de mettre en {\oe}uvre la fonctionnalité visée
+            \end{itemize}
+        \item \textbf{\textcolor{blue}{Bibliothèque de base très riche en fonctionnalités}}.
+    \end{itemize}
+
+    \underline{Remarque} : Ne pas se limiter à un seul paradigme lorsqu'on programme en C++ !
+\end{frame}
+
+\begin{frame}{Les différentes étapes de compilation en C++}
+    \scriptsize 
+    \begin{itemize}
+        \item \textbf{\textcolor{blue}{La précompilation}} : On remplace les macros par les textes correspondant et les "includes" par le texte contenu dans le fichier à inclure;
+        \item \textbf{\textcolor{blue}{Première phase de compilation}} : Une partie du code source est compilée afin de servir à la génération de données utiles à la seconde phase de compilation;
+        \item \textbf{\textcolor{blue}{Seconde phase de compilation}} : On transforme le reste du code en pseudo-assembleur en utilisant les données issues de la première phase;
+        \item \textbf{\textcolor{blue}{Troisième phase de compilation}} : Transforme le code pseudo-assembleur dans le langage machine du processeur visé;
+        \item \textbf{\textcolor{blue}{Edition des liens}} : Assemble plusieurs fichiers "objets" contenant du langage machine pour former un exécutable ou une bibliothèque binaire.
+    \end{itemize}
+
+    \underline{Remarque} : On peut se demander quelle est l'utilité de la première phase de compilation, propre au C++. En fait, il existe en 
+    C++ des instructions qui permettent d'évaluer certaines données (qui peuvent être des structures) à la compilation et non à l'exécution.
+\end{frame}
+
+\begin{frame}{Choix de la norme C++}
+    \scriptsize 
+    \begin{itemize}
+        \item Chaque norme du C++ apporte son lot de nouveautés au langage (nouvelles fonctionnalités dans la bibliothèque standard, nouvelles caractéristiques du langage, etc.).
+        \item Aujourd'hui, par défaut, les compilateurs prennent la norme C++ 17 comme norme de référence, mais il est possible de demander une norme plus récente
+              (mais généralement à laquelle il peut manquer une ou deux fonctionnalités), ou bien une norme plus ancienne pour assurer le portage pour des 
+              compilateurs plus anciens.
+        \item Néanmoins, il faut avoir conscience que les normes successives tendent à une simplification du langage, le rendent moins verbeux et
+              moins dépendant de l'OS sur lequel on compile.
+        \item Dans cette formation, on précisera quand nécessaire à partir de quelle version du langage une fonctionnalité ou caractéristique donnée
+              est apparue.
+
+        \item Lors de la compilation d'un fichier, si on veut contraindre ou étendre le compilateur à une version de la norme donnée, il faut utiliser
+              l'option \texttt{-std=C++\textcolor{red}{xx}} où \texttt{\textcolor{red}{xx}} est la norme du C++ choisie.\\
+              \underline{Exemple} : \texttt{-std=c++20} pour pouvoir utiliser des fonctionnalités du C++ 20.
+    \end{itemize}
+\end{frame}
+
+\section{Les bases du langage C++}
+
+\begin{frame}[fragile]{La fonction main}
+    \scriptsize
+    En C et C++, une fonction particulière sert de point d'entrée pour les exécutable : la fonction \texttt{\textcolor{blue}{main}}:
+
+\begin{minipage}{0.49\textwidth}
+\begin{minted}{C++}
+// Première forme 
+int main()
+{
+    ...
+    return EXIT_SUCCESS;
+}
+\end{minted}
+    \end{minipage}
+    \begin{minipage}{0.49\textwidth}
+\begin{minted}{C++}
+// Seconde forme 
+int main( int nargs, char* argc[] )
+{
+    ...
+    return EXIT_SUCCESS;
+}
+\end{minted}
+  \end{minipage}
+
+La fonction \texttt{main} retourne toujours en entier donnant l'état du programme à sa sortie : soit un succès (\texttt{EXIT\_SUCCESS}) soit un échec (\texttt{EXIT\_FAILURE}).
+
+La \textbf{seconde forme} prends en argument un entier donnant le nombre d'arguments passés à l'exécutable, ainsi qu'un tableau contenant
+les arguments passés sous forme de chaînes de caractère.
+
+\alert{Attention} : Le première argument passé est le nom de l'exécutable lui-même !
+\end{frame}
+
+\begin{frame}[fragile]{Les commentaires en C++}
+    \scriptsize
+    Il existe deux formes de commentaire :
+    \begin{itemize}
+        \item Sur plusieurs lignes, commençant par le marqueur \texttt{/*} et finissant par le marqueur \texttt{*/};
+        \item Sur une seule ligne, commençant par le marqueur \texttt{//} et finissant par le retour à la ligne
+    \end{itemize}
+
+\begin{minted}{C++}
+// Exemple d'un commentaire sur une seule ligne
+/* Exemple d'un commentaire
+   sur plusieurs lignes.
+*/
+\end{minted}
+
+\alert{Attention} : Les commentaires multilignes peuvent s'avèrer problématiques à l'usage si on les imbrique par inadvertance :
+
+\begin{minted}{C++}
+/*  Imaginons qu'on veut commenter une zone du programme en utilisant le commentaire sur plusieurs lignes.
+    C'est bien pratique 
+    /* Malheureusement, dans la zone qu'on a commenté, il existait déjà un commentaire
+       multiligne... */
+    On pourrait penser que nous sommes encore dans un commentaire.
+    Quelle erreur !
+*/
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les blocs d'instruction}
+    \scriptsize 
+    \begin{itemize}
+        \item Les blocs d'instruction sont délimités par les symboles \texttt{\{} et \texttt{\}};
+        \item Une variable déclarée dans un bloc d'instruction n'est visible que dans ce bloc d'instruction;
+        \item Une variable déclarée hors de tout bloc d'instruction est une \textbf{variable globale};
+        \item Les fonctions, les boucles et les branchements conditionnels sont délimités par un bloc d'instruction.
+        \item On peut créer un bloc d'instruction dans un bloc d'instruction (même si il n'est pas associé à une fonction, boucle, etc.)
+    \end{itemize}
+
+\underline{Exemple} :
+\begin{minted}{C++}
+int main()
+{// Début de la fonction main
+
+    {// Début d'un bloc d'instruction dans la fonction main
+
+    }// Fin du bloc d'instruction défini dans la fonction main
+
+}// Fin de la fonction main.
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les espaces de nommage}
+    \scriptsize
+    Région déclarative fournissant une portée aux identificateurs (noms de type, fonctions, variables, etc.) à l'intérieur.
+
+    \begin{itemize}
+    \item Permet d'organiser le code en groupes logiques;
+    \item Permet d'éviter les conflits de nom 
+    \end{itemize}
+
+    \underline{Exemple}:
+    \begin{minted}{C++}
+namespace géométrie { // On définit un espace de nommage nommé géométrie
+    struct Vecteur { // On définit un nouveau type vecteur géométrique
+    ... 
+    };
+}
+namespace algébre { // On définit un espace de nommage nommé algébre
+    struct vecteur { // On définit un nouveau type vecteur algébrique
+    ...
+    }
+}
+géométrie::Vecteur u; // On déclare un vecteur géométrique
+algébre::Vecteur   b; // On déclare un vecteur algébrique
+    \end{minted}
+
+    \alert{Remarque}: Toutes les composantes de la librairie standard sont dans l'espace de nommage \texttt{std}
+\end{frame}
+
+\begin{frame}[fragile]{Utilisation des espaces de nommage}
+    \scriptsize
+    Il est possible d'éviter de toujours précéder un identificateur par l'espace de nommage où il a été déclaré :
+    \begin{itemize}
+    \item Pour un identificateur spécifique :
+    \begin{minted}{C++}
+using géométrie::Vecteur;
+Vecteur u; // C'est un vecteur géométrique 
+algébre::Vecteur v;// Ici, on a spécifié, donc un vecteur algébrique
+    \end{minted}
+    \item Pour l'ensemble des identificateurs d'un espace de nommage :
+    \begin{minted}{C++}
+using namespace géométrie;
+Vecteur u; // Un vecteur géométrique donc
+    \end{minted}
+    \end{itemize}
+
+\end{frame}
+
+\begin{frame}[fragile]{Espaces de nommage imbriqués}
+    \scriptsize 
+    Les espaces de nommage peuvent être imbriqués
+
+    Les identificateurs dans un espace de nommage imbriqué a accès aux membres de l'espace parent sans qualifié l'espace de nommage parent.
+
+    Par contre, l'espace de nommage parent doit utiliser l'espace de nommage de l'espace imbriqué sauf si ce dernier est "inline".
+    \begin{minted}{C++}
+namespace A {
+    namespace B {
+        const int degré = 2;
+    }
+    const int ordre = B::degré + 1;
+}
+    \end{minted}
+    Il est possible à partir de C++ 17 de définir directement plusieurs espaces de nommage imbriqués :
+\begin{minted}{C++}
+namespace monalisa::géométrie
+{
+    struct Vecteur { ... };
+}
+monalisa::géométrie::Vecteur u;
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Espace de nommage "inline" (à partir du C++ 11)}
+\scriptsize
+Contrairement à un espace de nommage imbriqué ordinaire, les membres d'un espace de nommage "inline" sont traités en tant que membres de l'espace de nommage parent.
+
+\begin{minted}{C++}
+namespace opérateur_intégral
+{
+    namespace ancienne_version {
+        int calcul(...);
+        ...
+    }
+    inline namespace nouvelle_version {
+        int calcul(...);
+        ...
+    }
+    void evaluate() {
+        ... 
+        calcul( ... );
+        ...
+    }
+}
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Utilisation des bibliothèques}
+    \scriptsize
+    Bibliothèque standard très riche en fonctionnalités :
+    \begin{multicols}{3}
+    \begin{itemize}
+        \item Gestion de la mémoire
+        \item Chaînes de caractères
+        \item Conteneurs : tableaux, listes, dictionnaires, \ldots
+        \item Fonctions mathématiques avancées
+        \item Générations avancées de nombres aléatoires
+        \item Algorithmes de tri, de recherche,etc. séquentiels et parallèles
+        \item Gestion fichiers, chronomètre, multithreading, etc.
+    \end{itemize}
+\end{multicols}
+\vspace*{-5mm}
+    De manière générale, consulter le site \href{https://en.cppreference.com/w/}{\beamergotobutton{cppreference}}
+
+    Richesse du langage et de sa bibliothèque $\Rightarrow$ impossible de tout maîtriser. Bjarne Stroutrup, créateur du C++, prétend aujourd'hui
+    ne maîtriser que 70\% du langage !
+
+    Pour utiliser une des composantes d'une bibliothèque (standard ou système) : \mint{C++}|#include <fichier à inclure>|
+
+    Pour utiliser une composante d'une bibliothèque appartenant à son projet : \mint{C++}|#include "fichier à inclure"|
+
+    Pour les composantes bibliothèques non standards, fichiers à inclure possèdent conventionnellement extensions "hpp" ou "h".
+
+    Pour composantes de la bibliothèque standard, les fichiers à inclure ne possèdent pas d'extensions.
+\end{frame}
+
+\begin{frame}[fragile]{Déclaration des variables}
+\scriptsize
+    \textbf{\textcolor{red}{Syntaxes}} :
+\begin{minted}{C++}
+Type nomVariable; // Pour une seule variable
+Type nomVar1, nomVar2, ..., nomVarN; // Pour plusieurs variables de même type
+\end{minted}
+
+    Les variables peuvent être déclarées à tout endroit du code.
+
+    Il est possible d'initialiser la variable à sa déclaration :
+\begin{minted}{C++}
+Type nomVariable{valeur};// Initialise une variable à sa déclaration
+Type nomVar1{valeur1}, nomVar2{valeur2},...;// Initalise plusieurs variables à leurs déclarations
+\end{minted}
+
+\alert{Note} : Il est possible de remplacer les accolades par des parenthèses;
+
+Parmi les types de bases proposés par le C++ :
+\begin{multicols}{3}
+  \begin{itemize}
+  \item Chaînes de caractère "basiques" : \mintinline{C++}{char *var{"valeur"};}
+  \item Entiers (défaut): \mintinline{C++}{int var{valeur};}
+  \item Réels 64 bits : \mintinline{C++}{double var{valeur};}
+  \item Booléens : \mintinline{C++}{bool var{valeur};}
+\end{itemize}
+\end{multicols}
+\vspace*{-3mm}
+\alert{Note} : Il est préférable d'éviter autant que possible des variables de type \texttt{char *}, le C++ proposant par ailleurs une bibliothèque gérant de façon plus
+    simple et sûre les chaînes de caractère.
+\end{frame}
+
+\begin{frame}[fragile]{Affichage sur le terminal}
+\scriptsize
+Par défaut, le C++ est incapable d'afficher quoi que ce soit sur le terminal. Il faut utiliser une composante de la bibliothèque standard : \texttt{iostream}
+
+Deux sorties sur le terminal sont possibles :
+\begin{itemize}
+\item La sortie standard : \mintinline{C++}{std::cout}
+\item La sortie d'erreur   : \mintinline{C++}{std::cerr}
+\end{itemize}
+
+Pour afficher sur ces deux sorties, on utilise l'"opérateur de flux" \mintinline{C++}{<<} qu'on peut chaîner pour afficher plusieurs valeurs.
+    
+Pour faire un retour chariot, on utilise la valeur définie dans la bibliothèque : \mintinline{C++}{std::endl}
+
+Par exemple, en supposant qu'on veut afficher un message, la valeur d'un entier \texttt{i} et retourner sur une nouvelle ligne :
+\mint{c++}|std::cout << "La valeur de i est " << i << std::endl;|
+
+\begin{exampleblock}{\small Notre premier programme :}
+\begin{minted}{C++}
+#include <iostream>
+int main() {
+    std::cout << "Hello world !" << std::endl;
+    return EXIT_SUCCESS;
+}
+\end{minted}
+\end{exampleblock}
+
+\end{frame}
+
+\subsection{Les variables}
+
+\begin{frame}{Les noms des variables}
+    \scriptsize
+    \begin{itemize}
+    \item Toute variable doit commencer par : 
+    \begin{itemize}
+        \scriptsize
+        \item une lettre latine minuscule ou majuscule
+        \item un underscore
+        \item un caractère d'un sous-ensemble de l'UTF8 (lettre autre que latine)
+    \end{itemize} 
+    \item Les autres caractères composant le nom de la variable peuvent être :
+    \begin{itemize}
+        \scriptsize
+        \item Un chiffre
+        \item Une lettre latine minuscule ou majuscule
+        \item Un underscore
+        \item Un caractère d'un sous-ensemble de l'UTF8 (lettres autre que latines ou chiffres en indices ou exposant)
+    \end{itemize}
+\end{itemize}
+\begin{multicols}{2}
+\begin{exampleblock}{\scriptsize Exemples de noms de variables valides}
+uneVariable, \_nom, $\pi$, $n^{2}$, un\_nombre, \ldots
+\end{exampleblock}
+
+\begin{alertblock}{\scriptsize Exemples de noms de variables non valides}
+1nombre, une variable, un\$, \ldots
+\end{alertblock}
+\end{multicols}
+\alert{Attention} : En C++, les noms de variables sont sensibles à la casse !
+\end{frame}
+
+\begin{frame}[fragile]{Les caractères}
+    \scriptsize
+
+    Un caractère représente une "lettre" ou un symbole. En C++, le type caractère est \texttt{char}.
+
+    On initialise un caractère ASCII en le mettant entre deux simple quote. Par exemple :
+    \mint{C++}|char c = '#';|
+
+    \underline{Remarque} : On peut également initialiser une variable avec le symbole \texttt{=}
+
+    Il est par contre impossible tel quel d'initialiser un simple ou double quote. Il faut utiliser le symbole antislash
+    pour éviter au C++ d'éviter d'interpréter le simple ou double quote (ce qui sera vrai aussi pour les chaînes de caractère)
+
+    Il existe plusieurs symboles spéciaux :
+    \begin{multicols}{3}
+    \begin{itemize}
+    \item \mintinline{C++}{'\n'} : Retour à la ligne suivante
+    \item \mintinline{C++}{'\t'} : Aller à la prochaine tabulation
+    \item \mintinline{C++}{'\r'} : Retour en début de ligne 
+    \end{itemize}
+    \end{multicols}
+
+    Le type \texttt{char} étant codé sur un seul octet, il n'est pas possible d'initialiser un caractère C++ avec un caractère codé en UTF8
+
+    Il est possible d'initialiser un caractère directement avec le code ASCII correspondant :
+    \begin{minted}{C++}
+char c = 97;// c contient le caractère 'a'
+c = 98; // Maintenant c contient le caractère 'b'
+\end{minted}
+
+    \underline{Remarque} : On change la valeur d'une variable en C++ à l'aide du symbole \texttt{=}
+\end{frame}
+
+\begin{frame}[fragile]{Les chaînes de caractère}
+    \scriptsize
+    Nous avons vu qu'il existait déjà \mintinline{C++}{char *} pour déclarer une chaîne de caractère mais qu'il valait mieux éviter d'utiliser ce type.
+
+    En C++, il existe également une composante de la bibliothèque C++ : \texttt{string} qui permet de déclarer une chaîne de caractère plus facile et plus sûre à manier.
+
+    On déclare alors une chaîne de caractère avec le type \mintinline{C++}{std::string}.
+
+    \begin{block}{\small Initialisation d'une chaîne de caractère}
+    \begin{multicols}{2}
+\begin{itemize}
+\item Déclaration d'une chaîne vide
+\begin{minted}{C++}
+std::string phrase;
+\end{minted}
+\item Déclaration d'une chaîne de caractère simple : 
+\begin{minted}{C++}
+std::string phrase{"Une simple ligne"};
+\end{minted}
+\columnbreak
+\item Déclaration d'une chaîne de caractère litérale. Pour ces chaînes, le C++ n'interprète pas les symboles rencontrés dans la chaîne de caracère. Exemple :
+\begin{minted}{C++}
+std::string doc = R"DOC(
+Un exemple de documentation  où  le
+"retour chariot" est possible ainsi 
+que l'utilisation  des  'quotes' et 
+"double quotes"
+ )DOC"
+\end{minted}
+    \end{itemize}
+    \end{multicols}
+    \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Services associés à une chaîne de caractère}
+    \scriptsize
+    Plusieurs services sont associés aux chaînes de caractère de type \texttt{std::string} :
+    \begin{itemize}
+    \item Nombre de caractères d'une chaîne \texttt{s}: \mintinline{C++}{s.size();}
+    \item Copier la chaîne \texttt{s1} dans une chaîne \texttt{s2} : \mintinline{C++}{s1 = s2;}
+    \item Lire le $i^{\mbox{ème}}$ caractère de \texttt{s}: \mintinline{C++}{char c = s[i];}
+    \item Modifier le $i^{\mbox{ème}}$ caractère de \texttt{s}: \mintinline{C++}{s[i] = 't';}
+    \item Insérer un caracèture ou une chaîne de caractère à la $i^{\mbox{ème}}$ position : \mintinline{C++}{s.insert(i," toto ");}
+    \item Concaténer deux chaînes \texttt{s1} et \texttt{s2} dans \texttt{s} : \mintinline{C++}{s = s1 + s2;}
+    \item \'Echanger deux chaînes de caractères \texttt{s1} et \texttt{s2} : \mintinline{C++}{s1.swap(s2);}
+    \item Trouver la première position d'une sous chaine à partir de la position \texttt{i} : \mintinline{C++}{s.find("tintin", 3);}
+    \item Transformer une valeur en chaîne de caractère : \mintinline{C++}{s = std::to_string(3.14);}
+    \item \ldots
+    \end{itemize}
+
+    \alert{Note} : Comme tout conteneur (tableaux, chaîne de caractère, etc.), les indices commencent à 0 !
+\end{frame}
+
+\begin{frame}[fragile]{Définition directe d'une std::string (C++ 14)}
+    \scriptsize 
+    \begin{itemize}
+    \item Par défaut, les chaînes de caractère \mintinline{C++}{"Une chaîne..."} sont de type \texttt{char *};
+    \item Initialisation d'une \texttt{std::string} avec une telle chaîne non optimale (copie de la chaîne de caractère);
+    \item En utilisant l'espace de nommage \texttt{std::string\_literals} on peut définir une \texttt{std::string} directement en postfixant
+    un \texttt{s} à la dernière double quote.
+    \end{itemize}
+
+    \begin{exampleblock}{\small Exemple :}
+\begin{minted}{C++}
+#include <string>
+using namespace std::string_literals;
+... 
+std::string une_chaine = " directement initialisee !"s;
+\end{minted}
+\end{exampleblock}
+Ces chaînes offrent tous les services d'une \texttt{std::string} normale :
+\begin{minted}{C++}
+std::cout << "une longue phrase contenant avant les deux points :"s.size() << std::endl;
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les entiers de base}
+    \scriptsize 
+    Plusieurs types d'entiers possibles en C++ :
+    \begin{itemize}
+    \item Types d'entiers signés :
+    \begin{tabular}{|c|c|c|}\hline
+    Type & Intervalle & Remarque \\ \hline \hline
+    \mintinline{C++}{signed char} & $[-128;127]$ & \\ \hline
+    \mintinline{C++}{short} & $[-32768;32767]$ & \\ \hline
+    \mintinline{C++}{int} & $[-32768;32767]$ ou $[-2^{31};2^{31}-1]$ & Dépend du système ou processeur\\ \hline
+    \mintinline{C++}{long} & $[-2^{31};2^{31}-1]$ ou $[-2^{63};2^{63}-1]$ & Dépend du système ou processeur\\ \hline
+    \mintinline{C++}{long long} & $[-2^{63};2^{63}-1]$ & \\ \hline
+    \end{tabular}
+    \item Types d'entiers non signés
+    \begin{tabular}{|c|c|c|}\hline
+        Type & Intervalle & Remarque \\ \hline \hline
+        \mintinline{C++}{unsigned char} & $[0;255]$ & \\ \hline
+        \mintinline{C++}{unsigned short} & $[0;65535]$ & \\ \hline
+        \mintinline{C++}{unsigned} & $[0;65535]$ ou $[0;2^{32}-1]$ & Dépend du système ou processeur\\ \hline
+        \mintinline{C++}{unsigned long} & $[0;2^{32}-1]$ ou $[0;2^{64}-1]$ & Dépend du système ou processeur\\ \hline
+        \mintinline{C++}{unsigned long long} & $[0;2^{64}-1]$ & \\ \hline
+    \end{tabular}
+    \end{itemize}
+    \alert{Attention} : Il possible d'utiliser le type \texttt{char} comme entier, mais il n'est pas spécifié dans la norme si il est signé ou non signé !
+\end{frame}
+
+\begin{frame}[fragile]{Contrôler la taille des entiers !}
+    \scriptsize
+    Le C++ est livré avec une composante de la bibliothèque standard permettant de contrôler la taille des entiers : \texttt{cstdint}
+    On peut alors déclarer des entiers signés avec la syntaxe suivante : \mintinline{C++}{std::intX_t} où \texttt{X} est le nombre de bits contenus dans l'entier (8, 16, 32 ou 64)
+    Ainsi :
+    \begin{minted}{C++}
+    std::int8_t byte; // Entier sur 8bits signé 
+    std::int32_t quad; // Entier sur 32 bits signé
+    \end{minted}
+    Idem avec les types d'entiers non signés avec la syntaxe \texttt{std::uintX\_t}. Ainsi :
+    \begin{minted}{C++}
+    std::uint16_t uword; // Type d'entier non signé sur 16 bits 
+    std::uint64_t dqword; // Type d'entier non signé sur 64 bits
+    \end{minted}
+
+    Il existe également un type d'entier non signé représentant l'étendu mémoire que peut gérer le processeur pour lequel est compilé le code : \texttt{std::size\_t}
+    qui est un type d'entier non signé 64 bits sur les architectures et OS modernes, et 32 bits sur les processeurs ou OS un peu anciens. 
+\end{frame}
+
+\begin{frame}[fragile]{Opérations sur les entiers}
+\scriptsize
+Les opérations possibles sur les types d'entiers sont :
+\begin{itemize}
+\item Les opérations arithmétiques usuelles : \mintinline{C++}{+, -, *, /} (ici la division entière)
+\item les opérateurs inplace : \mintinline{C++}{+=, -=, *=, /=} : \mintinline{C++}{a -= 4;}
+\item L'opération modulo \texttt{\%} : \mintinline{C++}{a = b % 4;}
+\item La pré incrémentation (rajoute un et retourne la nouvelle valeur) : \texttt{++i}
+\item La pré décrémentation (enlève un et retourne la nouvelle valeur) : \texttt{--i};
+\item La post incrémentation (rajoute un et retourne l'ancienne valeur) : \texttt{i++}
+\item La post décrémentation (enlève un et retourne l'ancienne valeur) : \texttt{i--};
+\item Transformer une chaîne de caractère en entier : \mintinline{C++}{std::stoi(s), std::stol(s), std::stoll(s) ...}
+\end{itemize}
+\vspace*{-2mm}
+\begin{exampleblock}{\scriptsize Additionneur de deux entiers}
+\begin{minted}{C++}
+#include <iostream>
+int main( int nargs, char *argc[]) {
+  int x = std::stoi(argc[1]), y = std::stoi(argc[2]);
+  std::cout << x << " + " << y << " = " << x+y << std::endl;
+  return EXIT_SUCCESS;
+}
+\end{minted}
+\end{exampleblock}   
+\end{frame}
+
+\begin{frame}[fragile]{Formatage des entiers en sortie}
+\scriptsize 
+\begin{itemize}
+\item Utilisation de \texttt{iomanip}
+\item \texttt{std::setw} réserve un nombre de caractère à afficher
+\item \texttt{std::setfill} remplit l'espace non utilisé par un caractère.
+\end{itemize}
+\begin{minted}{C++}
+std::int32_t value1 = -32;
+std::int32_t value2 =  3 ;
+std::cout << "value1 = " << value1 << std::endl;
+std::cout << "et value2 = " << value2 << std::endl;
+std::cout << "123456789ABCDEF" << std::endl;
+std::cout << std::setw(15) << "value1 = " << std::setw(4) << value1 << std::endl;
+std::cout << std::setw(15) << "et value2 = " << std::setw(4) << std::setfill('0') << value2 << std::endl;
+\end{minted}
+
+Ce qui affiche 
+\begin{tcolorbox}[colback=black,coltext=white]
+\begin{verbatim}
+value1 = -32
+et value2 = 3
+123456789ABCDEF
+      value1 =  -32
+   et value2 = 0003
+\end{verbatim}
+\end{tcolorbox}
+\end{frame}
+
+\begin{frame}[fragile]{Nombres à virgule flottante}
+\scriptsize
+
+    Il existe trois types de nombres à virgule flottante :
+    \begin{itemize} 
+    \item \mintinline{C++}{float} : Nombre réel simple précision (32 bits)
+    \item \mintinline{C++}{double}: Nombre réel double précision (64 bits)
+    \item \mintinline{C++}{long double} : Nombre réel quadruple précision (128 bits en principe)
+    \end{itemize}
+
+    Opérations définies sur les nombres à virgule flottante :
+    \begin{itemize}
+    \item Opérateurs arithmétiques usuels : \texttt{+, -, *, /}
+    \item Opérateur arithmétiques inplace : \texttt{+=, -=, *=, /=}
+    \end{itemize}
+
+    La composant \texttt{cmath} de la bibliothèque standard fournit nombre de fonctions mathématiques :
+    \begin{itemize}
+    \item Fonctions trigonométriques usuelles : \mintinline{C++}{std::sin,std::cos, std::tan, std::asin, std::acos, std::atan, std::atan2}
+    \item Fonctions hyperboliques usuelles : \mintinline{C++}{std::sinh, std::cosh, std::tanh, std::asinh,std::acosh, std::atanh}
+    \item Fonctions exponentielles et logarithmiques : \mintinline{C++}{std::exp, std::expm1, std::log, std::log10, std::pow}
+    \item racines, fma et modulo généralisé : \mintinline{C++}{std::sqrt, std::cbrt, std::fma, std::fmod}
+    \item fonctions mathématiques spécialisée : polynôme de Laguerre, de Legendre, fonction beta, intégrales elliptiques de première et seconde espèce,
+          fonctions de bessel, etc. depuis le C++ 17
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Nombres à virgule flottante spécialisés}
+    \scriptsize 
+    Depuis C++11, trois valeurs spéciales définies dans \texttt{limits} :
+    \begin{itemize}
+        \item \texttt{quiet\_NaN} : Not a Number sans mettre le processeur en état d'erreur. Sa comparaison d'égalité avec toute autre valeur dont lui-même renvoit toujours faux
+        \item \texttt{signaling\_NaN} : Not a Number en mettant le processeur dans un état d'erreur.
+        \item \texttt{infinity} : Représente l'infini. Toujours supérieur à n'importe quel nombre réel.
+    \end{itemize}
+
+    \begin{minted}{C++}
+#include <limits>
+#include <iostream>
+int main() {
+    double x = std::numeric_limits<double>::quiet_NaN();
+    std::cout << std::boolalpha <<"Nan==NaN? "<< x==std::numeric_limits<double>::quiet_NaN() <<std::endl;
+    std::cout << "x n'est pas un nombre ? " << std::isnan(x) << std::endl;
+    float finf = std::numeric_limits<float>::infinity(), fsup = std::numeric_limits<float>::max();
+    std::cout << fx << " < ∞ ? :" << (fx < finf) << std::endl;
+    return EXIT_SUCCESS; }
+\end{minted}
+\vspace*{-2mm}
+\begin{tcolorbox}[colback=black,coltext=white]
+\begin{verbatim}
+Nan==NaN? : false
+x n'est pas un nombre ? true
+3.40282e+38 < ∞ ? true
+\end{verbatim}
+\end{tcolorbox}        
+\end{frame}
+
+\begin{frame}[fragile]{Les constantes prédéfinies (C++ 20)}
+    \scriptsize
+    De nombreuses constantes usuelles sont définies dans la composante 
+    \href{https://en.cppreference.com/w/cpp/numeric/constants}{\beamergotobutton{numbers}} de la bibliothèque standard.
+
+    Ces constantes sont sous deux formes :
+    \begin{itemize}
+        \item Prédéfinies pour les nombres réels double précision : \mintinline{C++}{std::numbers::pi, std::numbers::e}, \ldots
+        \item Génériques pour d'autres types de nombres réels   : \mintinline{C++}{std::numbers::pi_v<float>, std::numbers::e_v<float>}, \ldots
+    \end{itemize}
+
+\begin{exampleblock}{\small Exemple :}
+\begin{minted}{C++}
+long double pi_lf = std::numbers::pi_v<long double>;
+std::cout << std::setprecision((std::numeric_limits<long double>::digits10+1)) 
+          << "pi = " << pi_lf << std::endl; 
+double invpi = std::numbers::inv_pi;
+double e     = std::numbers::e;
+double phi   = std::numbers::phi;
+\end{minted}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Les nombres complexes}
+\scriptsize
+Les nombres complexes ne sont pas natifs. Il faut include la composante \texttt{complex} de la librairie standard.
+
+Il est possible alors de définir des nombres complexes dont le type des coefficients est choisi par le programmeur. Par
+exemple :
+\begin{minted}{C++}
+std::complex<double> z1; // Nombre complexe double précision 
+std::complex<float>  z2; // Nombre complexe simple précision
+std::complex<long>  iz1; // Nombre de Gauss: nombre complexe contenant des entiers
+\end{minted}
+
+Il existe deux manières d'initialiser un nombre complexe en C++ :
+\begin{itemize}
+\item Initialisation classique : \mintinline{C++}{std::complex z{0.,1.};}
+\item Initialisation "naturelle". Il faut préalablement après avoir inclu \texttt{complex} utiliser un espace de nommage :
+\mintinline{C++}{using namespace std::complex_literals}. On peut alors initialiser des nombres complexes à coefficients réels comme suit :
+\begin{minted}{C++}
+std::complex fz = 3.f + 2.if; // Complex simple précision
+std::complex dz = 3.  + 2.i ; // Complex double précision
+std::complex lz = 3.L + 4.iL; // Complex long double précision
+\end{minted}
+\end{itemize}
+\underline{Remarque} : Il n'est pas nécessaire depuis C++ 17 de préciser le type des coefficients lors de l'initialisation si les valeurs passées sont de même type.
+\end{frame}
+
+\begin{frame}[fragile]{Opérations sur les nombres complexes}
+    \scriptsize
+    \begin{multicols}{2}
+    \begin{itemize}
+\item Les opérations arithmétiques
+\item Les opérations arithmétiques inplace.
+\item L'opérateur d'égalité et de différence (\texttt{==} et \texttt{!=})
+\item Obtenir la partie réelle \mintinline{C++}{z.real()} ou imaginaire \mintinline{C++}{z.imag()}
+\item Le module du nombre complexe : \mintinline{C++}{std::abs(z)}
+\item L'argument du nombre complexe : \mintinline{C++}{std::arg(z)}
+\item Le carré du module : \mintinline{c++}{std::norm(z)}
+\item Le conjugué : \mintinline{C++}{std::conj(z)}
+\item Initialise un nombre complexe à partir de son module et argument : \mintinline{C++}{z = std::polar(r,theta);}
+\item Fonction exponentielle : \mintinline{C++}{std::exp(z)}
+\item Fonction logarithme    : \mintinline{C++}{std::log(z)}
+\item Fonction puissance     : \mintinline{C++}{std::pow(z1,z2)}
+\item Racinne carrée         : \mintinline{C++}{std::sqrt(z)}
+\item Les fonctions trigonométriques : \mintinline{C++}{std::sin,std::cos,std::tan}
+\item Les fonctions trigonométriques inverses : \mintinline{C++}{std::asin,std::acos,std::atan}
+\item Les fonctions hyperboliques : \mintinline{C++}{std::sinh,std::cosh,std::tanh}
+\item Les fonctions hyperboliques inverses : \mintinline{C++}{std::asinh, std::acosh, std::atanh}
+    \end{itemize}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Renommage de type}
+    \scriptsize
+
+    Il est possible de renommer des types lorsque ces derniers sont verbeux à l'aide de la commande \texttt{using}
+
+    \begin{exampleblock}{\small Exemple :}
+\begin{minted}{C++}
+using dcomplex = std::complex<double>;
+\end{minted}
+    \end{exampleblock}
+
+    Un autre avantage de renommer des types est de pouvoir basculer facilement entre plusieurs représentations mémoire des données :
+
+\begin{multicols}{2}
+\begin{minted}{C++}
+using conteneur = std::list<double>;
+... 
+conteneur tasks;
+...
+tasks.push(...);
+...
+\end{minted}
+\columnbreak
+\begin{minted}{C++}
+using conteneur = std::vector<double>;
+... 
+conteneur tasks;
+...
+tasks.push(...);
+...
+\end{minted}
+\end{multicols}
+\end{frame}
+
+
+\begin{frame}[fragile]{Déclaration implicite du type (C++ 11 et supérieur)}
+    \scriptsize
+    On peut remarquer lors de la déclaration d'une variable accompagnée de son initialisation, que le type peut être implicitement déclaré deux fois. Par exemple :
+    \begin{minted}{C++}
+std::complex z{1.,2.};
+std::complex z2 = z*z; // z*z est un complex double, z2 ne peut que l'être aussi
+    \end{minted}
+
+    On peut éviter dans ce cas de préciser le type qu'on initialise et laisser le compilateur déduire le type à l'aide du mot clef \mintinline{C++}{auto} :
+    \begin{minted}{C++}
+std::complex z{1.,2.};
+auto z2 = z*z; // z*z est un nombre complexe double, z2 ne peut que l'être aussi  
+    \end{minted}
+
+Ce mot clef est indispensable et simplifie beaucoup la programmation. Par exemple, en C++ 98 on écrivait :
+\begin{minted}{C++}
+for (std::vector<double>::const_iterator iter=u.begin(); iter != u.end(); ++iter)
+{    ...
+}
+\end{minted}
+En C++ 11, on pourrait écrire cette boucle comme :
+\begin{minted}{C++}
+for (auto iter=u.begin(); iter != u.end(); ++iter)
+{    ...
+}
+\end{minted}        
+\end{frame}
+
+\begin{frame}[fragile]{Valeurs constantes et expressions constantes}
+    \scriptsize
+  
+Il est possible de définir une variable représentant une valeur constante, c'est à dire qu'on ne peut modifier.
+Il suffit pour cela après (ou avant) avoir défini le type de rajouter le qualificatif \texttt{const} :
+\begin{minted}{C++}
+int const nbEssais = 4;
+nbEssais = 5; // Cette ligne provoque une erreur de compilation !
+\end{minted}
+  
+Sauf si une valeur constante est une simple valeur comme l'exemple ci-dessus, sa valeur sera évaluée à l'exécution :
+  
+\begin{minted}{C++}
+double const pis3 = 1.0471975511965976;
+double const cos_pis3 = std::cos(pis3);// cos_pis3 sera évaluée à l'exécution.
+\end{minted}
+  
+Il est néanmoins possible depuis C++ 11 de demander au compilateur à évaluer une valeur durant la phase de compilation.
+On utilise pour cela le mot clef \texttt{constexpr} :
+\begin{minted}{C++}
+constexpr double a00 = 1., a10 = 0.5, a01 = 0.75, a11 = 1.3;
+constexpr double x = 2., y = -1.5;
+constexpr auto valeur = a00 + a10*x + a01*y + a11 * x * y;
+\end{minted}
+  
+Si une partie de l'expression n'est pas évaluable en \texttt{constexpr}, l'évaluation se fera durant l'exécution.
+  
+Les fonctions mathématiques ne sont utilisables en \texttt{constexpr} que depuis C++ 23 (g++ le supportait bien avant).
+\end{frame}
+  
+\subsection{Les contrôleurs de flot d'exécution}
+
+\begin{frame}[fragile]{Branches conditionnelles}
+    \scriptsize
+    La syntaxe est simple :
+    \begin{minted}{C++}
+if (cond) <bloc d'instructions>
+else <bloc d'instruction>
+    \end{minted}
+
+    Noter les parenthèses autour de la condition. Si la condition est composée de plusieurs conditions articulées avec les opérateurs
+    logiques, chaque condition doit être mise entre parenthèses et l'ensemble des conditions également.
+
+    Pour les opérateurs logiques, on dispose de 
+    \begin{itemize}
+    \item \texttt{\&\&} ou \texttt{and} pour l'opérateur logique \textbf{ET},
+    \item \texttt{||} ou \texttt{or} pour l'opérateur logique \textbf{OU} 
+    \item \texttt{!} ou \texttt{not} pour l'opérateur logique \textbf{NON}  .
+    \end{itemize}
+
+    Par exemple, pour tester si un entier \texttt{i} est impair et divisible par trois et le diviser par trois dans ce cas, sinon
+    retrancher un à l'entier :
+    \begin{minted}{C++}
+    if ( (i%2 != 0) and (i%3 == 0) )
+        i = i/3;
+    else
+        i = i - 1;
+    \end{minted}
+
+    \underline{Remarque} : Il est inutile d'utiliser les accolades si le bloc d'instructions ne contient qu'une seule instruction.
+
+\end{frame}
+
+\begin{frame}[fragile]{Sélecteur de cas}
+    \scriptsize
+    On peut chaîner les \texttt{if} de la manière suivante :
+    \begin{minted}{C++}
+if (cond1) { ... }
+else if (cond2) { ... }
+else ...
+    \end{minted}
+    Si beaucoup de cas à traiter selon la valeur d'une variable, on utilise \texttt{switch} et \texttt{case}.
+    Par exemple, dans la gestion d'un menu, si on a une valeur entière \texttt{imenu} donnant la sélection de l'utilisateur :
+    \begin{minted}{C++}
+switch(imenu) {
+case 1: // Si imenu vaut 1
+    liste d'instructions
+    break;
+case 2: // Si imenu vaut 2
+    liste d'instructions...
+    break;
+... 
+default:// Autres valeurs non prévues
+    std::cout << "Choix invalide !" << std::endl;
+}
+\end{minted}
+\vspace*{-2mm}
+Sans mettre de \texttt{break} à la fin d'un \texttt{case}, le C++ continue avec les instructions
+se trouvant dans le \texttt{case} suivant (fallthrough).
+\end{frame}
+
+\begin{frame}[fragile]{Les boucles de type \texttt{while}}
+    \scriptsize
+    Il existe deux types de boucles :
+    \begin{multicols}{2}
+    \begin{itemize}
+        \item Les boucles de type \texttt{"Tant que (cond) faire ..."} :
+        \begin{minted}{C++}
+while (cond) <bloc d'instructions> 
+        \end{minted}
+        \underline{Exemple}
+        \begin{minted}{C++}
+int n=7;
+while (n!=1) {
+    if (n%2==0) n = n/2;
+    else n = 3*n+1;
+}
+\end{minted}
+        \columnbreak
+        \item Les boucles de type \texttt{"Faire ... tant que (cond)"} :
+        \begin{minted}{C++}
+do <bloc d'instructions> while (cond);
+        \end{minted}
+        \underline{Exemple}
+\begin{minted}{C++}
+int imenu = 0;
+do {
+    std::cout << "Votre choix : ";
+    std::cin.clear();
+    std::cin >> imenu;
+} while ( (imenu < 1) or (imenu > 5) );
+\end{minted}
+\end{itemize}
+\end{multicols}
+
+Il est possible de mettre pour condition la valeur \texttt{true} pour obtenir une boucle infinie.
+\end{frame}
+
+\begin{frame}[fragile]{Boucle \texttt{for}}
+    \scriptsize
+    La boucle \texttt{for} très souple. Prend deux formes, la boucle continuant tant que la condition est vraie :
+    \begin{itemize}
+    \item Première forme : les variables itérées sont déclarées avant la boucle :
+\begin{minted}{C++}
+for (init vars; cond; modif.)  <bloc d'instruction> 
+\end{minted}
+    \item Seconde forme : les variables itérées sont déclarées et initialisées dans le for :
+\begin{minted}{C++}
+for (décl. et init vars; cond; modif.)    <bloc d'instruction>
+\end{minted}
+    Sous cette forme, les variables itérées ne sont visibles quand dans le bloc d'instruction de la boucle
+\end{itemize}
+\begin{exampleblock}{\scriptsize Exemple 1 : Recherche du premier bit non nul d'un entier n à partir du bit le plus faible}
+\begin{minted}{C++}
+int firstRightBit; for (firstRightBit = 0; (n%2==0) and (n>0); n = n/2, firstRightBit++);
+\end{minted}
+\end{exampleblock}
+\alert{Remarque} : le bloc d'instruction peut ne contenir aucune instruction !
+\begin{exampleblock}{\scriptsize Exemple 2 : Calcul la puissance p d'un entier n}
+\begin{minted}{C++}
+int pow_n = 1; for (int pow = 0; pow < p; ++pow ) pow_n *= n;
+\end{minted}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Boucle for(suite)}
+    \scriptsize 
+    Au sein du bloc d'instruction :
+    \begin{itemize}
+    \item Il est possible d'arrêter une itération et continuer à la suivante avec l'instruction \mintinline{C++}{continue}
+    \item On peut également arrêter les itérations à l'aide de l'instruction \mintinline{C++}{break}
+    \end{itemize}
+
+    \begin{exampleblock}{\scriptsize Exemple 3 : Tester si un nombre entier n est premier (vrai) ou non (faux)}
+\begin{minted}{C++}
+bool estPremier = n%2==0 ? false : n%3==0 ? false : true;
+for (int i=1; (6*i-1 < std::sqrt(n)) && estPremier; ++i)
+{
+    if (n%(6*i-1) == 0) {
+        estPremier = false;
+        break;
+    }
+    if (n%(6*i+1) == 0) estPremier = false;
+}
+\end{minted}
+\end{exampleblock}
+\alert{Remarque 1} : On a utilisé ici l'opérateur ternaire  \texttt{ cond ? éval si vrai : éval si faux;}\\
+\alert{Remarque 2} : On verra une troisième forme pour la boucle for avec les conteneurs...
+\end{frame}
+
+\begin{frame}{Exercices}
+    \scriptsize
+    \begin{itemize}
+    \item Résoudre l'équation quadratique $a.x^{2}+b.x+c = 0$ avec $a$,$b$ et $c\in\mathbb{R}$. $a$, $b$ et $c$ seront
+    passés en argument à l'exécutable et la résolution se fera dans $\mathbb{R}$.
+    \item Calculer la longueur de vol, c'est à dire le nombre d'itérations nécessaire pour retomber sur le cycle 
+    $1\rightarrow 4 \rightarrow 2 \rightarrow 1$ avec la suite de Syracuse : $u_{n+1} = \left\{ \begin{array}{l}
+        u_{n}/2 \mbox{ si } u_{n}\mbox{ est pair} \\
+        3*u_{n}+1 \mbox{ si } u_{n}\mbox{ est impair}\end{array}\right.$
+        $u_{0}$ sera donné en argument à l'exécutable
+    \item Calculer et afficher les $n$ premiers termes de la série
+    \[
+        S_{n} = 4.\sum_{k=0}^{n} \frac{(-1)^{k}}{2k+1}\left(\frac{4}{5^{2k+1}} - \frac{1}{239^{2k+1}}\right)
+    \]
+    $n$ étant donné en argument à l'exécutable
+    \end{itemize}
+\end{frame}
+
+\subsection{Les références et les fonctions}
+
+\begin{frame}[fragile]{Les références}
+    \scriptsize 
+    Une variable faisant \textbf{référence} à la valeur d'une autre variable : 
+    la variable référente précédée par le symbole \texttt{\&}.
+
+    \begin{exampleblock}{\small Exemple}
+\begin{minted}{C++}
+int i  = 2;
+int &j = i; // j fait rérence à i et à sa valeur (ici 2)
+i = 3; // La valeur de i est maintenant 3, et donc j fait référence à la valeur de i, donc 3
+j = 4; // j faisant référence à i, la valeur de i est maintenant égale à quatre
+\end{minted}
+\end{exampleblock}
+
+Possibilité de déclarer une référence constante, c'est à dire que la variable référente ne peut modifier la valeur référée
+\begin{exampleblock}{\small Exemple}
+\begin{minted}{C++}
+int i = 2;
+int const &j = i;
+i = 3; // j faisant référence à la valeur de i, affichera la valeur 3
+j = 2; // Erreur de compilation : j ne peut modifier la valeur référée
+\end{minted}
+\end{exampleblock}
+
+Nous allons voir que les références sont un moyen très pratique de passer des arguments par adresse et non par valeur en C++
+\end{frame}
+
+\begin{frame}[fragile]{Déclaration des fonctions}
+    \scriptsize
+    Fonctions peuvent être déclarées avant d'être mise en {\oe}uvre en général dans un fichier \textsl{\textcolor{blue}{header}} 
+    (extension \texttt{.h} ou \texttt{.hpp}).
+
+    La déclaration d'une fonction se fait avec la syntaxe suivante :
+\begin{minted}{C++}
+<type de la valeur de retour> nom_de_la_fonction( type nom_arg1, type nom_arg2, ... );
+\end{minted}
+Possible de ne passer aucun argument à la fonction (une parenthèse ouvrante suivie d'une parenthèse fermante).
+
+Si la fonction ne renvoie aucune valeur (équivalent procédure en fortran), la fonction renvoie le type \texttt{void} comme valeur de retour.
+
+\begin{exampleblock}{\small Exemples}
+\begin{minted}{C++}
+void affiche_menu();
+double solveLinearEquation( double a, double b );//Résoud ax+b=0
+\end{minted}
+\end{exampleblock}
+
+Plusieurs fonctions peuvent avoir le même nom si arguments différents en nombre ou en type (\textcolor{blue}{surcharge fonction}) :
+\begin{exampleblock}{\small Exemples}
+\begin{minted}{C++}
+float solveLinearEquation( float a, float b );//Résoud ax+b=0 en simple précision
+double solveLinearEquation( double a, double b );//Résoud ax+b=0 en double précision
+\end{minted}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Définition des fonctions}
+\scriptsize
+\textsl{Définir} fonction dans fichier de mise en {\oe}uvre (extension \texttt{cpp}) avec la syntaxe suivante :
+\begin{minted}{C++}
+<type retour> nom_fonction( type1 param1, type2 param2, ... )
+{   ...
+    // Avec des returns si la fonction renvoit quelque chose.
+}
+\end{minted}
+
+\begin{exampleblock}{\small Exemple}
+\begin{minted}{C++}
+float solveLinearEquation( float a, float b ) {  return -b/a; }
+\end{minted}
+\end{exampleblock}
+
+Depuis C++ 11, il existe une seconde forme de syntaxe pour définir une fonction (forme fonctionnelle):
+\begin{minted}{C++}
+auto nom_fonction( type1 param1, type2 param2, ...) -> <type de retour>
+{ ... }
+\end{minted}
+
+\vspace*{-4mm}
+\begin{exampleblock}{\small Exemple}
+\begin{minted}{C++}
+auto solveLinearEquation( float a, float b ) -> float {  return -b/a; }
+\end{minted}
+\end{exampleblock}    
+\end{frame}
+
+\begin{frame}[fragile]{Passage par valeur/Passage par référence}
+    \scriptsize
+    Par défaut, les arguments passés à une fonction sont passés par valeur : on copie la valeur des variables passées en argument.
+
+    \begin{minted}{C++}
+void inc(int n) { n += 1; }
+...
+int x = 3;
+inc(x); // x vaut toujours trois à la sortie de la fonction !
+\end{minted}
+
+Pour passer un argument par adresse, il faut le passer par référence :
+\begin{minted}{C++}
+void inc(int &n) { n += 1; }
+...
+int x = 3;
+inc(x); // x vaut quatre à la sortie de la fonction !
+\end{minted}
+
+Pour des valeurs volumineux en mémoire (une matrice par exemple), il est préférable de passer l'argument correspondant par référence.
+Si de plus, on veut s'assurer que l'argument ne puisse pas être modifié, on peut passer une référence constante :
+\begin{minted}{C++}
+auto solve(MatricePleine const& A, Vecteur const& b ) -> Vecteur;
+\end{minted}
+
+L'avantage de la référence constante est de plus de pouvoir passer directement une valeur en argument :
+\begin{minted}{C++}
+auto y = solve(A, Vecteur{A.dimension(), 1.} );
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Paramètres par défaut}
+\scriptsize 
+\begin{itemize}
+\item Possible de donner des valeurs par défaut à des paramètres de la fonction;
+\item Ces paramètres doivent être passés en dernier dans la fonction;
+\item On peut ne pas passer ces arguments si les valeurs par défaut conviennent;
+\item Si on passe un argument ayant une valeur par défaut, il faut également passer les arguments le précédent, même si ils ont des valeurs par défaut.
+\end{itemize}
+
+\underline{Exemple} :
+\begin{minted}{C++}
+std::complex<double> monopole( double kWave, double radius, double minRadius = 0.01, double phase = 0. )
+{
+    double minRad = std::max(radius, minRadius);
+    return std::polar(1./minRad, kWave * minRad + phase );
+}
+
+auto p1 = monopole( 1.1, 0.5 ); // minRadius = 0.01, phase = 0.
+auto p2 = monopole( 1.1, 0.01, 0.02); // minRadius = 0.02, phase = 0.
+auto p3 = monopole( 1.1, 0.05, 0.1, std::numbers::pi/4. );// minRadius = 0.1, phase = pi/4
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Surcharge des fonctions}
+    \scriptsize
+  
+Plusieurs fonctions peuvent possèder le même nom si et seulement si la signature des fonctions sont différentes, c'est à dire :
+\begin{itemize}
+\item Le nombre de paramètre diffère \textbf{OU}
+\item Le type des paramètres diffèrent
+\end{itemize}
+  
+\alert{Attention} : Le nombre et le type des données retournées par une fonction ne font pas partie de la signature de la fonction !
+  
+\begin{exampleblock}{Exemple}
+\begin{multicols}{2}
+\begin{minted}{C++}
+float max( float x, float y ) {
+  return x >= y ? x : y;
+}
+  
+float max( float x, float y, float z ) {
+  if (x < y) return y >= z ? y : z;
+  return x >= z ? x : z;
+}
+
+double max( double x, double y ) {
+  return x >= y ? x : y;
+}
+\end{minted}
+\end{multicols}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Surcharge des opérateurs}
+    \scriptsize
+
+\vspace*{-3mm}
+\begin{block}{\small Opérateur}
+Symbole effectuant une opération :  \verb@+ - * / += -= *= /= = % ++ -- & && | || &= |= ^ < <= == >= > != , [] () ~ ->@
+\end{block}
+  
+\alert{Note} : Opérateurs \texttt{++} et \texttt{--} peuvent être définis pour  pré-incrémentation et post-incrémentation.
+Rajoute d'un entier inutilisé en paramètre pour définir post-incrémentation. \underline{Exemple}:
+\begin{minted}{C++}
+Type operator ++ ( Type& t ) { ... } // Pré-incrémentation 
+Type operator ++ ( Type& t, int ) { ... } // Post-incrémentation
+\end{minted}
+
+Possible redéfinir opérateurs pour nouveaux types. Exemple, supposons type \texttt{Point} défini :
+\begin{minted}{C++}
+Point operator + ( Point const& p1, Point const& p2 ) { ... }
+bool operator == ( Point const& p1, Point const& p2 ) { ... }
+Point operator * ( double scal, Point const& p ) { ... }
+Point& operator *= ( Point& p, double scal) { ... }
+Point& operator = ( Point& p1, Point const& p2 ) { ...; return p1; }
+int main() {
+  Point p1, p2;
+  p1 = p1 + p2;// Utilise operateur + et operateur =
+  p1 *= 2; // Utilise opérateur *=
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les assertions}
+\scriptsize
+Les assertions sont utiles lors de la phase de développement d'un code.
+
+Elles vérifient qu'un test est vrai. Si celui-ci est faux, le programme s'arrête en affichant le fichier et la ligne où l'assertion
+fausse a eu lieu.
+
+Les assertions sont très utiles pour :
+\begin{itemize}
+\item Vérifier si les paramètres d'entrées appartiennent au domaine de définition de la fonction appelée (Précondition);
+\item Vérifier si les valeurs de retour sont conformes à ce que doit retourner la fonction (Postcondition).
+\end{itemize}
+
+On utilise pour cela la composante \texttt{cassert} de la bibliothèque standard (std).
+
+\vspace*{-2mm}
+\begin{exampleblock}{\small Exemple :}
+\begin{minted}{C++}
+// Calcul la norme d'un vecteur 3D (x,y,z) et normalise le vecteur
+double normalize( double &x, double &y, double &z )
+{
+    double sqrNorm = x*x + y*y + z*z;
+    assert(sqrNorm > 1.E-14);
+    double norm = std::sqrt(sqrNorm);
+    x /= norm; y /= norm; z /= norm;
+    assert(norm > 0);
+    return norm;
+}
+\end{minted}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Contrat d'une interface et mise en {\oe}uvre d'un algorithme}
+    \scriptsize 
+    \begin{itemize}
+        \item \textbf{Contrat} : caractérisation de l'interface
+        \begin{itemize}
+            \scriptsize
+        \item Qu'est ce que l'algorithme est capable de produire;
+        \item Domaine de définition de l'algorithme
+        \item Valeurs possibles à la sortie
+        \end{itemize}
+        \item \textbf{\textcolor{DarkGreen}{Exemple}} : \textsl{Racine carrée d'un réel}
+        \begin{itemize}
+        \scriptsize 
+        \item \textcolor{DarkYellow}{En entrée} : un réel positif ou nul 
+        \item \textcolor{DarkYellow}{En sortie} : un réel positif ou nul
+        \end{itemize}
+        \item \textbf{Précondition} : Quelles conditions doivent vérifier les valeurs connues en entrée de l'algorithme ?
+        \item \textbf{Postcondition} : Quelles conditions doivent vérifier les valeurs modifiées ou retournées en sortie de l'algorithme ?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Utilisation des assertions}
+\scriptsize 
+
+\begin{itemize}
+\item Utilisation des \texttt{assert} de la composante \texttt{cassert} de la bibliothèque standard;
+\item \alert{Attention} : \texttt{assert} vient du langage C et ne possède pas d'espace de nommage \texttt{std::} !
+\item On peut ne pas vérifier les assertions (par exemple pour un exécutable en production) à l'aide de l'option de compilation 
+\texttt{-DNDEBUG}
+\item \textcolor{DarkGreen}{Exemple pour la racine carrée} :
+\begin{minted}{C++}
+#include <cassert>
+double sqrt( double x )
+{
+    assert(x >= 0); // Précondition
+    double sq = ...; // Calcul de la racine carrée avec votre algorithme
+    assert(sq >= 0); // Post-condition
+    return sq;
+}
+\end{minted}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Pré-postconditions avancées}
+\scriptsize 
+\begin{itemize}
+\item Les pré/postconditions peuvent être trop compliquées pour être de simples assertions;
+\item Peuvent engendrer un coût supplémentaire
+\begin{itemize}
+\scriptsize 
+\item \underline{Exemple} : Vérifier qu'un tableau est bien triée dans l'ordre croissant;
+\item Coût seulement acceptable durant la phase de développement
+\item Utiliser les macros pour cela (ici en utilisant l'option \texttt{-DDEBUG} à la compilation) :
+\begin{minted}{C++}
+#if defined(DEBUG)
+... // partie programme complexe permettant de vérifier une condition complexe;
+#endif
+\end{minted}
+\end{itemize}
+\item Conditions parfois difficiles à traduire dans un langage de programmation :
+\begin{itemize}
+\scriptsize 
+\item \underline{Exemple} : Précondition pour le tri : la fonction de comparaison vérifie t'elle une relation d'ordre ?
+\item Rajouter un commentaire dans la documentation code pour ce type de condition
+\end{itemize}
+\item Les pré/postconditions font parti de la documentation du code.
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Exercices}
+\scriptsize 
+\begin{itemize}
+\item \'Ecrire une fonction qui calcule le PGCD de deux entiers $a$ et $b$ à l'aide de l'algorithme d'Euclide :
+\[
+\left\{\begin{array}{ll}
+\mbox{Tant} & \mbox{que } b \neq 0\\
+ & t \leftarrow b \\
+&  b \leftarrow a\mod b \\
+&  a \leftarrow t\\
+\mbox{retourner} & a 
+\end{array}\right.
+\]
+\item \'Ecrire une fonction calculant la factorielle d'un entier :
+\begin{itemize}
+    \scriptsize
+\item de manière itérative
+\item de manière récursive
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\section{Les conteneurs}
+
+\subsection{Généralité sur les conteneurs}
+
+\begin{frame}[fragile]{Les conteneurs : Définition}
+\scriptsize
+\begin{block}{\small Définition}
+Valeur contenant d'autres valeurs
+\end{block}
+\underline{\textcolor{DarkGreen}{Exemple}} : Tableaux, listes, arbres, dictionnaires, \ldots 
+
+\begin{block}{\small Propriétés}
+\begin{itemize}
+\item Réservation et libération de la mémoire gérée par le conteneur;
+\item Valeurs contenues accessibles en lecture ou écriture;
+\item Des itérateurs permettent de parcourir les valeurs contenues.
+\end{itemize}
+\end{block}
+
+\begin{exampleblock}{\small Conteneurs C++}
+\begin{multicols}{3}
+\begin{itemize}
+\item Liste d'initialisation
+\item Tableaux statiques 
+\item Tableaux dynamiques
+\item Listes
+\item Ensembles
+\item Dictionnaires 
+\item Queues 
+\item Tas
+\end{itemize}
+\end{multicols}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Les itérateurs}
+    \scriptsize
+    \begin{block}{\small Définition}
+Type permettant de parcourir les valeurs contenus dans un conteneur
+    \end{block}
+
+    Plusieurs types d'itérateurs avec les méthodes associées dans les conteneurs :
+\begin{tabular}{|c|c|c|c|c|c|c|}\hline
+Type & Lecture & \'Ecriture &Suivant & Précédent & Début & Fin \\ \hline\hline
+    \texttt{iterator} & Oui & Oui & Oui & Non & \texttt{c.begin()} & \texttt{c.end()}\\ \hline
+    \texttt{const\_iterator} & Oui & Non & Oui & Non & \texttt{c.cbegin()} & \texttt{c.cend()}\\ \hline
+    \texttt{reverse\_iterator} & Oui & Oui & Non & Oui & \texttt{c.rbegin()} & \texttt{c.rend()}\\ \hline
+    \texttt{const\_reverse\_iterator} & Oui & Non & Non & Oui & \texttt{c.crbegin()} & \texttt{c.crend()}\\ \hline
+\end{tabular}
+
+\begin{itemize}
+\item Les méthodes de type \texttt{end} "pointent" après le dernier élément;
+\item L'opérateur \texttt{++} permet de passer à la valeur suivante (ou précédente);
+\item L'opérateur \texttt{!=} teste si deux itérateurs ne pointent pas sur la même valeur;
+\item On accède à la valeur "pointée" par l'itérateur avec l'opérateur \texttt{*}.
+\end{itemize}
+
+\begin{minted}{C++}
+for (auto iter = c.begin(); iter != c.end(); ++iter ) { 
+  *iter = 1;
+}
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les itérateurs (suite)}
+    \scriptsize
+
+Selon le type de conteneur les itérateurs peuvent être :
+\begin{itemize}
+\item \textbf{\textcolor{darkorange}{Uni-directionnels}} : opérateur \texttt{++} seulement
+\item \textbf{\textcolor{darkorange}{Bi-directionnels}}  : opérateur \texttt{++} et \texttt{--}
+\item \textbf{\textcolor{darkorange}{Aléatoires}} : opérateur \texttt{++}, \texttt{--}, \texttt{+=} et \texttt{-=}
+\end{itemize}
+
+\begin{minted}{C++}
+for (auto iter=tab.begin(); iter != tab.end(); iter += 2) ...
+\end{minted}
+
+Depuis C++ 11, il existe pour les conteneurs (tout type possédant des méthodes \texttt{begin} et \texttt{end}) trois autres formes de boucle :
+\begin{itemize}
+\item \underline{\textcolor{darkorange}{Première forme}} : pour lire les valeurs d'un conteneur
+\begin{minted}{C++}
+for (typeContenu itValue : conteneur ) { ... typeContenu a = itValue; ... }
+\end{minted}
+\item \underline{\textcolor{darkorange}{Seconde forme}} : pour lire/écrire les valeurs d'un conteneur
+\begin{minted}{C++}
+for (typeContenu &itValue : conteneur ) { ... itValue = 2; ... }
+\end{minted}
+\item \underline{\textcolor{darkorange}{Troisième forme}} : pour lire ou/et écrire les valeurs d'un conteneur + indices (C++ 20)
+\begin{minted}{C++}
+for (type var = value; typeContenu &itValue : conteneur ) { ... itValue = 2; ... }
+\end{minted}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Copie et déplacement}
+\scriptsize
+
+\begin{itemize}
+\item À partir du C++ 11, on peut déplacer des valeurs (ou bien sûr les copier !);
+\item \textbf{La copie} duplique une valeur contenue dans une variable dans une autre variable;
+\item \textbf{Le déplacement} permet à une variable $v_{1}$ de "voler" la valeur d'une autre variable $v_{2}$ : la variable 
+$v_{2}$ a perdu sa valeur !
+\item \texttt{std::move} permet de spécifier un déplacement plutôt qu'une copie :
+\begin{minted}{c++}
+int v2 = v1; // Copie dans v2 de la valeur dans v1 
+int v3 = std::move(v1); // Déplacement dans v3 de la valeur dans v1 
+\end{minted}
+\item Si le déplacement n'a aucun intérêt pour des valeurs simples comme un entier, un réel, etc., il en a beaucoup pour 
+les conteneurs ou les structures contenant un grand nombre de données;
+\item \textcolor{DarkGreen}{Exemple}:
+\begin{itemize}
+\scriptsize
+\item La copie d'une liste se fera en $O(n)$ ($n$ = nombre d'éléments dans la liste)
+\item Le déplacement d'une liste se fera en $O(1)$ !
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Copie et déplacement (suite)}
+    \scriptsize
+
+\begin{itemize}
+\item Un déplacement a automatiquement lieu au retour d'une fonction si et seulement si la valeur retournée est locale à la fonction;
+\item On peut spécifier qu'un paramètre d'une fonction soit une valeur en déplacement en préfixant l'argument par un double \texttt{\&};
+\item \textcolor{DarkGreen}{Exemple} :
+\begin{minted}{c++}
+std::list<double> calculeTachesPrioritaires()
+{
+    std::list<double> taches;
+    ... 
+    return taches;
+}
+
+// On perdra la tâche à l'exécution de la fonction
+void executerTacheUnique( Tache&& tache )
+{
+    ...
+}
+// La liste retournée est déplacée dans la variable tachesPrioritaires
+auto tachesPrioritaires = calculeTachesPrioritaires();
+\end{minted}
+\end{itemize}
+\end{frame}
+
+\subsection{Les conteneurs}
+
+\begin{frame}[fragile]{Les listes d'initialisation}
+\scriptsize
+
+\textcolor{orange}{\textbf{Type}} : \mintinline{C++}{std::initializer_list<type>}
+
+Représente un ensemble de valeurs servant à :
+\begin{itemize}
+\item Initialiser d'autres conteneurs avec des valeurs;
+\item Initialiser une structure (voir plus loin);
+\item Simplement définir un ensemble de valeurs temporaires
+\end{itemize}
+
+Une liste d'initialisation est définie par des valeurs de même type compris entre accolades.
+\begin{minted}{C++}
+std::initializer_list<double> l = { 1.5, 3.4, -2.6, 3.0 };
+\end{minted}
+
+En particuliers, cela permet de pouvoir itérer sur un ensemble de valeurs de même type :
+\begin{minted}{C++}
+std::uint64_t prod = 1;
+for (auto prime : {2,3,5,7,11,13,17,19}) {
+    prod *= prime;    
+}
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les tableaux statiques en C++}
+    \scriptsize
+    \begin{multicols}{2}
+    \begin{itemize}
+    \item Tableau statique existe en natif;
+    \item Mais déconseillé d'utiliser;
+    \item Plutôt utiliser la composante \texttt{array} de la std;
+    \item Plus sûre et aussi bien optimisée
+    \item Défini le type \mintinline{C++}{std::array<type valeurs>}
+    \end{itemize}
+\end{multicols}
+
+Plusieurs façons d'initialiser un tableau statique :
+\begin{minted}{C++}
+std::array<type,N> array1;
+std::array array2{value1, value2, value3,...}; // C++ 17
+std::array<type,N> array3{value1, value2, value3,...,valueN};
+\end{minted}
+
+Accéder en lecture/écriture à un élément du tableau : opérateur \texttt{[]}. Attention, indice comment à zéro !
+\begin{minted}{C++}
+array1[3] = 4; // Ecrire 4 à la quatrième position
+\end{minted}
+
+Il est possible de déclarer un tableau statique contenant des tableaux statiques :
+\begin{minted}{C++}
+std::array<std::array<double,3>,3> matrice3x3 = { std::array{ 1., 0., 0. },
+                                                            { 0., 1., 0. },
+                                                            { 0., 0., 1. } };
+matrices3x3[0][1] = -1;
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Tableaux statiques : opérations possibles}
+    \scriptsize
+
+    Pour un tableau \texttt{a} :
+\begin{itemize}
+\item \mintinline{C++}{a.at(indice)} : Accèder à un élément en lecture/écriture avec vérification de l'indice
+\item \mintinline{C++}{a.front()} : Accéder en lecture/écriture au premier élément du tableau
+\item \mintinline{C++}{a.back()}  : ACcèder en lecture/écriture au dernier élément du tableau
+\item \mintinline{C++}{a.data()}  : Retourne l'adresse du premier élément du tableau
+\item \mintinline{C++}{a.empty()} : Retourne vrai si le tableau ne contient aucun élément, faux sinon
+\item \mintinline{C++}{a.size()}  : Retourne le nombre d'éléments contenus dans le tableau
+\item \mintinline{C++}{a.fill(value)} : Remplit le tableau avec la valeur \texttt{value}
+\item \mintinline{C++}{a.swap(a1)} : Echange les valeurs entre le tableau \texttt{a} et \texttt{a1}
+\end{itemize}
+
+Il est également possible de comparer lexicographiquement deux tableaux statiques \texttt{a} et \texttt{a1}:
+\begin{minted}{C++}
+if (a < a1) ...
+if (a == a1) ...
+\end{minted}
+\underline{\textbf{\textcolor{blue}{Remarque}}} : Lors du développement, il est conseillé de rajouter l'option 
+\texttt{-D\_GLIBCXX\_DEBUG} ave g++ pour déboguer notre utilisation de la librairie std.
+\end{frame}
+
+\begin{frame}[fragile]{Exercice}
+    \scriptsize 
+
+    \textbf{Calcul de l'aire signée}
+
+    \begin{itemize}
+    \item Définir à l'aide d'\texttt{using} le type point et le type vecteur comme des tableaux statiques contenant deux c{\oe}fficients
+    \item Définir à l'aide d'\texttt{using} le type triangle comme un tableau statique contenant trois points
+    \item Définir dans le programme principal un point $p(0,0)$ et un triangle $T = \{ (-1,-1), (1,-1), (0,1) \}$
+    \item Calculer les vecteurs $u_{1} = pT[0], u_{2} = pT[1], u_{3} = pT[2]$
+    \item Calculer les trois produits croisés 
+    $u_{i}\times u_{j} = u_{i}[0].u_{j}[1] - u_{i}[1].u_{j}[0]$ avec $i=1,2$ ou 3 et $j = (i+1)\mod 3$;
+    \item Vérifier que les trois produits obtenus ont le même signe
+    \item Si oui, afficher que le point $p$ est bien dans le triangle.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Tableaux dynamiques}
+\scriptsize
+\begin{itemize}
+\item La composante \texttt{vector} de la bibliothèque standard propose un type gérant les tableaux dynamiques;
+\item Type optimisé gérant dynamiquement la mémoire avec des techniques d'allocation élaborées :
+\item Deux notions à bien distinguer :
+\begin{itemize}
+\scriptsize
+\item \textbf{La capacité} : La place mémoire allouée pour potentiellement contenir un certain nombre $c$, appelé capacité d'éléments;
+\item \texttt{u.capacity()} renvoit le nombre d'éléments potentiels alloué;
+\item \textbf{La taille} : Nombre d'éléments contenus effectivement dans le tableau.
+\item \texttt{u.size()} renvoit le nombre d'éléments effectifs contenus dans le tableau;
+\end{itemize}
+\item La taille diffère en général de la capacité : \texttt{u.size() $\neq$ u.capacity()};
+\item \texttt{u.reserve(n)} permet d'allouer une place mémoire pouvant contenir potentiellement $n$ éléments :
+\begin{itemize}
+\scriptsize 
+\item Si \texttt{n} $\ge$ \texttt{u.size()} : déplace les éléments contenus dans \texttt{u} dans la nouvelle zone mémoire réservée;
+\item Si \texttt{n} $<$ \texttt{u.size()} : déplace les $n$ premiers éléments contenus dans la nouvelle zone mémoire et perd le reste.
+\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Services associées aux tableaux dynamiques}
+    \scriptsize
+
+\begin{itemize}
+\scriptsize
+\item\textcolor{DarkGreen}{Rajout/Suppression valeur}
+\begin{itemize}\scriptsize
+\item \texttt{u.push\_back(variable);} : Copie la valeur contenue dans \texttt{variable} à la fin du tableau;
+\item \texttt{u.emplace\_back(valeur)} : Rajoute la valeur \texttt{valeur} à la fin du tableau;
+\item \texttt{u.pop\_back();} : \'Elimine le dernier élément du tableau;
+\item \texttt{u.shrink\_to\_fit();} : Modifie la taille réservée par le tableau pour que la capacité soit égale à la taille actuelle du tableau
+\item \texttt{u.swap(v)} : Echange le contenu de \texttt{u} avec celui de \texttt{v} ($\mathcal{O}(1)$)
+\end{itemize}
+\item\textcolor{DarkGreen}{Accès valeur}
+\begin{itemize}\scriptsize
+\item \texttt{u[i]} accède sans contrôle d'indice (sauf option \texttt{-D\_GLIBCXX\_DEBUG} avec gcc) à la $i^{\mbox{ème}}$ valeur du tableau
+\item \texttt{u.at(i)} accède avec contrôle d'indice à la $i^{\mbox{ème}}$ valeur du tableau 
+\item \texttt{u.front()} : Accède au premier élément du tableau;
+\item \texttt{u.back()}  : Accède au dernier élément du tableau;
+\item \texttt{u.data()}  : Retourne l'adresse mémoire du premier élément du tableau;
+\end{itemize}
+\end{itemize}
+\textcolor{NavyBlue}{\textbf{Note}} : Le déplacement d'un \texttt{vector} est en $\mathcal{O}(1)$. Il n'est donc pas pénalisant à partir 
+de C++11 de renvoyer un tableau dynamique local en retour d'une fonction !
+\end{frame}
+
+\begin{frame}[fragile]{Exemple d'utilisation d'un tableau dynamique}
+    \scriptsize
+
+\begin{minted}{C++}
+std::vector<std::int64_t> primes;
+primes.reserve(nbPrimes);
+primes.emplace_back(2);
+if (nbPrimes > 1) primes.emplace_back(3);
+std::int64_t k = 1;
+while (primes.size() < nbPrimes) {
+   std::int64_t p1 = 6*k-1;
+   std::int64_t p2 = 6*k+1;
+   k = k + 1;
+   for (auto p : primes) {
+       if ( (p1 > 0 ) and (p1\%p == 0) ) p1 = 0;
+       if ( (p2 > 0 ) and (p2\%p == 0) ) p2 = 0;
+       if ( (p1 == 0) and (p2 == 0) ) break;
+   }
+   if (p1 > 0) primes.push_back(p1);
+   if ( (p2 > 0) and (primes.size() < nbPrimes) ) primes.push_back(p2);
+}
+std::cout << "Voici les " << nbPrimes << " premiers nombres premiers :  " << std::endl;
+for (auto p : primes ) std::cout << p << " ";
+std::cout << std::endl;  
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Exercice sur les tableaux dynamiques}
+    \scriptsize
+  
+    \begin{itemize}
+    \item Définir un polynôme comme tableau dynamique des c{\oe}fficients de ses monômes (réels);
+    \item Définir une fonction qui crée et réserve en mémoire un polynôme de degré $n$;
+    \item Écrire une fonction qui renvoie le degré d'un polynôme;
+    \item Écrire une fonction qui évalue un polynôme en un point $x$;
+    \item Écrire un opérateur faisant la sommation de deux polynômes;
+    \item Écrire un opérateur faisant la multiplication de deux polynômes;
+    \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Les listes}
+    \scriptsize
+  
+  \begin{itemize}
+    \item Listes doublement chaînées \mintinline{C++}{std::list<Type>} dans la composante \texttt{list} de la std;
+    \item Listes simplement chaînées \mintinline{C++}{std::forward_list<Type>} dans la composante \texttt{forward\_list} de la std (C++ 11).
+  \end{itemize}
+
+  \vspace*{-3mm}
+  \begin{exampleblock}{\scriptsize Méthodes communes}
+  \begin{itemize}
+  \item \textcolor{blue}{\texttt{l.front();}} : Accès à la première valeur;
+  \item \textcolor{blue}{\texttt{l.empty();}} : Vrai si aucune valeur dans la liste;
+  \item \textcolor{blue}{\texttt{l.clear();}} : Supprime toutes les valeurs de la liste;
+  \item \textcolor{blue}{\texttt{l.push\_front(var);}} : Insère valeur de \texttt{var} au début;
+  \item \textcolor{blue}{\texttt{l.emplace\_front(params...);}} : Insère valeur dépendant de params au début;
+  \item \textcolor{blue}{\texttt{l.pop\_front();}} : Supprime $1^{\mbox{er}}$ élément;
+  \item \textcolor{blue}{\texttt{l.swap(l2);}} : Echange les deux listes (de même type);
+  \item \textcolor{blue}{\texttt{l.merge(l2);}} : Fusionne la liste \texttt{l2} à la fin de la liste \texttt{l};
+  \item \textcolor{blue}{\texttt{l.remove(valeur); l.remove\_if(predicat);}} : Enlève des éléments à la liste égale à la valeur ou vérifiant le prédicat;
+  \item \textcolor{blue}{\texttt{l.reverse();}} : Renverse l'ordre des valeurs;
+  \item \textcolor{blue}{\texttt{l.unique();}}  : Enlève les valeurs dupliquées consécutives;
+  \item \textcolor{blue}{\texttt{l.sort();l.sort(comp);}} : Trie la liste dans l'ordre croissant ou suivant la fonction de comparaison \texttt{comp};
+  \end{itemize}
+  \end{exampleblock}  
+  \end{frame}
+  
+\begin{frame}[fragile]{Les listes doublement chaînées}
+\scriptsize
+  
+Initiation d'une liste doublement chaînée :
+\begin{itemize}
+\item \mintinline{C++}{std::list<Type> l;} : Construit une liste vide;
+\item \mintinline{C++}{std::list<Type> l = {val1, val2, ..., valN};} : Construit une liste contenant intialement les valeurs \texttt{val1} à \texttt{valN}.
+\end{itemize}
+  
+Services propres aux listes doublement chaînées :
+\begin{itemize}
+\item \textcolor{blue}{\texttt{l.back();}} : Accède au dernier élément;
+\item \textcolor{blue}{\texttt{l.size();}} : Retourne le nombre d'éléments contenus;
+\item \textcolor{blue}{\texttt{l.insert(iter,value)}} ou \textcolor{blue}{\texttt{l.insert(iter, \{value1, value2, ..., valueN\})}} :
+Insère à la position de l'itérateur iter la (les) valeurs passée(s) en paramètre;
+\item \textcolor{blue}{\texttt{l.emplace(iter, params...);}} : Construit une valeur dépendant des paramètres passées à la position donnée par iter;
+\item \textcolor{blue}{\texttt{l.push\_back(var);}} : Rajoute en dernier élément la valeur contenue dans var;
+\item \textcolor{blue}{\texttt{l.emplace\_back(var, params... )}} : Construit en dernier élément une valeur dépendant des paramètres params
+\item \textcolor{blue}{\texttt{l.pop\_back();}} : Supprime le dernier élément;
+\end{itemize}
+  
+On peut également comparer deux listes à l'aide des opérateurs de comparaison ($<,<=,==,>,>=,!=$).
+\end{frame}
+
+  \begin{frame}[fragile]{Les listes simplement chaînées}
+    \scriptsize
+  
+    Initiation d'une liste doublement chaînée :
+    \begin{itemize}
+  \item \mintinline{C++}{std::forward_list<Type> l;} : Construit une liste vide;
+  \item \mintinline{C++}{std::forward_list<Type> l = {val1, val2, ..., valN};} : Construit une liste contenant intialement les valeurs val1 à valN.
+    \end{itemize}
+  
+    Méthodes propres aux listes simplement chaînées :
+  \begin{itemize}
+    \item \textcolor{blue}{\texttt{l.insert\_after(iter, val);}} ou \textcolor{blue}{\texttt{l.insert\_after(iter,\{val1, ..., valN\});}} :
+    Insère la (les) valeurs après la position de l'itérateur iter;
+    \item \textcolor{blue}{\texttt{l.emplace\_after(iter,params...);}} : Insère une nouvelle valeur dépendant de params après la position de l'itérateur iter;
+  \end{itemize}
+  
+  On peut également utiliser les opérateurs de comparaison.
+  
+  \end{frame}
+
+  \begin{frame}[fragile]{Les dictionnaires}
+    \scriptsize
+  
+    C++ propose deux types de dictionnaires :
+  \begin{itemize}
+  \item \textcolor{blue}{\texttt{std::map<TypeClef,TypeValeur>}} trouvé dans la composante \texttt{map} de la std :
+    \begin{itemize}
+      \scriptsize
+  \item Utilise des clefs qui peuvent être comparées et trie les clefs au fur et à mesure;
+  \item Insère une valeur en $\mathcal{O}(\log_{2}(N))$;
+  \item Trouve une valeur en $\mathcal{O}(\log_{2}(N))$;
+    \end{itemize}
+    \item \textcolor{blue}{\texttt{std::unordered\_map<TypeClef,TypeValeur>}} trouvé dans la composante \texttt{unordered\_map} de la std depuis C++ 11 :
+    \begin{itemize}
+      \scriptsize
+  \item Utilise des clefs hashables (on peut définir sa fonction de hashage);
+  \item Insère une valeur en $\mathcal{O}(1)$
+  \item Trouve une valeur en $\mathcal{O}(1)$
+    \end{itemize}
+  \end{itemize}
+  
+    Les deux dictionnaires proposent peu ou prou les mêmes services !
+  \end{frame}
+  
+  \begin{frame}[fragile]{Exemple basique d'utilisation}
+    \scriptsize
+  
+  \begin{minted}{C++}
+std::map<std::string,std::int32_t> badges = { {"John", 12304}, {"Eric", 3204}, {"Mathew", 1320} };
+badges["Paul"] = 14503;
+  
+auto iter = badges.find("Marie");
+if (iter == badges.end())
+  std::cout << "Marie n'existe pas" << std::endl;
+else
+  std::cout << "Le badge de Marie est le " << iter->second << std::endl;
+  
+iter = badges.find("Eric");
+if (iter == badges.end())
+  std::cout << "Eric n'existe pas" << std::endl;
+else
+  std::cout << "Le badge d'Eric est le " << iter->second << std::endl;
+  
+for (auto const& values : badges )
+  std::cout << values.first << " a pour badge " << values.second << std::endl;
+  
+  \end{minted}
+  \end{frame}
+  
+\section{Les pointeurs}
+
+\begin{frame}[fragile]{Généralités sur les pointeurs}
+    \scriptsize
+  
+    \begin{itemize}
+  \item Les pointeurs représentent une simple adresse mémoire;
+  \item Il existe des pointeurs natifs au langage avec la syntaxe suivante : \mintinline{C++}{Type *pt_var;} qui désigne un pointeur 
+        sur des valeurs de type \texttt{Type}. Il est déconseillé sauf si nécessaire d'utiliser ces pointeurs;
+  \item Deux composantes de la std proposent des pointeurs :
+  \begin{itemize}
+  \scriptsize 
+  \item \textcolor{blue}{\texttt{std::shared\_ptr<Type>}} : Pointeur "partagé" sur un type;
+  \item \textcolor{blue}{\texttt{std::unique\_ptr<Type>}} : Pointeur "unique" sur un type;
+  \end{itemize}
+  \item \textcolor{blue}{nullptr} : Le pointeur "null", indiquant qu'un pointeur ne pointe sur aucune valeur; Possède son propre type (\mintinline{C++}{nullptr_t}).
+  \item Les pointeurs non natifs gèrent la réservation et la libération mémoire automatiquement contrairement aux pointeurs natifs;
+  \item Accès à la valeur à l'aide du symbole \verb@*@ : \mintinline{C++}{*pointeur} renverra la valeur pointée par \texttt{pointeur};
+  \item Pas d'arithmétiques de pointeur sur les pointeurs non natifs.
+  \end{itemize}
+  
+\end{frame}
+
+\begin{frame}[fragile]{Les pointeurs "partagés"}
+\scriptsize
+  
+Pointeur permettant de partager la valeur pointée avec d'autres pointeurs partagés.
+  
+Mode de fonctionnement :
+\begin{itemize}
+  \item Un pointeur partagé est créé avec une nouvelle valeur, réservée et initialisée, pointée par ce pointeur;
+  \item On peut copier le pointeur partagé dans d'autres pointeurs partagés qui pointent sur la même valeur;
+  \item La valeur est détruite et la mémoire réservée libérée lorsque plus aucun pointeur partagé pointe sur cette valeur;
+\end{itemize}
+  
+\underline{Exemple d'utilisation} : Gérer un graphe où on peut rajouter ou enlever des arêtes.
+  
+\underline{Exemple de code}
+\begin{minted}{C++}
+auto pt_value = std::make_shared<std::complex<double>>( 1., -3.); // Pointeur sur valeur complexe 1.-3.i
+auto pt_val2  = pt_value;// pt_value et pt_val2 pointent sur la même valeur.
+pt_value = nullptr; // pt_value ne pointent plus sur une valeur.
+pt_val2  = std::make_shared<std::complex<double>>(0.,1.); // pt_val2 pointe sur une nouvelle valeur
+// La valeur complexe est détruite car plus aucun pointeur ne la pointe.
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les pointeurs "uniques"}
+\scriptsize
+  
+Pointeur garantissant que la valeur pointée ne peut pas être pointée par un autre pointeur (unique).
+  
+Mode de fonctionnement :
+\begin{itemize}
+  \item Un pointeur unique est créé avec une nouvelle valeur, réservée et initialisée, pointée par ce pointeur;
+  \item On peut déplacer la valeur pointée vers un autre pointeur unique. Le pointeur initial est dans un état non défini.
+  \item La valeur est détruite et la mémoire réservée libérée lorsque le pointeur unique pointant sur cette valeur est détruit;
+  \end{itemize}
+  
+\underline{Exemple d'utilisation} : Gérer un contexte, une fenêtre graphique, etc.
+
+\vspace*{2mm}
+\underline{Exemple de code}
+\begin{minted}{C++}
+auto pt_value = std::make_unique<std::complex<double>>( 1., -3.); // Pointeur sur valeur complexe 1.-3.i
+auto pt_val2  = std::move(pt_value);// pt_value maintenant indéfini et pt_val2 pointe sur la même valeur.
+pt_val2  = std::make_shared<std::complex<double>>(0.,1.); // pt_val2 pointe sur une nouvelle valeur
+// La valeur complexe est détruite car plus aucun pointeur ne la pointe.
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Conversion de type}
+\scriptsize
+  
+\begin{itemize}
+\item Il arrive parfois qu'on veuille convertir une valeur en un autre type, par exemple un réel en un entier.
+\item C++ propose trois types de conversions :
+\begin{itemize}
+\scriptsize
+\item La conversion impérative "à la C"  : Convertit la valeur sans vérification à l'aide du langage de base.\\
+\textcolor{NavyBlue}{\textbf{Syntaxe} : (\textsl{Type})\textsl{variable ou valeur}};\\[1mm]
+\item La conversion impérative "à la C++": Convertit la valeur sans vérification à l'aide du langage de base ou si un "constructeur" le permettant existe.\\
+\textcolor{NavyBlue}{\textbf{Syntaxe} : \textsl{Type}(\textsl{variable ou valeur})};\\[1mm]
+\item La conversion statique   : Le C++ vérifie que la conversion est valide à la compilation.\\ 
+\textcolor{NavyBlue}{\textbf{Syntaxe} : 
+\texttt{static\_cast}$<$\textsl{Type}$>$(\textsl{variable ou valeur})};\\[1mm]
+\item La conversion dynamique  : Ne marche que sur des pointeurs ou des références. Valide la conversion à l'exécution.
+\textcolor{NavyBlue}{\textbf{Syntaxe} : \texttt{dynamic\_cast}$<$\textsl{Type}$>$(\textsl{variable ou valeur});}
+\end{itemize}
+\end{itemize}
+  
+\alert{Remarque} : Le dernier type de conversion n'est intéressant que pour la programmation objet. On la traitera au moment du chapître sur la 
+programmation orienté objet.
+  
+\end{frame}
+  
+\begin{frame}[fragile]{Exemples de conversion valides et non valides}
+  
+\begin{minted}{C++}
+using dcomplex=std::complex<double>;
+dcomplex z;
+std::uint32_t uval32 = 3;
+  
+z = (dcomplex)uval32;// Valide, z vaut 3. + 0.i
+  
+z = dcomplex(uval32);// Valide, z vaut 3. + 0.i
+  
+z = static_cast<dcomplex>(uval32);// Valide, z vaut 3. + 0.i
+  
+z = 3. -2.i;
+uval32 = (std::uint32_t)z;// Impossible. Erreur de compilation !
+  
+uval32 = (std::uint32_t&)z;// Possible mais non valide, uval32 vaut 0 !
+  
+uval32 = static_cast<std::uint32_t&>(z);// Possible mais non valide, erreur de compilation !
+\end{minted}
+\end{frame}
+
+\section{Les structures}
+
+\begin{frame}[fragile]{Définition des structures}
+\scriptsize
+  
+\begin{block}{\scriptsize Définition en C++}
+Définition d'un nouveau type contenant un ensemble de valeurs de types hétérogènes et de fonctions (\alert{méthodes});
+\end{block}
+  
+\textcolor{DarkGreen}{\scriptsize Syntaxe}
+\begin{minted}{C++}
+struct <NomStucture> {
+  <Type> <NomChamps1>;
+  ...
+  <déclaration methode1>;
+  ...
+};
+\end{minted}
+
+\alert{Note} : Une classe étant en fait une structure "privée", on verra les méthodes dans la partie programmation objet du cours.
+  
+\underline{Exemple} :
+\begin{minted}{C++}
+struct Matrice {
+  std::int32_t numberOfRows;
+  std::vector<double> coefficients;
+};
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Accès aux champs des structures et structures récursives}
+\scriptsize
+  
+L'accès aux champs/attributs d'une valeur de type structure :
+\begin{itemize}
+\item se fait à l'aide du symbole \texttt{.} si une variable contient la valeur;
+\item se fait à l'aide du symbole \mintinline{C++}{->} si un pointeur pointe sur la valeur.
+\end{itemize}
+
+\underline{\textcolor{DarkGreen}{Exemple}} :
+\begin{minted}{C++}
+Matrice mat;
+mat.coefficients = std::move(std::vector<double>(100, 0.));
+mat.numberOfRows = 10;
+
+auto pt_mat = std::make_unique<Matrice>();// Création pointeur unique
+pt_mat->coefficients = std::move(std::vector<double>(100, 0.));
+pt_mat->numberOfRows = 10;
+\end{minted}
+  
+Possible de créer des structures récursives à condition que l'autoréférence se fasse via un pointeur :
+\begin{minted}{C++}
+struct ListNode {
+  double valeur;
+  std::unique_ptr<ListNode> nextNode;
+};
+\end{minted}
+\end{frame}  
+
+  \begin{frame}[fragile]{Initiation des valeurs de type structure}
+    \scriptsize
+  
+    Plusieurs façons d'initialiser une valeur de type structure :
+    \begin{itemize}
+  \item Attribut par attribut (voir transparent précédent pour exemple)
+  \item Par liste d'initialisation (C++ 11) :
+  \begin{minted}{C++}
+  Matrice mat{ 10, std::vector<double>( 100, 0.); };
+  \end{minted}
+  \item Par attributs nommés (C++ 20) :
+  \begin{minted}{C++}
+  Matrice mat3{ .numberOfRows = 10 };// On n'initialise que certains champs
+  \end{minted}
+  \end{itemize}
+  
+  Il est également possible (et encouragé !) de donner des valeurs par défaut aux attributs d'une structure :
+  \begin{minted}{C++}
+struct OctTreeNode {
+    std::array<double,6> boundingBox{0., 0., 0., 0., 0., 0.};
+    std::array<std::shared_ptr<OctTreeNode>,8> children{nullptr,nullptr,nullptr,nullptr,
+                                                        nullptr,nullptr,nullptr,nullptr};
+};  
+  \end{minted}  
+  \end{frame}
+  
+  \begin{frame}[fragile]{Exercice structure}
+    \scriptsize
+  
+  \underline{Dessin "vectoriel"}:
+  \begin{itemize}
+  \item Définir la structure \texttt{Point} contenant deux champs réels $x$ et $y$;
+  \item Définir une fonction \texttt{buidPoint} prenant deux réels en paramètres et renvoyant un pointeur partagé sur un point;
+  \item Définir une structure \texttt{Arete} contenant deux champs \texttt{deb} et \texttt{fin} qui sont des pointeurs partagés sur 
+        des valeurs de type \texttt{Point}.
+  \item \'Ecrire un programme principal qui :
+  \begin{itemize}
+  \scriptsize
+  \item Construit une arête $a_{1}$ de coordonnées $(-1,0)$ et $(0,0)$;
+  \item Construit une arête $a_{2}$ de coordonnées $a_{1}$.fin et $(1,0)$;
+  \item Afficher $a_{1}$ et $a_{2}$ (On construira des opérateurs de flux pour cela);
+  \item Rajouter 1 à l'ordonnée du point $a_{2}$.deb;
+  \item Afficher $a_{1}$ et $a_{2}$;
+  \item Supprimer 1 de l'abcisse de $a_{1}$.fin et de $a_{1}$.deb
+  \item Modifier les sommets de $a_{1}$ : $a_{1}$.fin = $a_{1}$.deb et $a_{1}$.deb = $(0,-1)$.
+  \item Afficher $a_{1}$ et $a_{2}$.
+  \end{itemize}
+  \end{itemize}
+  \end{frame}
+
+  \section{Gestion des erreurs en C++}
+
+\begin{frame}[fragile]{La gestion des erreurs en C++}
+\scriptsize
+  
+\begin{itemize}
+  \item Déjà vu l'instruction \texttt{assert} qui permet en phase de développement de détecter les erreurs de programmation;
+  \item Possibilité de gestion "à la main" en retournant des codes d'erreurs (gestion à la "C");
+  \item Néanmoins pas possible de retourner un code d'erreur dans certains cas :
+  \begin{itemize}
+  \scriptsize
+  \item Lors de la construction d'une valeur (qu'on verra dans la partie programmation objet);
+  \item Lors de l'exécution d'une surcharge d'opérateur qui ne peut renvoyer que des types de valeurs spécifiques (Exemple : opérateur +
+  pour concaténer deux chaînes de caractères);
+  \end{itemize}
+  \item De plus, gestion pouvant être lourde à gérer :
+  \begin{itemize}
+  \scriptsize
+  \item Devoir remonter un code d'erreur jusqu'à la fonction pertinente;
+  \item S'assurer qu'un code d'erreur a une signification unique;
+  \item Pouvoir associer un message à chaque code d'erreur;
+  \item Maintenant généralement difficile à cause des deux derniers points.
+  \end{itemize}
+  \item Le C++ propose également de gérer les erreurs à l'aide d'exception (comme d'autres langages modernes);
+  \item \alert{Attention} : La gestion des exceptions ne règle pas tous les problèmes de conception !
+  \end{itemize}
+  \end{frame}
+  
+\begin{frame}[fragile]{Les exceptions}
+  \scriptsize
+  \begin{itemize}
+  \item Permet de gérer des erreurs dûes à des situations \textbf{exceptionnelles};
+  \item Le principe :
+  \begin{itemize}
+  \scriptsize
+  \item Une fonction "émet" une erreur;
+  \item Tant que cette erreur n'est pas "attrapée" on remonte la pile d'appel;
+  \item Si une fonction attrape une exception, elle peut la gérer totalement ou partiellement et elle peut également la reémettre;
+  \item Si aucune fonction ne rattrape l'exception, le programme s'arrête en affichant l'erreur;
+  \end{itemize}
+  \item \underline{Exemples de situation} : \textcolor{darkorange}{Situation}/\textcolor{DarkGreen}{Traitement possible}
+  \begin{itemize}
+  \scriptsize
+  \item \textcolor{darkorange}{Le disque dur est plein}/\textcolor{DarkGreen}{On sauvegarder sur un disque dur auxiliaire};
+  \item \textcolor{darkorange}{Impossible d'accéder à un serveur}/\textcolor{DarkGreen}{Tentative connection sur serveur mirroir};
+  \item \ldots
+  \end{itemize}
+  \item L'exception émise peut être un simple entier, une chaîne de caractère, \ldots ou une valeur de type \texttt{std::exception} !
+  \item Plusieurs types d'exceptions sont déjà définies dans la composante \texttt{stdexcept} de la \texttt{std}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Syntaxe C++}
+  \scriptsize
+    \begin{itemize}
+    \item On utilise le mot clef \texttt{throw} pour émettre une exception : \mintinline{C++}{throw valeur;}
+    \item Le bloc d'instruction où est suceptible d'être émise l'exception est précédé de \texttt{try};
+    \item On utilise à la suite de \texttt{try} le mot clef \texttt{catch} suivi d'un bloc d'instruction pour rattraper et traiter une exception :\mintinline{C++}{catch(Type& excp) { ...}};
+    \item On peut mettre plusieurs \texttt{catch} à la suite pour attraper plusieurs types d'exceptions.
+    \end{itemize}
+    
+    \begin{multicols}{2}
+    Fonction émettrice
+\begin{minted}{C++}
+auto green(double k, double r)
+{
+  if (r <= 1.E-10 ) throw "Distance trop petite"s;
+  return std::polar(1./r, k*r);
+}
+\end{minted}
+\columnbreak
+Partie réceptrice du code appelant :
+\begin{minted}{C++}
+try {
+  double r = std::sqrt(x*x + y*y + z*z);
+  auto kernel = green(k, r);
+}
+catch(std::string& err ) {
+  std::cerr << "Impossible de calculer le noyau :" 
+            << err << std::endl;
+  throw err;
+}
+\end{minted}
+\end{multicols}    
+\end{frame}
+
+\begin{frame}[fragile]{Exceptions pré-définies}
+\scriptsize
+        
+  Exceptions prédéfinies dans la composante \texttt{stdexcept} de \text{std} :
+  \begin{itemize}
+  \item \texttt{std::logic\_error} : violations de préconditions logiques;
+  \item \texttt{std::invalid\_argument} : argument passé à une fonction n'est pas valide;
+  \item \texttt{std::domain\_error} : argument passé à une fonction n'est pas dans le domaine de définition;
+  \item \texttt{std::length\_error} : tentative de réservaton supérieure à la taille maximale permise;
+  \item \texttt{std::out\_of\_range}: argument n'est pas compris dans un certain intervalle;
+  \item \texttt{std::runtime\_error}: erreur qui ne peut survenir que lors d'une exécution;
+  \item \texttt{std::range\_error} : erreur d'intervalle durant un calcul interne;
+  \item \texttt{std::overflow\_error} : erreur dûe à un calcul produisant un dépassement arithmétique;
+  \item \texttt{std::underflow\_error}: erreur dûe à un calcul produisant un nombre trop petit pour être représentable (underflow);
+  \end{itemize}
+  \alert{Note 1} : \texttt{std::domain\_error} moins spécialisée que \texttt{std::invalid\_argument} et pas utilisé dans la std.
+        
+  \alert{Note 2} : Toutes ces exceptions peuvent être rattrapées indiféremment à l'aide d'une exception de type \texttt{std::exception} (
+  qui peut être aussi étendue par l'utilisateur)
+        
+\end{frame}
+        
+\begin{frame}[fragile]{Exemple utilisation d'une exception prédéfinie}
+\scriptsize
+        
+\begin{multicols}{2}
+Fonction émettrice
+\begin{minted}{C++}
+auto green(double k, double r)
+{
+  if (k <= 0) 
+    throw std::range_error("k doit etre positif");
+  if (r <= 1.E-10 ) 
+    throw std::domain_error("Rayon trop petit");
+  return std::polar(1./r, k*r);
+}
+\end{minted}
+\columnbreak
+Partie réceptrice du code appelant :
+\begin{minted}{C++}
+try {
+  double r = std::sqrt(x*x + y*y + z*z);
+  auto kernel = green(k, r);
+}
+catch(std::domain_error& err ) {
+  std::cerr << "Erreur domaine de définition :" 
+            << err.what() << std::endl;
+}
+catch(std::exception& err ) {
+  std::cerr << "Erreur calcul noyau :" 
+            << err.what() << std::endl;
+}
+\end{minted}
+\end{multicols}
+\end{frame}
+
+\begin{frame}[fragile]{Bonne utilisation des exceptions}
+  \scriptsize
+    
+  \begin{itemize}
+  \item Mécanisme de rattrapage exception assez lourde en temps CPU;
+  \item L'utilisation des exceptions doit rester exceptionnelle;
+  \item Préfarable d'avoir un gros bloc d'instruction pour le \texttt{try} :
+  \begin{multicols}{2}
+    \begin{tcolorbox}[colback=red!5!white,colframe=red!30!black, title=Mauvaise utilisation]
+\begin{minted}{C++}
+for (int i=0; i<n; ++i)
+  try {
+    base[i] = normalize(u[i]);
+  }
+\end{minted}
+    \end{tcolorbox}
+    \columnbreak
+    \begin{tcolorbox}[colback=green!5!white,colframe=green!10!black, title=Bonne utilisation]
+\begin{minted}{C++}
+try {
+  for (int i=0; i<n; ++i)
+    base[i] = normalize(u[i]);
+}
+\end{minted}
+\end{tcolorbox}
+\end{multicols}
+\end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Les entrées-sorties}
+  \scriptsize
+  
+  \begin{itemize}
+  \item On a déjà vu comment afficher du texte à l'aide de \mintinline{C++}{std::cout};
+  \item Pour afficher du texte, on utilise l'opérateur de flux sortant \mintinline{C++}{<<};
+  \item On peut également demander à un utilisateur de rentrer du texte avec \mintinline{C++}{std::cin}
+  \item Pour rentrer des données, on utilise l'opérateur de flux entrant \mintinline{C++}{>>};
+  \end{itemize}
+  
+  \underline{\textbf{Exemple}} :
+\begin{minted}{C++}
+std::string nom;
+std::cout << "Rentrez votre nom...";
+std::cin >> nom;
+std::cout << "Bonjour " << nom << std::endl;
+\end{minted}
+  
+\begin{itemize}
+  \item En fait, principe généralisé aux fichiers formatés.
+  \item En C++, il existe un type de base pour tout type de sortie : \mintinline{C++}{std::ostream} et un type de base pour tout type d'entrée : \mintinline{C++}{std::istream};
+  \item Toute fonction ayant pour paramêtre un \mintinline{C++}{std::ostream} pourra selon l'argument passé soit afficher dans un terminal soit écrire dans un fichier;
+  \item Toute fonction ayant pour paramêtre un \mintinline{C++}{std::istream} pourra selon l'argument passé soit demander de rentrer les données au clavier soit lire un fichier formaté.
+\end{itemize}
+\end{frame}
+  
+  \begin{frame}[fragile]{Ouvrir des fichiers en écriture}
+    \scriptsize
+  
+    On utilise pour cela la composante \texttt{fstream} de la std
+  
+  \begin{block}{\small Ouvrir un fichier en écriture}
+  \begin{itemize}
+  \item Syntaxe \mintinline{C++}{std::ofstream fich(<nom fichier>[, <mode>]);}
+  \item Si \texttt{mode} est omis, ouverture fichier formaté;
+  \item Si \texttt{mode} est mis égal à \mintinline{C++}{std::ios::binary}, ouverture fichier binaire;
+  \item Pour écrire en binaire, utilise la méthode \texttt{write} ou opérateur de flux $<<$
+  \item Pour écrire en formaté, utilise opérateur de flux $<<$;
+  \end{itemize}
+  \end{block}
+  
+  \underline{\textbf{Exemple}} : \'Ecrire un fichier contenant un tableau de réels \texttt{u} : nombre de coefficients + coefficients
+  \begin{multicols}{2}
+  En formaté :
+  \begin{minted}{C++}
+  std::ofstream fich("sortie.txt");
+  if (fich.is_open() == false) exit(EXIT_FAILURE);
+  fich << u.size() << std::endl;
+  for (auto const& val : u ) fich << val << " ";
+  fich.close();
+  \end{minted}
+  \columnbreak
+  En binaire :
+  \begin{minted}{C++}
+  std::ofstream fich("sortie.dat",std::ios::binary);
+  if (fich.is_open() == false) exit(EXIT_FAILURE);
+  fich << u.size();
+  fich.write(u.data(), u.size()*sizeof(double));
+  fich.close();
+  \end{minted}
+  \end{multicols}
+  \end{frame}
+  
+\begin{frame}[fragile]{Ouvrir des fichiers en lecture}
+  \scriptsize
+  
+ On utilise pour cela la composante \texttt{fstream} de la std
+  
+\begin{block}{\small Ouvrir un fichier en lecture}
+\begin{itemize}
+  \item Syntaxe \mintinline{C++}{std::ifstream fich(<nom fichier>[, <mode>]);}
+  \item Si \texttt{mode} est omis, ouverture fichier formaté;
+  \item Si \texttt{mode} est mis égal à \mintinline{C++}{std::ios::binary}, ouverture fichier binaire;
+  \item Pour lecture en binaire, utilise la méthode \texttt{read} ou opérateur de flux $>>$;
+  \item Pour lecture en formaté, utilise opérateur de flux $>>$;
+\end{itemize}
+\end{block}
+  
+\underline{\textbf{Exemple}} : Lire un fichier contenant un tableau de réels pour initialiser un vecteur \texttt{u}
+\begin{multicols}{2}
+  En formaté :
+\begin{minted}{C++}
+std::ifstream fich("sortie.txt");
+if (fich.is_open() == false) exit(EXIT_FAILURE);
+fich >> dim; v.resize(dim);
+for (auto& val : v ) fich >> val;
+fich.close();
+\end{minted}
+\columnbreak
+En binaire :
+\begin{minted}{C++}
+std::ifstream fich("sortie.dat",std::ios::binary);
+if (fich.is_open() == false) exit(EXIT_FAILURE);
+fich >> dim; v.resize(dim);
+fich.read(v.data(), dim*sizeof(double));
+fich.close();
+\end{minted}
+\end{multicols}
+\end{frame}
+  
+\begin{frame}[fragile]{Formatage des nombres réels}
+  \scriptsize 
+  
+  Pour écriture dans un fichier formaté ou sur terminal, on peut formater la sortie à l'aide de la composante \texttt{iomanip} de la std :
+  \begin{itemize}
+  \item Ces formats se font dans le flux de sortie;
+  \item \texttt{std::setw(n)} réserve $n$ caractères pour afficher la prochaine valeur;
+  \item \texttt{std::setfill(c)} remplit les caractères non remplit par la valeur afficher avec le caractère $c$;
+  \item \texttt{std::setprecision(n)} donne le nombre de chiffres à afficher après la virgule;
+  \end{itemize}
+  
+  \underline{\textbf{Exemple}} :
+  \begin{minted}{C++}
+  constexpr long double pi{std::numbers::pi_v<long double>};
+  std::cout << std::setw(19) << std::setprecision(0) << pi << std::endl;
+  std::cout << std::setw(19) << std::setfill('_')  << std::setprecision(4) << pi << std::endl;
+  std::cout << std::setw(4) << std::setprecision(4) << pi << std::endl;
+  std::cout << std::setprecision(20) << pi << std::endl;
+  \end{minted}
+  
+\begin{tcolorbox}[colback=black,coltext=white]
+\begin{verbatim}
+                      3
+    ______________3.142
+    3.142
+    3.1415926535897932385\end{verbatim}
+\end{tcolorbox}
+\end{frame}
+
+\begin{frame}[fragile]{Exercice}
+    \scriptsize
+    
+    \begin{itemize}
+    \item Utilisez les opérateurs \verb@|, +@ et \verb|*| pour définir le produit scalaire, la somme et l'homothétie de vecteurs 
+  (définis comme des \texttt{std::vector});
+    \item \'Ecrire une fonction d'orthonormalisation d'une famille de vecteur $u_{i}$ ($i=0,N-1$) (supposé libre) utilisant l'algorithme de Gram-Schmidt :
+    \begin{itemize}
+    \small
+    \item $v_{0} = \frac{u_{0}}{\|u_{0}\|}$;
+    \item Pour $i \leftarrow 1$ à $N-1$ :
+    \begin{itemize}
+    \small
+    \item $\displaystyle v_{i} = u_{i} - \sum_{j=0}^{i-1} (u_{i}|v_{j})v_{j}$
+    \item $v_{i} \leftarrow \frac{v_{i}}{\|v_{i}\|}$
+    \end{itemize}
+    \item $v_{i}$, ($i=0,N-1$) possède une base orthonormale générant la famille de vecteur $u_{i}$.
+    \end{itemize}
+    \item Gérer les erreurs éventuelles rencontrées à l'aide du mécanisme des exceptions (exemple : Quand la famille passée est non libre)
+    \item \underline{Option} : Sauvegarder la base dans  fichier binaire ou formaté et écrire fonction pour la relire.
+    \end{itemize}
+\end{frame}
+
+\section{Initiation avancée}
+
+\begin{frame}[fragile]{Fonctions : déduction du type de la valeur de retour}
+    \scriptsize
+    
+    Deux déductions possibles en C++
+    \begin{itemize}
+  \item \textcolor{NavyBlue}{Le type de la valeur retournée déclarée} : Retourne liste d'initialisation contenant valeurs nécessaire à valeur retournée;
+  \begin{minted}{C++}
+  auto e1() -> std::array<double,3> { return {1.,0.,0.}; }
+  \end{minted}
+  \item \textcolor{NavyBlue}{Le type de la valeur retournée est simplement déclarée comme auto} : le C++ déduit le type de retour de la fonction par le type retourné
+  effectivement
+  \begin{minted}{C++}
+  auto e1() {  return std::array{1.,0.,0.};  }
+  \end{minted}
+  \end{itemize}
+  
+  \alert{Attention} : Pour le second point, si la fonction possède plusieurs points de retour, il est impératif de retourner exactement
+  le même type pour chaque retour !
+  
+  \begin{multicols}{2}
+  \begin{tcolorbox}[colback=red!5!white,colframe=red!30!black, title={\scriptsize Ne compile pas !}]
+  \begin{minted}{C++}
+  auto esqrt( double x ) {
+    if (x >= 0) return std::sqrt(x);//double
+    return 0; //entier !
+  }
+  \end{minted}
+  \end{tcolorbox}
+  \columnbreak
+  \begin{tcolorbox}[colback=green!5!white,colframe=green!10!black, title={\scriptsize Compile !}]
+  \begin{minted}{C++}
+    auto esqrt( double x ) {
+      if (x >= 0) return std::sqrt(x);//double
+      return 0.; //double  
+    }
+    \end{minted}
+    \end{tcolorbox}
+    
+  \end{multicols}
+  \end{frame}
+
+  \begin{frame}[fragile]{Fonctions : retour de valeurs multiples}
+    \scriptsize
+  
+    \begin{itemize}
+  \item Il arrive souvent qu'une fonction doit retourner plusieurs valeurs;
+  \item Possibilité de passer en référence ou par pointeur (partagé ou unique) des valeurs de sortie;
+  \item \textcolor{NavyBlue}{Pointeur} : attention au cas où pointeur passé est nul;
+  \item Ne sépare pas bien les paramètres d'entrées et les valeurs de sortie...
+    \end{itemize}
+  
+    \underline{\textcolor{NavyBlue}{Exemple}} :
+  \begin{minted}{C++}
+  int divisionEuclidienne( int p, int q, int& reste ) {
+    int résultat = p/q;
+    reste = p - résultat * q;
+    return résultat;
+  }
+  ...
+  int quotient, reste;
+  quotient = divisionEuclidienne(7, 3, reste);
+  \end{minted}
+  
+  \end{frame}
+  
+  \begin{frame}[fragile]{Fonctions : retour de valeurs multiples...}
+    \scriptsize
+  
+    \begin{itemize}
+  \item Possibilité en C++ de retourner tableau statique de $N$ valeurs;
+  \item Les valeurs doivent être de type homogène;
+  \item Bonne séparation des paramètres d'entrée et des valeurs de sortie
+  \item Mais tableau peu expressif sur le rôle des valeurs de sortie (qui quotient ? qui reste ?)
+  \item Depuis C++ 17, possibilité de recevoir directement les valeurs retournée par structure ou tableau statique 
+  directement dans des variables.
+    \end{itemize}
+    \underline{\textcolor{NavyBlue}{Exemple}} :
+  \begin{minted}{C++}
+  std::array<int,2> divisionEuclidienne( int p, int q ) {
+    int résultat = p/q;
+    return {résultat, p - résultat * q};
+  }
+  ... 
+  auto res = divisionEuclidienne(7,3);// res[0]=2, res[1] = 1
+  auto[division, reste] = divisionEuclidienne(7,3);// A partir de C++ 17
+  \end{minted}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Fonctions : retour de valeurs multiples...}
+    \scriptsize
+  
+  Technique précédente marche également pour retourner plus de deux valeurs homogènes :
+  \begin{minted}{C++}
+  std::array<std::complex<double>,3> racinesCubiques(std::complex<double> const& z)
+  {
+    const double pi_2s3 = 2*std::numbers::pi/3.;
+    const double pi_4s3 = 4*std::numbers::pi/3.;
+    double argument = std::arg(z)/3.;
+    double module = std::cbrt(std::abs(z));//cbrt = Racine cubique
+    return {
+      std::polar(module, argument),
+      std::polar(module, argument + pi_2s3),
+      std::polar(module, argument + pi_4s3)
+    };
+  }
+  ... 
+  auto [z1, z2, z3] = racinesCubiques(1.+1.i);
+  \end{minted}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Fonctions : retour de valeurs multiples hétérogènes}
+  \scriptsize
+  
+  \begin{itemize}
+  \item Plus possible d'utiliser un tableau statique !
+  \item Pour deux valeurs, on peut utiliser le type générique \texttt{std::pair} proposé dans \texttt{utility}
+  \end{itemize}
+  
+  \underline{\textcolor{NavyBlue}{Exemple}} :
+  \begin{minted}{C++}
+  std::pair<double,std::size_t> trouveLocaliseMax( std::vector<double> const& conteneur ) {
+    int index = 0;
+    for (std::size_t i=1; i<conteneur.size(); ++i)
+      if (conteneur[i] > conteneur[index] ) index = i;
+    return {conteneur[index],index};
+  }
+  ... 
+  auto [valeur,index] = trouveLocaliseMax({1., 3., 2., -5., 7., 5., 0.});
+  \end{minted}
+  
+  \begin{itemize}
+    \item Ne marche pas pour retourner plus de trois valeurs hétérogènes !
+  \end{itemize}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Fonctions : retour de valeurs multiples hétérogènes}
+    \scriptsize
+  
+  \begin{itemize}
+  \item Depuis C++ 11, la std propose dans la composante \texttt{tuple} un type \texttt{std::tuple} similaire aux tuple de python;
+  \item Déclaration d'un \texttt{tuple} lourde à faire (on doit préciser chaque type) : \mintinline{C++}{auto} bienvenue !
+  \item La fonction \texttt{std::make\_tuple} permet de créer facilement un tuple;
+  \end{itemize}
+  
+  \underline{\textcolor{NavyBlue}{Exemple}} :
+  \begin{minted}{C++}
+  auto convertionFraction( double valeur, int maxIter ) {   // Algorithme utilisant fraction continue
+    std::int64_t dividende, diviseur;
+    assert(valeur >= 0);
+    std::int64_t partie_entiere = std::int64_t(valeur);
+    double reste = valeur - partie_entiere;
+    if (std::abs(reste) < 1.E-14) return std::make_tuple(partie_entiere, 1LL, 0.);
+    if (maxIter == 0) return std::make_tuple(partie_entiere, 1LL, reste);
+    auto [p,q,r] = convertionFraction(1./reste, maxIter-1);
+    dividende = partie_entiere*p+q;
+    diviseur  = p;
+    reste = std::abs(valeur - double(dividende)/double(diviseur));
+    return std::make_tuple(dividende, diviseur, reste);
+  }
+  ... 
+  auto [dividende, diviseur, reste] = convertionFraction(std::sqrt(2),20);
+  \end{minted}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Fonctions : retour de valeurs multiples hétérogènes}
+    \scriptsize
+  
+    \begin{itemize}
+  \item Solutions précédentes présentent un défaut : rôle des valeurs retournées non exprimées;
+  \item Une autre solution existe : utiliser une structure !
+  \item Réception des valeurs multiples façon C++ 17 marche encore !
+    \end{itemize}
+  
+    \underline{\textcolor{NavyBlue}{Exemple}} :
+    \begin{minted}{C++}
+  struct convertionFractionReturnType { std::int64_t dividende, diviseur; double reste };
+  convertionFractionReturnType convertionFraction( double valeur, int maxIter ) {
+      std::int64_t dividende, diviseur;
+      assert(valeur >= 0);
+      std::int64_t partie_entiere = std::int64_t(valeur);
+      double reste = valeur - partie_entiere;
+      if (std::abs(reste) < 1.E-14) return {partie_entiere, 1LL, 0.};
+      if (maxIter == 0) return {partie_entiere, 1LL, reste};
+      auto [p,q,r] = convertionFraction(1./reste, maxIter-1);
+      dividende = partie_entiere*p+q; diviseur  = p;
+      reste = std::abs(valeur - double(dividende)/double(diviseur));
+      return {dividende, diviseur, reste};
+    }
+    ... 
+    auto res = convertionFraction(std::sqrt(2),20);// res.dividende, res.diviseur, res.reste
+    \end{minted}
+    \end{frame}
+  
+  \begin{frame}[fragile]{Réception de valeurs multiples en C++ 17 (complément)}
+  \scriptsize
+  
+  \begin{itemize}
+  \item Parfois, toutes les valeurs retournées ne nous intéresse pas.
+  \item Par exemple, dans l'exemple de convertion en fraction, le reste peut ne pas nous intéresser
+  \item Deux façon de faire :
+  \begin{itemize}
+  \scriptsize 
+  \item On récupère les trois valeurs mais on rajoute une directive pour le compilateur pour ignorer le reste qui ne sert pas (C++ 17):
+  \begin{minted}{C++}
+  [[maybe_unused]] auto [p,q,ignorée] =   convertionFraction(std::sqrt(2), 20);
+  \end{minted}
+  \item On récupère les trois valeurs avec la fonction \texttt{std::tie} proposée depuis le C++ 11, mais on remplace par \texttt{std::ignore}
+  la valeur qu'on veut ignorer (C++ 11 ou supérieure):
+  \begin{minted}{C++}
+  std::int64_t diviseur, dividende;
+  std::tie(dividende, diviseur, std::ignore) = convertionFraction(std::sqrt(2),20);
+  \end{minted}
+  \end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Retour d'une variable globale vs retour d'une variable locale}
+    \scriptsize
+  
+    \begin{block}{\small Une valeur retournée par une fonction :}
+  \begin{itemize}
+  \item \textcolor{BrickRed}{est déplacée} si cette valeur est une valeur \textcolor{DarkGreen}{locale à cette fonction};
+  \item \textcolor{BrickRed}{est copiée} si cette valeur est une valeur \textcolor{DarkGreen}{définie en dehors de cette fonction}.
+  \end{itemize}
+    \end{block}
+  
+    \underline{\textbf{Exemple}} :
+  
+    \begin{minted}{C++}
+  std::vector<double> operator + ( std::vector<double> const& u, std::vector<double> const& v ) {
+    assert(u.size() == v.size());
+    std::vector<double> w(u.size());
+    for (std::size_t i=0; i<u.size(); ++i ) w[i] = u[i] + v[i];
+    return w; // w est retournée par déplacement. On a un coût en O(1) pour le retour.
+  }
+  std::vector<double> operator += ( std::vector<double>& u, std::vector<double> const& v ) {
+    assert(u.size() == v.size());
+    for (std::size_t i=0; i<u.size(); ++i ) u[i] += v[i];
+    return u; // u est retournée par copie ! On a un coût en O(n) pour le retour !
+  }
+  \end{minted}
+  \end{frame}
+  
+  \begin{frame}[fragile]{Retour par référence}
+  \scriptsize
+  
+  \begin{itemize}
+  \item Il est possible de retourner une valeur par référence pour une fonction
+  \item \alert{Cette valeur doit être globale} (sinon bogue !);
+  \item Pour le cas de l'addition sur place (+=) vue dans l'exemple précédent, on peut retourner une référence pour éviter une copie :
+  \item Dans ce cas, la copie ne se fait pas si on reçoit la référence dans une variable référence.
+  \end{itemize}
+  
+  \begin{minted}{C++}
+  std::vector<double>& operator += ( std::vector<double>& u, std::vector<double> const& v )
+  {
+    assert(u.size() == v.size());
+    for (std::size_t i=0; i<u.size(); ++i ) u[i] += v[i];
+    return u; // u est retournée par référence ! 
+  }
+  ... 
+  u1 += u2; // Ok, on retourne une référence qui ne sert à rien (détruite juste après l'appel !)
+  auto& res = (u1 += u2);// OK, pas de copie, res fait référence à la valeur possédée par u1
+  auto res = (u1 += u2);// Une copie de u1 est faite dans res.
+  \end{minted}
+  \end{frame}
+
+\begin{frame}[fragile]{Paramètres nommés (C++ 20)}
+  \scriptsize
+
+\begin{itemize}
+\item En C++ 20, possible d'initialiser une structure en nommant certains paramètres de la structure;
+\item Utile pour écrire une fonction avec nommage des paramètres pertinents à l'appel.
+\end{itemize}
+
+\underline{\bf Exemple} :
+\begin{minted}{C++}
+struct AxpyParameters {
+  double alpha = 1;   std::size_t dim{0};    
+  std::vector<double> const& x; int incx{1}, offsetX{0};
+  std::vector<double>      & y; int incy{1}, offsetY{0};
+};
+  
+void axpy( AxpyParameters const& params ) {
+  std::size_t dim = params.dim;
+  if (dim==0) dim = params.x.size() - params.offsetX;
+  for (std::size_t i=0; i < dim; ++i )
+    params.y[i*params.incy + params.offsetY] += params.alpha * params.x[i*params.incx + params.offsetX];
+}
+... 
+axpy( {.alpha=-2., .x=u, .y=v } );// Attention à respecter ordre déclaration dans structure
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Fonctions génériques (C++ 2020)}
+\scriptsize
+
+\begin{itemize}
+\item \'Ecrire plusieurs fois la même fonction pour différents types : pénible et source de bogues;
+\item Depuis C++ 20, on peut déclarer un paramêtre \texttt{auto} plutôt que de lui donner un type;
+\item C'est à l'appel que le type sera défini pour ce paramêtre;
+\item On peut contrôler la catégorie de types permis pour un paramêtre (mais on ne le verra pas dans ce cours);
+\end{itemize}
+
+\begin{minted}{C++}
+// Fonction générique pour des vecteurs contenant des types multipliables et additionnables
+void axpy( auto alpha, auto const& x, auto &y )
+{// Op. y <- y + alpha.x où x et y sont des vecteurs, alpha un scalaire 
+    for (std::size_t i=0; i< x.size(); ++i) y[i] += a*x[i];
+}
+... 
+std::array fx = { 1.f, 2.f, 3.f, 4.f };
+std::array fy = { 0.f,-1.f,-2.f,-3.f };
+axpy(2.f, fx, fy ); // Appel axpy avec des tableaux statiques 
+std::vector dx = {1., 2., 3., 4.};
+std::vector dy = {0.,-1.,-2.,-3.};
+axpy(2.f, dx, dy); // Appel axpy avec alpha simple précision, x et y tableaux dynamiques double précision
+axpy(2.f, 1.f, -2.f);// Erreur compilation ! 
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les fonctions constexpr}
+  \scriptsize
+  
+\begin{itemize}
+\item On a vu qu'on pouvait définir des valeurs évaluées à la compilation;
+\item C++ 11 permet de créer des fonctions appelables à la compilation pour évaluer ces valeurs;
+\item Les paramêtres passés à ces fonctions doivent être \texttt{constexpr} pour être appelable à la compilation;
+\item Ces fonctions peuvent être également appelées normalement durant l'exécution du code. 
+\item Si elles ne sont pas appelées en dehors des \texttt{constexpr}, elles ne seront pas compilées pour le code exécutable
+\item Les fonctions mathématiques de la composante \texttt{cmath} ne sont pas \texttt{constexpr} (prévu pour C++ 26);
+\item Peu de compilateur supporte les fonctions mathématiques en \texttt{constexpr} actuellement (seulement g++ à ma connaissance).
+\end{itemize}
+
+\begin{minted}{C++}
+constexpr double cteExp(int n) {
+  if (n==0) return 1; else {
+    if (n%2==0) {
+      double v = cteExp(n/2);
+      return v*v;
+    } else return std::numbers::e * cteExp(n-1);
+  }
+}
+...   
+constexpr double cx = cteExp(7);
+\end{minted}
+
+\end{frame}
+  
+\begin{frame}[fragile]{Les fonctions constexpr}
+  \scriptsize
+  
+  \begin{itemize}
+\item Parfois, pour une même fonction, on aimerait une implémentation différente selon qu'on calcule une expression constante ou non;
+\item Depuis C++ 23, possibilité de tester si une fonction constexpr est évaluée à la compilation ou à l'exécution
+\item \underline{\textcolor{blue}{Syntaxe}} : \mintinline{C++}{if consteval { ... partie exécutée à la compilation } else { ... partie exécutée à l'exécution }}
+  \end{itemize}
+
+  \underline{Exemple} : 
+  \begin{minted}{C++}
+constexpr double cteExp(int n) {
+  if consteval {
+    if (n==0) return 1; else {
+      if (n%2==0) { double v = cteExp(n/2); return v*v; } 
+      else return std::numbers::e * cteExp(n-1);
+                             }
+  } else { return std::exp(n); }
+}
+...   
+constexpr double cx = cteExp(7);// Evaluation à la compilation, appel fonction récursive
+double y = 7;
+double cy = cteExp(y);// Evaluation à l'exécution, appel fonction math
+    \end{minted}
+    
+\end{frame}
+
+\begin{frame}[fragile]{Les fonctions consteval (C++ 20)}
+  \scriptsize
+
+  \begin{itemize}
+\item On aimerait forcer une fonction à être évaluée uniquement durant la compilation;
+\item Depuis C++ 20, on peut pour cela déclarer une fonction \texttt{consteval};
+  \end{itemize}
+
+\begin{minted}{C++}
+consteval double evalExp(int n) {
+  if (n==0) return 1;
+  else {
+    if (n%2==0) {
+      double v = cteExp(n/2);
+      return v*v;
+    } else {
+      return std::numbers::e * cteExp(n-1);
+    }
+  }
+}
+... 
+double ix = 7;
+constexpr double cx2 = evalExp(7);
+double x2 = evalExp(7);// Valeur évaluée à la compilation mais x2 non constexpr...
+double x23 = evalExp(ix); // Génère une erreur de compilation !
+
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les fonctions lambda}
+  \scriptsize
+  
+\vspace*{-2mm}
+\begin{itemize}
+\item Il arrive qu'on ait besoin d'une fonction faisant quelques lignes pour effectuer une tâche particulière;
+\item \underline{Exemple} : Pour trier un tableau de vecteur selon leur norme $L_{2}$
+\item Les fonctions lambdas sont donc un moyen commode de définir une fonction anonyme qu'on pourra appeler ou passer en argument localement;
+\item Syntaxe : [\textcolor{orange}{clause de capture}] 
+(\textcolor{orange}{liste des paramètres}) 
+\Shortunderstack{mutable \textcolor{orange}{optionnel}}
+\Shortunderstack{{throw()} \textcolor{orange}{optionnel}}
+\Shortunderstack{{-$>$\textcolor{orange}{type retour}} \textcolor{orange}{optionnel}} \verb@{@ \textcolor{orange}{corps de la fonction}\verb@}@
+\item La capture permet de donner une "liste" des variables externes à la fonction visibles dans le corps de la lambda fonction;
+\item \texttt{mutable} et \texttt{throw()} ne seront pas abordés dans cette formation;
+\item Si le type de retour n'est pas donné, le retour sera déduit du type des valeurs retournées par la fonction;
+\item Une lambda fonction possède son propre type. On doit utiliser \texttt{auto} pour "stocker" la lambda fonction dans une variable;
+\end{itemize}
+
+\underline{Exemple} :
+\begin{minted}{C++}
+std::vector<std::array<double,10>> arrays;
+... 
+std::sort(arrays, []( std::array<double,10> const& u, std::array<double,10> const& v) {
+    double sqNrmU = 0, sqNrmV = 0;
+    for (int i=0; i<10; ++i) {sqNrmU += u[i]*u[i]; sqNrmV += v[i]*v[i]; }
+    return sqNrmU < sqNrmV; });
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les captures dans les fonctions lambda}
+\scriptsize
+
+\begin{itemize}
+\item Une valeur capturée peut être capturée par valeur (on en fait une copie) ou bien par référence;
+\item Une variable précédée par un \& indique que sa valeur est passée par référence;
+\item Si la clause de capture est vide (\verb@[]@), cela indique que le corps de la lambda ne peut accèder à des variables non définis localement;
+\item Il est possible d'indiquer un mode de capture par défaut de toutes les variables externes utilisées par la lambda;
+\item \verb@[&]@ indique que toutes les variables externes utilisées sont capturées par référence;
+\item \verb@[=]@ indique que toutes les variables externes utilisées sont capturées par valeur;
+\item Il est possible d'indique un mode de capture par défaut et une liste de variables capturées autrement.\\
+\underline{Exemple} : \verb@[=,&total]@
+\end{itemize}
+
+\underline{Exemple} :
+\begin{minted}{C++}
+double maxNorm = 0;
+std::vector<std::array<double,10>> arrays;
+... 
+std::sort(arrays.begin(), arrays.end(), [&maxNorm]( std::array<double,10> const& u, 
+                                                    std::array<double,10> const& v) {
+    double sqNrmU = 0, sqNrmV = 0; for (int i=0; i<10; ++i) {sqNrmU += u[i]*u[i]; sqNrmV += v[i]*v[i]; }
+    maxNorm = std::max({maxNorm, sqNrmU, sqNrmV});  return sqNrmU < sqNrmV; });
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Les fonctions lambda : paramètres auto (C++ 14) et affectation}
+  \scriptsize 
+
+\begin{itemize}
+\item Comme pour les fonctions génériques en C++ 20, il est possible de déclarer un paramètre de type auto;
+\end{itemize}
+
+\underline{Exemple paramètre générique et affectation à une variable}
+\begin{minted}{C++}
+double evalPol( double x ) {  return 3*x*x*x - 4.*x*x + x - 5;  }
+...
+auto compose = [] (auto const& f, auto const& g) {
+        return [f, g]( double x ) { return f(g(x)); };
+                                                 };
+auto f = compose(evalPol, cos);
+double x = std::numbers::pi;
+std::cout << "f(pi) = " << f(x) << std::endl;
+\end{minted}
+\end{frame}
+
+\begin{frame}[fragile]{Exercice}
+  \scriptsize 
+
+\begin{itemize}
+\item \'Ecrire la fonction $f(x)=\frac{x^{3}-3.x^{2}+2}{|x|^{2} + 1}$ où $x$ peut être tout type de valeur scalaire;
+\item Dans la fonction \texttt{main}, déclarer un complexe $c$ et une variable $m$
+      à laquelle on affectera la lambda fonction $m(z)=z^{2}+c$ où $z$ est un complexe;
+\item Déclarer un tableau dynamique R de N (=10) réels double précision dont on remplira 
+      les c{\oe}fficients avec $R[i] = \cos(\frac{i.\pi}{N})$ 
+\item Déclarer un tableau dynamique Z de N complexes dont les valeurs sont définies par récurrence :
+      $Z[0] = c$ et $Z[i+1] = m(Z[i])$ ;
+\item Trier le tableau $R$ tel que $f(R[i]) \leq f(R[i+1])$;
+\item Trier le tableau $Z$ tel que $|f(Z[i])| \leq |f(Z[i+1])|$.     
+\end{itemize}
+\end{frame}
+\end{document}

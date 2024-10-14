@@ -1,0 +1,109 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% beamerthemeonera.sty : fichier de style principal de présentation ONERA %
+%													      %
+% Fichiers de style inclus :									      %
+%	- beamerinnerthemeonera.sty							      %
+%	- beamerouterthemeonera.sty							      %
+%	- beamercolorthemeonera.sty							      %
+%	- beamerfontthemeonera.sty							      %
+% Mise en forme de la bibliographie :							      %
+%	- onera.bst de Frédéric Cassaing, DOTA					      %
+%													      %
+% ========= Olivier Boisot, DEMR, TERE -- ONERA 2021 ========== %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\mode<presentation>
+
+%%%%%%%%%%%
+% Options du thème %
+%%%%%%%%%%%
+  % Conditions						      % Valeurs par défaut
+\newif\ifONERA@english				      \ONERA@englishfalse % NOTE :  cette notation est directement compatible avec le fichier
+												% de style de la biblio onera.bst
+\newif\ifONERA@DR					\ONERA@DRfalse
+\newif\ifONERA@CD					\ONERA@CDfalse
+\newif\ifONERA@SD					\ONERA@SDfalse
+\newif\ifONERA@S                                 \ONERA@Sfalse
+\newif\ifONERA@TS                               \ONERA@TSfalse
+\newif\ifONERA@SF				      \ONERA@SFfalse
+\newif\ifONERA@customnumbering		\ONERA@customnumberingfalse
+
+\DeclareOptionBeamer{french}{\beamer@frenchtrue} % Diffusion Restreinte
+\DeclareOptionBeamer{english}{\ONERA@englishtrue} % Option anglais
+\DeclareOptionBeamer{DR}{\ONERA@DRtrue} % Mention Diffusion Restreinte
+\DeclareOptionBeamer{CD}{\ONERA@CDtrue} % Mention Confidentiel Défense
+\DeclareOptionBeamer{SD}{\ONERA@SDtrue} % Mention Secret Défense
+\DeclareOptionBeamer{S}{\ONERA@Strue} % Mention Secret
+\DeclareOptionBeamer{TS}{\ONERA@TStrue} % Mention Très Secret
+\DeclareOptionBeamer{SF}{\ONERA@SFtrue} %  Mention Spécial France
+\DeclareOptionBeamer{customnumbering}{\ONERA@customnumberingtrue} % Numérotation 'custom'
+\ProcessOptionsBeamer
+
+% Condition pour gérer le cas où on ne veut pas de page de titre
+\newif\ifONERA@maketitlepage			\ONERA@maketitlepagefalse
+
+%%%%%%%%%%
+% Packages requis %
+%%%%%%%%%%
+	% Font
+\RequirePackage{sansmathfonts} % Pour une police mathématique similaire à 'Arial' /!\ Doit être chargé avant helvet /!\
+\RequirePackage{helvet} % Pour l'utilisation d'une police similaire à 'Arial'
+	% Dessin
+\RequirePackage{tikz}
+\usetikzlibrary{positioning}
+	% Encoding
+\RequirePackage[utf8x]{inputenc}
+% test si le package inputenc est bien chargé avec l'option utf8x (pour utilisation avec pstool) sinon utilise utf8 par défaut
+\@ifpackagewith{inputenc}{utf8x}{}{\RequirePackage[utf8]{inputenc}}
+\RequirePackage[T1]{fontenc}
+	% Langue
+\ifONERA@english%
+    \RequirePackage[english]{babel}
+\else%
+    \RequirePackage[french]{babel} % l'option 'french' est apparemment le nouveau standard (plus frenchb)   
+    \@ifpackagewith{babel}{french}{}{\RequirePackage[frenchb]{babel}} % On teste si ça fonctionne, sinon on charge 'frenchb'
+\fi%
+	% Boîtes personnalisées
+\RequirePackage[skins]{tcolorbox} %  Note : skins permet d'utiliser l'option enhanced
+	% Texte dans des boîtes
+\RequirePackage{varwidth}
+
+%%%%%%%%%%%%%%%%%
+% Utilisation des thèmes ONERA %
+%%%%%%%%%%%%%%%%%
+\useinnertheme{onera}
+\useoutertheme{onera}
+\usecolortheme{onera}
+\usefonttheme{onera}
+
+% Navigation symbols
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+% Bibliographie
+\setbeamertemplate{bibliography item}{\insertbiblabel} % Ajoute la référence [1], [2] au lieu du logo pourri
+
+%Défintion des couleurs
+\definecolor{onera}{RGB}{0,80,154}
+\definecolor{onera_dark}{RGB}{17,72,156}
+\definecolor{onera_gray}{RGB}{128,128,128}
+\definecolor{citecolor}{RGB}{0,118,157}
+
+% Réglages des hyperliens
+\hypersetup{
+    pdfborder={0 0 0}, % !!!! Option pdftex en conflit avec pstool !!!
+    hidelinks, colorlinks,
+    linkcolor=citecolor, urlcolor=citecolor, % /!\ l'option citecolor ne fonctionne pas avec beamer !
+}
+
+% Nouvelles commandes
+%**** Fonction \bigcenter (à la place de \centering) permettant de centrer de grosses images****
+\makeatletter
+\newskip\@bigflushglue \@bigflushglue = -100pt plus 1fil
+\def\bigcenter{\trivlist \bigcentering\item\relax}
+\def\bigcentering{\let\\\@centercr\rightskip\@bigflushglue%
+\leftskip\@bigflushglue
+\parindent\z@\parfillskip\z@skip}
+\def\endbigcenter{\endtrivlist}
+\makeatother
+
+\mode<all>

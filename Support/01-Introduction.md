@@ -1,7 +1,8 @@
 ---
 title: Introduction au C++
 ---
-# Introduction
+
+# Introduction au C++
 
 ## Qu'est-ce que le C++ ?
 
@@ -19,53 +20,56 @@ C'est pour cette raison qu'en 1971, on commença à travailler sur le successeur
 
 Le C devint vite tellement populaire que tout le monde voulait en faire sa propre version avec ses propres "améliorations". Si bien que les différents compilateurs devinrent rapidement incompatibles les uns avec les autres, et on avait perdu une grande part de la portabilité du C. L'idée vint alors qu'il fallait créer un standard pour le langage C. C'est un comité de l'ANSI (American National Standards Institute) qui mit au point ce standard en 1983, et depuis, la plupart des compilateurs (Borland, Microsoft, Intel, GNU, NVIDIA,...) se sont pliés à ce standard, si bien qu'un programme écrit en ANSI C est en principe compilable presque partout.
 
-Le langage C possédait donc de nombreux avantages. Mais il lui manquait certaines caractérisrique des langages dit modernes : la programmation orientée objet, la programmation fonctionnelle, \ldots
+Le langage C possédait donc de nombreux avantages. Mais il lui manquait certaines caractéristiques des langages dits modernes : la programmation orientée objet, la programmation fonctionnelle, etc.
 
-Le Dr. Bjarne Stroustrup, ingénieur de recherche au Bell Laboratories, décida au début des années 80 de créer un langage orienté objet performant  dont l'apprentissage devait être moindre. Pour cela, il décida de créer son langage comme une extension d'un langage de programmation populaire. A cette époque, le langage de programmation le plus populaire chez les professionels était le langage C. Aussi le Dr. Stroustrup décida de créer son langage orienté objet comme une extension du langage C dont il préserva la compatibilité  et le baptisa naturellement C++.  Pour la programmation orienté objet, il s'inspira de deux langages orientés objets de l'époque : les langages Simula67 et Algol68. Afin de toucher un large public, il décida également d'en faire un langage ouvert et gratuit, ce qui contribua grandement au succès du C++ (au dépend d'autres langages plus "propres" comme Eiffel). Il est à remarquer que dans ses premières versions, le compilateur C++ n'était qu'un traducteur du langage C++ vers le langage C !
+Le Dr. Bjarne Stroustrup, ingénieur de recherche au Bell Laboratories, décida au début des années 80 de créer un langage orienté objet performant  dont l'apprentissage devait être moindre. Pour cela, il décida de créer son langage comme une extension d'un langage de programmation populaire. A cette époque, le langage de programmation le plus populaire chez les professionnels était le langage C. Aussi le Dr. Stroustrup décida de créer son langage orienté objet comme une extension du langage C dont il préserva la compatibilité  et le baptisa naturellement C++.  Pour la programmation orienté objet, il s'inspira de deux langages orientés objets de l'époque : les langages Simula67 et Algol68. Afin de toucher un large public, il décida également d'en faire un langage ouvert et gratuit, ce qui contribua grandement au succès du C++ (au dépend d'autres langages plus "propres" comme Eiffel). Il est à remarquer que dans ses premières versions, le compilateur C++ n'était qu'un traducteur du langage C++ vers le langage C !
 
 Mais, de la même façon que le langage C, l'évolution du langage C++ commença rapidement à diverger entre les éditeurs de compilateur. Dans le courant de l'année 1994 les comités de normalisation ISO et ANSI ont donc publié une version préliminaire officielle du C++ X3 JI 6/WG21. La dernière version préliminaire fut publiée en décembre 1996. A part quelques points de détail, elle comportait l'essentiel de ce qui allait être la version définitive, datée du 27 septembre 1998 notée **norme ISO/IEC 14882:1998(E)**. On se réfère à ce standard en parlant du C++ 98.
 
-Pendant de nombreuses années, le standard resta figée. Une première mise à jour, essentiellement pour
-corriger quelques problèmes liés au standard 98 (en particuliers des omissions dans la norme) fut effectuée en 2003 (**standard ISO/IEC 14882:2003, C++ 03**).  La vraie évolution du langage eu lieu avec la sortie d'un nouveau standard le 12 Août 2011 (**standard ISO/IEC 14882:2011, C++ 11**) qui apporta un grand nombre de nouveautés et changea définitivement la manière de programme en C++. Depuis, le standard est mis à jour tous les trois ans, en rajoutant de nouvelles fonctionnalités permettant de repousser les limites du langage sans pour autant apporter une révolution aussi grande. que celle de 2011 Il existe donc actuellement un standard datant du 18 Août 2014 ( C++ 14 ) qui apporte quelques améliorations au C++ 11, une autre de Mars 2017 (C++ 17) qui corrige certains défauts du C++14  en enlevant certaines fonctionnalités mal définies du langage et en rajoutant beaucoup de nouveautés, et finalement la version actuelle publié par l'ISO (avec un peu de retard dû au COVID\ldots) en Décembre 2020 qui rajoute un grand nombre de nouveautés au langage. La prochaine version du standard devrait donc apparaître à la fin de cette année (2023).
+Pendant de nombreuses années, le standard resta figée. Une première mise à jour, essentiellement pour corriger quelques problèmes liés au standard 98 (en particuliers des omissions dans la norme) fut effectuée en 2003 (**standard ISO/IEC 14882:2003, C++ 03**).  La vraie évolution du langage eu lieu avec la sortie d'un nouveau standard le 12 Août 2011 (**standard ISO/IEC 14882:2011, C++ 11**) qui apporta un grand nombre de nouveautés et changea définitivement la manière de programmer en C++. Depuis, le standard est mis à jour tous les trois ans, en rajoutant de nouvelles fonctionnalités permettant de repousser les limites du langage sans pour autant apporter une révolution aussi grande que celle de 2011. Il existe donc actuellement un standard datant du 18 Août 2014 ( C++ 14 ) qui apporte quelques améliorations au C++ 11, une autre de Mars 2017 (C++ 17) qui corrige certains défauts du C++14  en enlevant certaines fonctionnalités mal définies du langage et en rajoutant beaucoup de nouveautés, et finalement la version actuelle publié par l'ISO (avec un peu de retard dû au COVID\ldots) en Décembre 2020 qui rajoute un grand nombre de nouveautés au langage. La prochaine version du standard devrait donc apparaître à la fin de cette année (2023).
 
 Notons qu'un des grands efforts effectués lors de l'adoption des nouvelles normes est de permettre une programmation plus simple et concise de certaines notions du C++.
 
 ### Caractéristiques du langage C++
 
 Le C++ est un langage :
-  - **compilé** : il n'existe pas en standard d'interpréteur du langage C++. Il faut donc dans un premier temps utiliser un compilateur qui lit les fichiers sources et les transforment en langage machine (dans des fichiers dit objets) directement compréhensible par le processeur de la machine sur laquelle il a été compilé puis créer éventuellement un exécutable directement exploitable sur le système d'exploitation sur lequel il a été créé. Il n'est pas possible d'utiliser directement un code compilé pour un processeur incompatible avec celui pour lequel on a compilé et il n'est  pas possible d'exécuter directement un exécutable créer pour un autre système d'exploitation.
-  - **performant** : Aujourd'hui, le C++ est un langage aussi, voir plus performant que le langage C. Il est le langage le plus rapide actuellement (battu récemment par le lnagage Rust pour certaines applications)
-  - **multi-paradigmes** : le langage C++ permet d'utiliser différents paradigmes de programmation, à savoir :
-    - *La programmation structurée* : Comme en C, on décompose le problème en fonctions agissant sur des structures de données;
-    - *La programmation orientée objet* : On se concentre sur la gestion des données, à savoir comment les gérer (protocole) et la façon de les gérer (interface);
-    - *La programmation fonctionnelle* : On décompose le problème en un ensemble de fonctions (dans un sens proche des mathématique) qu'on manipule (en les composant, etc.) afin de créer l'application visée.
-  A noter qu'il est fortement déconseillé lors d'un projet informatique de se limiter à un seul paradigme de programmation. Un paradigme sera sûrement plus adapté qu'un autre pour une partie du projet mais pas nécessairement pour une autre partie. Il faut donc rester pragmatique et savoir utiliser le bon paradigme de programmation pour aborder le plus simplement et efficacement possible le problème à résoudre.
- 
-  Une des autres forces du langage C++ (par rapport au C en particuliers), est d'être doté d'une bibliothèque standard très riche (un peu comme le langage python) qui permet de gagner un temps appréciable pour l'élaboration d'un programme. On verra au fur et à mesure du cours certaines parties de cette bibliothèque (il faudrait plusieurs semaines pour aborder tout ce que propose cette bibliothèque !).
 
-En revanche, l'héritage du C fait que le langage C++ est un langage complexe à apprendre et impossible à maitriser à 100%. Le créateur du C++,
-le dr. Bjarne Stroustrup a lui-même estimé qu'il ne connaissait qu'environ 70% du langage. Il est donc illusoire de vouloir totalement maîtriser ce langage. Il est plutôt conseillé d'apprendre petit à petit à maîtriser des parties du langage qui vous permettront de résoudre efficacement les problèmes que vous rencontrer.
+- **compilé** : il n'existe pas en standard d'interpréteur du langage C++. Il faut donc dans un premier temps utiliser un compilateur qui lit les fichiers sources et les transforment en langage machine (dans des fichiers dit objets) directement compréhensible par le processeur de la machine sur laquelle il a été compilé puis créer éventuellement un exécutable directement exploitable sur le système d'exploitation sur lequel il a été créé. Il n'est pas possible d'utiliser directement un code compilé pour un processeur incompatible avec celui pour lequel on a compilé et il n'est  pas possible d'exécuter directement un exécutable créer pour un autre système d'exploitation.
+- **performant** : Aujourd'hui, le C++ est un langage aussi, voir plus performant que le langage C. Il est le langage le plus rapide actuellement (battu récemment par le langage Rust pour certaines applications).
+- **multi-paradigmes** : le langage C++ permet d'utiliser différents paradigmes de programmation, à savoir :
+  - *La programmation structurée* : Comme en C, on décompose le problème en fonctions agissant sur des structures de données;
+  - *La programmation orientée objet* : On se concentre sur la gestion des données, à savoir comment les gérer (protocole) et la façon de les gérer (interface);
+  - *La programmation fonctionnelle* : On décompose le problème en un ensemble de fonctions (dans un sens proche des mathématiques) qu'on manipule (en les composant, etc.) afin de créer l'application visée.
+
+À noter qu'il est fortement déconseillé lors d'un projet informatique de se limiter à un seul paradigme de programmation. Un paradigme sera sûrement plus adapté qu'un autre pour une partie du projet mais pas nécessairement pour une autre partie. Il faut donc rester pragmatique et savoir utiliser le bon paradigme de programmation pour aborder le plus simplement et efficacement possible le problème à résoudre.
+ 
+Une des autres forces du langage C++ (par rapport au C en particuliers), est d'être doté d'une bibliothèque standard très riche (un peu comme le langage python) qui permet de gagner un temps appréciable pour l'élaboration d'un programme. On verra au fur et à mesure du cours certaines parties de cette bibliothèque (il faudrait plusieurs semaines pour aborder tout ce que propose cette bibliothèque !).
+
+En revanche, l'héritage du C fait que le langage C++ est un langage complexe à apprendre et impossible à maitriser à 100%. Le créateur du C++, le dr. Bjarne Stroustrup a lui-même estimé qu'il ne connaissait qu'environ 70% du langage. Il est donc illusoire de vouloir totalement maîtriser ce langage. Il est plutôt conseillé d'apprendre petit à petit à maîtriser des parties du langage qui vous permettront de résoudre efficacement les problèmes que vous rencontrer.
 
 ## Compiler des sources en C++
 
 ### Les compilateurs disponibles (et gratuits !)
 
 **Sous Linux** :
-  - *Le compilateur gnu g++* : le compilateur *g++* n'est pas installé par défaut (contrairement à gcc). Il est néanmoins disponible dans les paquets proposer par votre distribution (voir la documentation de votre distribution pour installer g++). Sur les machines ONERA, il est possible de charger un module contenant une version relativement récente des compilateurs gnu (qui contient une version récente de gcc et de g++)
-  - *Le compilateur clang* : Un compilateur aussi performant (voir plus) que le compilateur gnu. Le compilateur clang est accompagné de nombreux outils, dont un pour formater votre code d'une manière très précise et un permettant de vérifier les erreurs de compilation à la volée. Ces deux outils sont interfaçables avec des éditeurs de code (vim, vscode, etc.)
-  - *Le compilateur intel* : Un compilateur pendant longtemps payant mais devenu gratuit depuis qu'il est livré avec OneAPI. A remarquer que dans les versions récentes des compilateurs intels, il ne faut plus utiliser *icpc* bien trop bogué mais *icpx* qui est  son remplaçant, basé sur le compilateur clang. *icpc* est prévu pour disparaître de oneAPI dans la prochaine version qui sortira au dernier trimestre 2023. Les compilateurs intels récents sont disponibles sur les postes linux de l'ONERA et les grands calculateurs. Ils sont très performants et offrent une micro librairie vectorisée pour certaines fonctions intrinsiques (trigonométriques, exponentielles, etc.) utilisée lors de la compilation de code et permettant un gain significatif des performances.
-  - *Le compilateur NVIDIA* : Basé sur le compilateur PGI (Portland Group) racheté par NVIDIA, ce compilateur est un peu en retrait des autres compilateurs en ce qui concerne  la norme du C++  pris en compte par ce compilateur. Cependant, il offre l'avantage de pouvoir à l'aide de directives de compilation OpenACC d'effectuer des calculs sur un GPU NVIDIA (ce point n'est pas abordé dans ce cours).
+
+- *Le compilateur gnu g++* : le compilateur *g++* n'est pas installé par défaut (contrairement à gcc). Il est néanmoins disponible dans les paquets proposer par votre distribution (voir la documentation de votre distribution pour installer g++). Sur les machines ONERA, il est possible de charger un module contenant une version relativement récente des compilateurs gnu (qui contient une version récente de gcc et de g++)
+- *Le compilateur clang* : Un compilateur aussi performant (voir plus) que le compilateur gnu. Le compilateur clang est accompagné de nombreux outils, dont un pour formater votre code d'une manière très précise et un permettant de vérifier les erreurs de compilation à la volée. Ces deux outils sont interfaçables avec des éditeurs de code (vim, vscode, etc.)
+- *Le compilateur intel* : Un compilateur pendant longtemps payant mais devenu gratuit depuis qu'il est livré avec OneAPI. A remarquer que dans les versions récentes des compilateurs intels, il ne faut plus utiliser *icpc* bien trop bogué mais *icpx* qui est  son remplaçant, basé sur le compilateur clang. *icpc* est prévu pour disparaître de oneAPI dans la prochaine version qui sortira au dernier trimestre 2023. Les compilateurs intels récents sont disponibles sur les postes linux de l'ONERA et les grands calculateurs. Ils sont très performants et offrent une micro librairie vectorisée pour certaines fonctions intrinsiques (trigonométriques, exponentielles, etc.) utilisée lors de la compilation de code et permettant un gain significatif des performances.
+- *Le compilateur NVIDIA* : Basé sur le compilateur PGI (Portland Group) racheté par NVIDIA, ce compilateur est un peu en retrait des autres compilateurs en ce qui concerne  la norme du C++  pris en compte par ce compilateur. Cependant, il offre l'avantage de pouvoir à l'aide de directives de compilation OpenACC d'effectuer des calculs sur un GPU NVIDIA (ce point n'est pas abordé dans ce cours).
 
 **Mac OS** : Pour avoir accès à des compilateurs C++, il faut installer *Homebrew* qui est un environnement gratuit. Vous pouvez alors avoir accès à clang (fournit également avec XCode) et g++.
 
 **Windows** : Plusieurs options s'offrent à vous :
-  - Utiliser Microsoft Visual C++ community : Permet d'avoir un IDE pour programmer. La compilateur est de bonne facture mais sa version gratuite (community) ne permet pas de produire un code optimisé. En ce qui concerne les postes windows, il est possible de demander à la DSI de l'installer;
-  - CodeBlock : Un IDE fournit avec g++ et qui comme Microsoft Visual C++ permet de créer des projets C++. Code block est fourni par défaut sur les postes Windows de l'ONERA;
-  - MSYS 2 :  MSys est à proprement parler un ensemble d'outils offrant un environnement *à la UNIX* pour Windows (terminal, makefile, compilateurs, éditeurs, bibliothèques, latex, gimp, etc. ) pouvant être installé avec uniquement des droits utilisateurs. Les compilateurs fournis (C, C++, fortran, rust, ada, etc.)  permettent de compiler des sources et de produire des bibliothèques et des exécutables pour le système d'exploitation Windows. Cet environnement est basé sur une distribution Linux (Arch Linux). On peut gérer les différents outils comme sous de nombreux linux à l'aide d'un gestionnaire de paquets qui propose les dernières versions de g++ ou de clang. En revanche, il faut avoir une petite base du shell pour  faire fonctionner tout cela sans problème. A recommander à ceux habitués à un environnement UNIX !
 
-**Android** : Dans le google store, on peut trouver des IDEs primaires fournis avec des  compilateurs gratuits C++ fonctionant sous téléphone portable et tablette androïd. Ces compilateurs sont tous basés sur la version de g++ pour ARM.
+- Utiliser Microsoft Visual C++ community : Permet d'avoir un IDE pour programmer. La compilateur est de bonne facture mais sa version gratuite (community) ne permet pas de produire un code optimisé. En ce qui concerne les postes windows, il est possible de demander à la DSI de l'installer;
+- CodeBlock : Un IDE fournit avec g++ et qui comme Microsoft Visual C++ permet de créer des projets C++. Code block est fourni par défaut sur les postes Windows de l'ONERA;
+- MSYS 2 :  MSys est à proprement parler un ensemble d'outils offrant un environnement *à la UNIX* pour Windows (terminal, makefile, compilateurs, éditeurs, bibliothèques, latex, gimp, etc.) pouvant être installé avec uniquement des droits utilisateurs. Les compilateurs fournis (C, C++, fortran, rust, ada, etc.)  permettent de compiler des sources et de produire des bibliothèques et des exécutables pour le système d'exploitation Windows. Cet environnement est basé sur une distribution Linux (Arch Linux). On peut gérer les différents outils comme sous de nombreux linux à l'aide d'un gestionnaire de paquets qui propose les dernières versions de g++ ou de clang. En revanche, il faut avoir une petite base du shell pour  faire fonctionner tout cela sans problème. A recommander à ceux habitués à un environnement UNIX !
+
+**Android** : Dans le google store, on peut trouver des IDEs primaires fournis avec des  compilateurs gratuits C++ fonctionnant sous téléphone portable et tablette androïd. Ces compilateurs sont tous basés sur la version de g++ pour ARM.
 
 **Web** : Un site web permettant de pouvoir compiler et d'exécuter des codes simples (largement suffisant pour le TP !) peut être trouver à  la page suivante :
+
     https://www.onlinegdb.com/online_c++_compiler
 
 ## Les différentes phases de compilation
@@ -91,10 +95,10 @@ L'usage le plus simple d'un compilateur est de créer un exécutable directement
     g++ -o <nom de  l'exécutable à créer> <nom fichier source à compiler>
 
 ---
-*Exemple* : Dans le répertoire Exemple/Basic, compilons le fichier hello_world.cpp et créons à partir de ce fichier l'exécutable HelloWorld.exe :
+*Exemple* : Dans le répertoire exemples/introduction, compilons le fichier hello_world.cpp et créons à partir de ce fichier l'exécutable HelloWorld.exe :
 
 ```sh
-g++ -o HelloWorld.exe hello_world.cpp
+    g++ -o HelloWorld.exe hello_world.cpp
 ```
 ---
 
@@ -102,7 +106,32 @@ Malheureusement, de nombreuses autres options risquent d'être nécessaires dans
 
 ### Cas où le projet contient plusieurs fichiers sources
 
-### Création du code binaire final : exécutable, bibliothèque statique ou dynamique  ?
+Si votre projet contient plusieurs fichiers sources, il sera nécessaire de les compiler tout d'abord séparément en fichiers objets puis de les lier entre eux pour créer l'exécutable final.
+
+Pour compiler un fichier source en fichier objet, on utilise l'option **-c** :
+
+    g++ -c <nom fichier source à compiler>
+
+---
+*Exemple* : Dans le répertoire exemples/introduction, compilons le fichier hello_world.cpp en fichier objet hello_world.o :
+
+```sh
+    g++ -c fonction_hello_world.cpp
+    g++ -c main_hello_world.cpp
+```
+---
+
+Une fois les fichiers objets créés, il suffit de les lier entre eux pour créer l'exécutable final avec l'option **-o** :
+
+    g++ -o <nom de l'exécutable à créer> <nom fichier objet 1> <nom fichier objet 2> ... 
+
+---
+*Exemple* : Dans le répertoire exemples/introduction, lier les fichiers objets hello_world.o et main.o pour créer l'exécutable HelloWorld.exe :
+
+```sh
+    g++ -o hello_world.exe fonction_hello_world.o main_hello_world.o
+```
+---
 
 ### Choix de la norme C++ à utiliser pour la compilation
 
@@ -112,35 +141,41 @@ La norme C++ utilisée par défaut par votre compilateur sera en général dépe
 
 La principale raison pour laquelle un compilateur ne prend pas par défaut la dernière version de la norme C++ est qu'il faut en général plusieurs années pour que cette version de la norme soit dans la plus grande partie mise en oeuvre dans le compilateur, et ce dernier va donc proposer la norme aboutie la plus récente. Il faut avoir conscience que créer un compilateur C++ avec les normes actuelles est loin d'être un exercice trivial !
 
-  *Comment changer la norme C++ utilisée par votre compilateur ?*
- 
+*Comment changer la norme C++ utilisée par votre compilateur ?*
+
 L'option **-std** permet   de modifier la norme employée par le compilateur. Cela permet en particuliers d'accèder à une version de la norme C++ plus récente que celle par défaut utilisé par le compilateur. Par contre, il faut dans ce cas faire attention à ce que la fonctionnalité utilisée, apportée par une norme plus récente que la norme par défaut soit bien mis en oeuvre par le compilateur employé. Cela permet également de pouvoir tester des fonctionnalités qui doivent arriver dans la prochaine version : par exemple il est possible avec les compilateurs les plus récents de tester certaines fonctionnalités de la norme C++ 23 qui doit être définitivement adoptée à la fin de cette année.
 
 A contrario, demander au compilateur de se conformer à une version plus ancienne de la norme peut vous assurer une meilleure portabilité de votre code, en particuliers sur des machines possédant des compilateurs C++ plus anciens.
 
 Voici les options à fournir pour les différentes versions de la norme :
 
-  - **-std=c++98** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 98 du C++
-  - **-std=c++11** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 11 du C++
-  - **-std=c++14** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 14 du C++
-  - **-std=c++17** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 17 du C++
-  - **-std=c++20** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 20 du C++
-  - **-std=c++0x** pour commencer à utiliser la prochaine norme C++ à sortir par rapport à la date de parution du compilateur. 
+- **-std=c++98** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 98 du C++
+- **-std=c++11** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 11 du C++
+- **-std=c++14** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 14 du C++
+- **-std=c++17** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 17 du C++
+- **-std=c++20** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 20 du C++
+- **-std=c++23** pour que le compilateur s'assure que vos sources soient conformes à la norme C++ 23 du C++
+
+Attention, beaucoup de compilateurs ne supportent pas encore toutes les normes C++ ! En particulier, les versions de g++ et clang++ antérieures à la version 10 ne supportent pas la norme C++ 17.
 
 ### Les options à utiliser pendant la phase de développement
 
 On peut scinder ces options en deux grands groupes :
-    -
 
-### Les options à utiliser pendant la phase de débogagge
+- Les options de compilation
+- Les options de liaison
+
+#### Les options de compilation
+
+##### Les options à utiliser pendant la phase de débogage
 
 Durant la phase de développement, il est conseillé d'utiliser au maximum les options de compilation permettant de vérifier la qualité de votre code et de détecter de potentiels bogues:
 
 - *-g* : Permet de conserver les noms symboliques des fonctions et des variables afin de pouvoir utiliser un logiciel de débogage qui pourra ainsi interroger le code pour vérifier l'état des variables, l'endroit où on se trouve dans le code source et la pile d'appel.
 - *-Wall* : Active tous les messages d'alertes (warning) pointant les éventuelles maladresses ou bogues potentiels dans le code, dont :
 
-  - Les variables utilisées mais non initialisées;
-  - Les conversions d'entiers non compatibles;
+- Les variables utilisées mais non initialisées;
+- Les conversions d'entiers non compatibles;
 
 Pour g++ ( et clang++ ), on a de plus :
 
@@ -162,16 +197,16 @@ Ces options dépendent des compilateurs. Pour g++ et clang++ sous Linux,on pourr
 
 Il existe plusieurs dizaines de vérifications différentes avec cet argument ! Notons que ces tests ne marchent pas sous Windows du fait que la bibliothèque *san* n'a pas été porté sur cet OS (Pour Mac OS X, je ne sais pas).
 
-**Remarque** : L'exécution de votre code sera relativement lent avec ces options lors de la phase de développement, mais elle vous permettra   de détecter un nombre conséquent de bogues potentiels. 
+**Remarque** : L'exécution de votre code sera relativement lent avec ces options lors de la phase de développement, mais elle vous permettra de détecter un nombre conséquent de bogues potentiels.
 
-### Les options à utiliser pendant la phase d'optimisation
+##### Les options à utiliser pendant la phase d'optimisation
 
 Le but ici est d'avoir le code le plus compact et rapide possible.
-On veut en outre éliminer certains tests effectuer lors de la phase de développement :
+On veut en outre éliminer certains tests effectués lors de la phase de développement :
 
 - *-O2* ou *-O3* : Demande au compilateur d'optimiser votre code afin d'en accélérer l'exécution. *-O2* optimise votre code tout en garantissant que l'ordre des opérations du code source soient respecté. *-O3* quant à lui optimise votre code en se permettant de modifier l'ordre des opérations, ce qui ne garantit donc pas une solution identique à celle obtenue lors de la phase de développement. En pratique, si on détecte que l'option *-O3* pose des problèmes (ce qui arrive tout de même très très rarement), ou si l'ordre des opérations est primordiale, on baissera le niveau d'optimisation à *-O2*
-- *-march=native* ou *-march=<type d'architecture de processeur visé>* : Optimise et produit du code pour l'architecture de processeur visé. Si on a spécifié *native* au lieu de l'architecture, le compilateur détectera le type d'architecture du processeur de l'ordinateur sur lequel il compile et optimisera et produira du code en fonction de l'architecture locale. **Attention** : Sur certains calculateurs parallèle de l'ONERA (sator), l'architecture des n{\oe}uds d'exploitation sur lequels on compile le code est plus récent que l'architecture des n{\oe}uds de calcul (sur lequel on exécute le code !)
-- *-DNDEBUG* : Permet de ne pas tenir compte de certains testes de débogage mis dans le code. En particulier, permet d'ignorer toutes les assertions mises dans votre code (voir plus loin dans le cours).
+- *-march=native* ou *-march=<type d'architecture de processeur visé>* : Optimise et produit du code pour l'architecture de processeur visé. Si on a spécifié *native* au lieu de l'architecture, le compilateur détectera le type d'architecture du processeur de l'ordinateur sur lequel il compile et optimisera et produira du code en fonction de l'architecture locale. **Attention** : Sur certains calculateurs parallèle de l'ONERA (sator), l'architecture des n{\oe}uds d'exploitation sur lequels on compile le code est plus récente que l'architecture des n{\oe}uds de calcul (sur lequel on exécute le code !)
+- *-DNDEBUG* : Permet de ne pas tenir compte de certains tests de débogage mis dans le code. En particulier, permet d'ignorer toutes les assertions mises dans votre code (voir plus loin dans le cours).
 
 Pour des projets conséquents et de manière générale, il est conseillé d'utiliser un outil pour la compilation du code permettant de détecter les dépendances entre vos différents fichiers et de ne recompiler que le strict minimum  nécessaire pour conserver un code cohérent. Pour cela, de nombreux outils existent tels que :
 
@@ -182,6 +217,11 @@ Pour des projets conséquents et de manière générale, il est conseillé d'uti
 
 On peut également utiliser un gestionnaire de projet, soit intégré dans un IDE comme Visual C++, ou bien encore *CMakefile* qui est supporté par toutes les plateformes existantes.
 
+#### Les options de liaison
+
+Lors de l'édition des liens, on peut spécifier les bibliothèques à lier avec votre exécutable. Pour cela, on utilise l'option **-l** suivie du nom de la bibliothèque sans le préfixe *lib* ni le suffixe *.a* ni *.so* :
+
+    g++ -o <nom de l'exécutable à créer> <nom fichier objet 1> <nom fichier objet 2> ... -l<nom de la bibliothèque> -L<répertoire contenant la bibliothèque>  
 
 ## Des bonnes pratiques de programmation
 
@@ -259,7 +299,7 @@ Ainsi, prenons un algorithme de tri sur des valeurs contenus dans un tableau don
 - *Post-conditions* :
 
   - Que les valeurs du tableau en sortie soit une permutation des valeurs du tableau en entrée;
-  -  Que les valeurs du tableau en sortie vérifie la relation d'ordre en parcourant linéairement le tableau;
+  - Que les valeurs du tableau en sortie vérifie la relation d'ordre en parcourant linéairement le tableau;
 
 On voit que les préconditions et les post-conditions sont moins triviales ici que pour la racine carrée.
 
@@ -274,7 +314,7 @@ qu'un tableau de valeurs est bien la permutation d'un autre tableau de valeurs).
 
 Quant à la seconde post-condition, il suffit de parcourir linéairement tout le tableau en sortie pour vérifier que les éléments consécutifs vérifient bien la relation d'ordre.
 
-Remarquons que dans cet exemple, les pré et post-conditions sont loin d'être triviales et ont un coup en temps de calcul qui peut être non négligeable. Cependant, en C et C++, rappelons que ce coût ne sera effectif que lorsqu'on sera en phase de développement (*-DDEBUG*) mais ne sera plus présent lors de la production finale du code (où on utilisera l'option *-DNDEBUG*).
+Remarquons que dans cet exemple, les pré et post-conditions sont loin d'être triviales et ont un coup en temps de calcul qui peut être non négligeable. Cependant, en C et C++, rappelons que ce coût ne sera effectif que lors de la phase de développement (*-DDEBUG*) mais ne sera plus présent lors de la production finale du code (où on utilisera l'option *-DNDEBUG*).
 
 Même si le code produit durant la phase de développement sera plus lent, une bonne utilisation des pré et post conditions peut réduire drastiquement le temps de développement en permettant de détecter assez tôt des bogues potentiels. Il ne faut pas oublier que la relecture du code et la phase de "débogage" sont des parties du développement qui prennent la plus grosse partie du temps de mise en oeuvre.
 
@@ -287,9 +327,7 @@ Un code mettant en oeuvre un algorithme est bien écrit si il a les propriétés
 - Être explicite, montrer clairement les intentions du développeur;
 - Être soigné et robuste au temps qui passe.
 
-Regardons en détail chacune de ces caractéristiques :
-
-**Le code doit être facile à lire**
+#### Le code doit être facile à lire
 
 Pour que le code soit facile à lire, il faut d'une part qu'il soit bien structuré et bien présenté, et d'autre part,
 que les noms des variables et des fonctions soient choisis avec soin.
@@ -315,7 +353,7 @@ Par exemple, si on regarde le code C ci--dessous, il est évident que le manque 
 
 Pour ce qui est du choix des noms des choses (variables, fonctions, structures, etc.), nous en reparlerons un peu plus loin.
 
-**Le code doit avoir une organisation logique et évidente**
+#### Le code doit avoir une organisation logique et évidente
 
 Ce point est plus délicat car nous avons souvent des solutions différentes pour résoudre le même problème. Il est donc normal qu'un code qui semble logique à quelqu'un, semble "tordu" à son voisin.
 
@@ -358,7 +396,7 @@ Quitte à faire un peu plus de calcul, il est donc préférable de ne passer que
     }
 ```
 
-**Le code doit être explicite**
+#### Le code doit être explicite
 
 Lorsqu'on écrit des algorithmes ou que l'on développe des programmes, on est parfois tenté de prendre
 des raccourcis car "on sait" que telle ou telle méthode permet de faire telle ou telle chose bien pratique.
@@ -373,7 +411,7 @@ boucles imbriquées permettant d'afficher chacun des éléments de la matrice. O
 est triangulaire, vous allez probablement vouloir optimiser votre double boucle d'affichage. C'est naturellement
 une bonne idée... mais pensez bien à rappeler dans le commentaire pourquoi vous procédez de la sorte.
 
-**Le code doit être soigné et robuste au temps qui passe**
+#### Le code doit être soigné et robuste au temps qui passe
 
 Lorsqu'on écrit un code, on a la fâcheuse tendance à s'arrêter dès que celui-ci fonctionne. C'est un tort !
 Le code doit être entretenu. Cela signifie qu'il faut relire son code après l'avoir terminé, vérifié que l'on a bien
@@ -410,7 +448,7 @@ Comme vous pouvez le voir, le premier commentaire ne correspond plus du tout à 
 la compréhension du code plutôt qu'il l'éclaire ! Ce premier commentaire devait sûrement être pertinent dans les premières
 versions du code mais au fur et à mesure de l'évolution de ce dernier, ne correspond plus du tout à ce que fait l'algorithme !
 
-**C'est bien joli tout ça, mais coder proprement ça prend du temps !**
+#### C'est bien joli tout ça, mais coder proprement ça prend du temps !
 
 Faux ! Il ne faut pas confondre vitesse et précipitation.
 
@@ -471,23 +509,13 @@ Amusez-vous à trouver pourquoi tous les commentaires ci--dessous sont des mauva
     return i;
 ```
 
-**Remarque** : Si vous vous sentez obligé de commenter la fin d'un bloc d'instructions, c'est que
-probablement votre bloc d'instruction est trop long et que vous pouvez certainement fragmenter votre code
-en éléments plus simples.
+**Remarque** : Si vous vous sentez obligé de commenter la fin d'un bloc d'instructions, c'est que probablement votre bloc d'instruction est trop long et que vous pouvez certainement fragmenter votre code en éléments plus simples.
 
-**Attention** : Les commentaires ne doivent pas palier un manque de clarté de votre code. Si
-vous avez besoin de commentaires pour cela, c'est probablement que vous pouvez améliorer votre code pour le rendre plus
-lisible. Essayez donc de le reécrire, au moins partiellement, en l'améliorant.
+**Attention** : Les commentaires ne doivent pas palier un manque de clarté de votre code. Si vous avez besoin de commentaires pour cela, c'est probablement que vous pouvez améliorer votre code pour le rendre plus lisible. Essayez donc de le reécrire, au moins partiellement, en l'améliorant.
 
-Comme nous l'avons déjà évoqué, les commentaires, comme le code, doivent être maintenus, c'est à dire qu'ils doivent
-évoluer avec le code, et disparaître si le code correspondant disparaît. Par conséquent, il faut veiller au bon dosage
-de vos commentaires, de sorte à ne pas alourdir inutilement votre travail de maintenance. Et puis, pour citer
-Guido Von Rossum, le créateur du langage Python, "Les interfaces, c'est comme les blagues, si on doit les expliquer, c'est qu'elles sont ratées !". Donc si on doit commenter l'utilisation d'une fonction avec un grand nombre de commentaire, c'est
-que la fonction fait soit trop de chose, soit est inutilement compliquée !
+Comme nous l'avons déjà évoqué, les commentaires, comme le code, doivent être maintenus, c'est à dire qu'ils doivent évoluer avec le code, et disparaître si le code correspondant disparaît. Par conséquent, il faut veiller au bon dosage de vos commentaires, de sorte à ne pas alourdir inutilement votre travail de maintenance. Et puis, pour citer Guido Von Rossum, le créateur du langage Python, "Les interfaces, c'est comme les blagues, si on doit les expliquer, c'est qu'elles sont ratées !". Donc si on doit commenter l'utilisation d'une fonction avec un grand nombre de commentaire, c'est que la fonction fait soit trop de chose, soit est inutilement compliquée !
 
-Enfin, une bonne pratique est d'utilisé des outils tels que |doctest| qui vous permettent d'écrire des petits tests pour vos fonctions tout en les documentant. Les avantages de cette pratique sont d'une part que cela vous "force" à tester votre code,
-et qu'il permet en même temps d'en avoir une documentation "par l'exemple" qui sera forcément cohérente avec le code et à jour
-(sinon les tests ne fonctionneraient pas).
+Enfin, une bonne pratique est d'utilisé des outils tels que |doctest| qui vous permettent d'écrire des petits tests pour vos fonctions tout en les documentant. Les avantages de cette pratique sont d'une part que cela vous "force" à tester votre code, et qu'il permet en même temps d'en avoir une documentation "par l'exemple" qui sera forcément cohérente avec le code et à jour (sinon les tests ne fonctionneraient pas).
 
 ### Comment nommer les choses ?
 
@@ -510,32 +538,20 @@ La première règle est donc de choisir des noms de variables prononçables et f
 
 Vous devez également choisir des noms de variables explicites pour vous mais aussi pour les autres.
 
-Par exemple, *a* est bien moins explicite que *adresseClient*. De même, *lf* est moins explicite que
-*largeurFenetre*. Pensez également que vous serez probablement amenés à chercher vos variables dans votre code
-avec un outil de recherche. À votre avis, combien d'occurences de *a* allez vous trouver ? Et combien
-d'occurences de *adresseClients* ?
+Par exemple, *a* est bien moins explicite que *adresseClient*. De même, *lf* est moins explicite que *largeurFenetre*. Pensez également que vous serez probablement amenés à chercher vos variables dans votre code avec un outil de recherche. À votre avis, combien d'occurences de *a* allez vous trouver ? Et combien d'occurences de *adresseClients* ?
 
-Evitez également de choisir des noms de variables qui induisent un contre-sens. Par exemple, si vous écrivez
-*matrice = 8*, on pourrait penser que la variable est une matrice, or il s'agit clairement d'un entier. Au moment
-de l'affectation, il est facile de se rendre compte du type de la variable, mais maintenant, imaginez que vous
-rencontriez au beau mileu de votre code la ligne suivant :
+Evitez également de choisir des noms de variables qui induisent un contre-sens. Par exemple, si vous écrivez *matrice = 8*, on pourrait penser que la variable est une matrice, or il s'agit clairement d'un entier. Au moment de l'affectation, il est facile de se rendre compte du type de la variable, mais maintenant, imaginez que vous rencontriez au beau milieu de votre code la ligne suivante :
 
     matrice = 4 * matrice;
 
 Comment allez vous interpréter cette instruction ?
 
-Evitez également les noms de variables qui n'ont pas de sens, comme *plop*, surtout si vous en utilisez plusieurs
-dans la même portion de code. Vous risquez de vous perdre dans les noms, et donc d'introduire inutilement des
-bogues dans votre code.
+Evitez également les noms de variables qui n'ont pas de sens, comme *plop*, surtout si vous en utilisez plusieurs dans la même portion de code. Vous risquez de vous perdre dans les noms, et donc d'introduire inutilement des bogues dans votre code.
 
 Ne trichez pas non plus quand vous choisissez des noms de variables. Par exemple, en C, on ne peut pas nommer une variable
-*case* ou *volatile* car ce sont des mots réservés du langage. Si vous pensez avoir besoin de ces mots pour nommer vos
-variables, ne trichez pas en écrivant *ccase* ou 
-*vvolatile*, vous risqueriez de vous perdre dans vos propres astuces.
+*case* ou *volatile* car ce sont des mots réservés du langage. Si vous pensez avoir besoin de ces mots pour nommer vos variables, ne trichez pas en écrivant *ccase* ou *vvolatile*, vous risqueriez de vous perdre dans vos propres astuces.
 
-Enfin, essayez d'être cohérents losque vous choisissez vos noms de variables. Par exemple, si vous décidez d'utiliser
-le français pour nommer vos variables, utilisez le français tout du long, n'alternez pas avec l'anglais.
-*longueurPath* et *lengthChemin* sont des noms pour le moins curieux !
+Enfin, essayez d'être cohérents losque vous choisissez vos noms de variables. Par exemple, si vous décidez d'utiliser le français pour nommer vos variables, utilisez le français tout du long, n'alternez pas avec l'anglais. *longueurPath* et *lengthChemin* sont des noms pour le moins curieux !
 
 ### En conclusion
 

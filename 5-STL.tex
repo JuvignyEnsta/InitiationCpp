@@ -1,0 +1,1193 @@
+\documentclass[handout,10pt]{beamer}
+\usetheme{Copenhagen}
+\usepackage{amsmath,amsfonts,graphicx}
+\usepackage{listings}
+\usepackage{dsfont}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\setitemize{label=\usebeamerfont*{itemize item}%
+            \usebeamercolor[fg]{itemize item}
+            \usebeamertemplate{itemize item}}
+            
+\setlist[description]{style = multiline, labelwidth = 60pt}
+
+\usepackage{tikz} % Required for drawing custom shapes
+\usetikzlibrary{shadows, arrows, decorations.pathmorphing, fadings, shapes.arrows, positioning, calc, shapes, fit, matrix}
+\usepackage{multirow}
+\usepackage{polyglossia}
+
+
+\definecolor{lightblue}{RGB}{0,200,255} 
+\definecolor{paper}{RGB}{255,243,227}
+\definecolor{ocre}{RGB}{243,102,25} % Define the orange color used for highlighting throughout the book
+\definecolor{BurntOrange}{RGB}{238,154,0}
+\definecolor{OliveGreen}{RGB}{188,238,104}
+\definecolor{DarkGreen}{RGB}{0,128,0}
+\definecolor{BrickRed}{RGB}{238,44,44}
+\definecolor{Tan}{RGB}{210,180,140}
+\definecolor{Aquamarine}{RGB}{127,255,212}
+\definecolor{NavyBlue}{RGB}{0,64,128}
+
+\title[C++\hspace{2em}]{STL et librairie standard}
+\author[Xavier JUVIGNY]{Xavier JUVIGNY}
+\date{\today}
+
+\institute{ONERA}
+\newcommand*\lstinputpath[1]{\lstset{inputpath=#1}}
+\lstinputpath{./exemples/5_STL}
+\lstdefinestyle{customcpp}{
+    breaklines=true,
+    frame=tb,
+    xleftmargin=\parindent,
+    language=C++,
+    showstringspaces=false,
+    basicstyle=\tiny\ttfamily,
+    keywordstyle=\bfseries\color{green!40!black},
+    commentstyle=\itshape\color{purple!40!black},
+    identifierstyle=\color{blue},
+    stringstyle=\color{orange!60!black},
+}
+\lstset{escapechar=@,style=customcpp}
+\newcommand{\includecode}[2][cpp]{
+\lstinputlisting[escapechar=, style=custom#1]{#2}
+}
+
+\newcommand{\includepartcode}[4][cpp]{
+\lstinputlisting[escapechar=, firstline=#3, lastline=#4, style=custom#1]{#2}
+}
+
+\begin{document}
+
+\lstset{language=C++,
+  frame=single,
+  backgroundcolor=\color{paper},
+  basicstyle=\tiny\ttfamily,
+  keywordstyle=\color{blue}\tiny\ttfamily,
+  commentstyle=\color{red}\tiny\ttfamily,
+  stringstyle=\color{brown}\tiny\ttfamily,
+  keepspaces=true,
+  showspaces=false,
+  showstringspaces=false,
+  tabsize=4
+}
+
+\begin{frame}
+ \titlepage
+\end{frame}
+
+\begin{frame}
+\frametitle{Plan du cours}
+\tableofcontents
+\end{frame}
+
+\section{Présentation STL}
+
+\begin{frame}[fragile]{Standard Template Library (STL)}
+\tiny
+\begin{block}{Historique}
+\begin{itemize}
+ \item \textbf{\color{red}1971} : Première recherche en programmation générique par Dave Musser
+ \item \textbf{\color{red}1979} : Alexander Stepanov publie ses premières idées de programmation générique;
+ \item \textbf{\color{red}1987} : A. Stepanov met en {\oe}uvre ses idées en ADA;
+ \item \textbf{\color{red}1992} : Sur demande d'HP, Stepanov avec Musser porte le code ADA en C++ avec l'aide de Meng Lee;
+ \item \textbf{\color{red}1993} : l'ISO demande à HP et Stepanov la possibilité de normaliser leur bibliothèque;
+ \item \textbf{\color{red}Mars 1994} : Première version normalisée de la STL pour le C++ : la STL fait désormais partie de la librairie standard du C++;
+ \item \textbf{\color{red}Août 1994} : HP met leur implémentation de la STL libre de droit.
+\end{itemize}
+\end{block}
+
+\begin{block}{Caractéristiques}
+\begin{itemize}
+ \item Bibliothèque uniquement basée sur les templates, libre de droit;
+ \item Les différentes implémentations de la STL sont relativement bien optimisées;
+ \item Temps relativement long à la compilation, mais techniques possibles pour optimiser le temps de compilation;
+ \item Divisée en plusieurs parties :
+ \begin{itemize}
+ \item Les conteneurs;
+ \item Général;
+ \item Localisation;
+ \item Chaînes de caractères;
+ \item Flux, entrées et sorties;
+ \item Support pour le langage;
+ \item Support du multithreading;
+ \item Librairies numériques;
+ \end{itemize}
+ \item À partir de C++ 17, certains algorithmes de la STL ont une version parallèle.
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Les itérateurs}
+\tiny
+\begin{block}{Notion d'itérateur}
+\begin{itemize}
+ \item Objets permettant de parcourir les éléments d'un conteneur, indépendemment de la structure sous-jacente;
+ \item On pourra ainsi parcourir de la même façon un tableau, une liste, un arbre, un dictionnaire, etc.
+ \item Différents itérateurs en C++ :
+ \begin{itemize}
+ \item Itérateurs bidirectionnel : permet d'accéder à l'élément suivant ou précédent :
+ \begin{lstlisting}
+std::list<int>::iterator itL = ... ; itL++ /* élt suivant */; itL-- /* élt précédent */;\end{lstlisting}
+ \item Itérateurs à accès aléatoire : Permet de pouvoir sauter autant d'éléments ( précédents ou suivant ) que l'on souhaite :
+ \begin{lstlisting}
+std::vector<int>::iterator itV = ...; itV += 5;/* Cinq éléments après */
+\end{lstlisting}
+ \item Itérateurs inverses : Permet de parcourir un conteneur à l'envers
+ \begin{lstlisting}
+std::vector<int>::reverse_iterator itV = ...; itV ++;/* élt précédent */
+\end{lstlisting}
+ \item Itérateurs constants : Permet de parcourir les éléments d'un conteneur sans pouvoir modifier les valeurs contenues.
+ \begin{lstlisting}
+std::vector<int>::const_iterator itV = ...; double a = *itV; *itV = 3 /* Erreur ! */; 
+\end{lstlisting}
+ \end{itemize}
+ \item Un itérateur peut avoir plusieurs des qualificatifs cités au dessus.
+\begin{lstlisting}
+std::vector<int>::const_reverse_iterator itV = ...;/* It. inverse constant à accès aléatoire*/
+\end{lstlisting}
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Les itérateurs (suite)}
+\tiny
+\begin{block}{Utilisation des itérateurs}
+\begin{itemize}
+ \item Les itérateurs comparés avec l'opérateur \lstinline$!=$, et l'opérateur \lstinline$*$ permet l'accès à l'élément courant pointé par l'itérateur;
+ \item Les conteneurs de la STL ont tous une méthode 
+  \begin{itemize}
+  \item \lstinline$begin$ renvoyant un itérateur pointant sur le premier élément du conteneur;
+  \item \lstinline$end$ renvoyant un itérateur pointeur sur un élément après le dernier élément du conteneur.
+  %\item \lstinline$rbegin$/\lstinline$rend$ renvoyant un itérateur inverse pointant sur le dernier/avant le premier élément du conteneur.
+  \end{itemize}
+\begin{lstlisting}
+std::vector<int> tableau = { 2, 3, 5, 7, 11, 13, 17, 19 };
+for ( auto it = tableau.begin(); it != tableau.end(); ++it ) std::cout << *it << std::endl;\end{lstlisting}
+  \item Permet aussi certaines manipulations sur les conteneurs : insertion, suppression, etc.
+\begin{lstlisting}
+std::vector<std::string> tab;
+tab.push_back(" et "); tab.push_back(" milou.");
+tab.insert(tab.begin(), "Tintin");// Insère Tintin au début du tableau
+tab.erase(tab.begin());// On supprime le premier mot...
+\end{lstlisting}
+\end{itemize}
+\end{block}
+\begin{alertblock}{Fonctions \lstinline$begin$ et \lstinline$end$}
+\begin{itemize}
+ \item Deux \textbf{fonctions} \lstinline$begin$ et \lstinline$end$ renvoyant un itérateur sur le premier ou après
+ le dernier élément du conteneur...
+\begin{lstlisting}
+int foo[] = {1,2,3,4,5}; std::vector<int> bar;
+for ( auto it = std::begin(foo); it != std::end(foo); ++it ) ...
+for ( auto it = std::begin(bar); it != std::end(bar); ++it ) ...
+\end{lstlisting}
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]{Méthodes communes aux conteneurs} 
+\tiny
+\begin{exampleblock}{Capacité}
+\begin{itemize}
+ \item \lstinline$empty$ teste si le conteneur est vide ou non;
+ \item \lstinline$size$ retourne la taille actuelle du conteneur;
+ \item \lstinline$max_size$ retourne la taille maximale possible pour le conteneur.
+\end{itemize}
+\end{exampleblock}
+
+\begin{block}{Accesseurs}
+\begin{itemize}
+ \item La méthode  \lstinline$front$ permet d'accèder au premier élément du conteneur;
+ \item La méthode \lstinline$back$ permet d'accèder au dernier élément du conteneur;
+\end{itemize}
+Et seulement pour les conteneurs à accès direct :
+\begin{itemize}
+ \item L'opérateur \lstinline$[]$ permet d'accèder directement au $i^{\mbox{ème}}$ élément;
+ \item La méthode \lstinline$at$ permet d'accèder directement au $i^{\mbox{ème}}$ élément mais vérifie la validité de l'indice;
+ \item La méthode \lstinline$data$ renvoie un pointeur C sur l'adresse du premier élément du conteneur.
+\end{itemize}
+\end{block}
+
+\begin{alertblock}{Modifieurs pour conteneurs dynamiques}
+\begin{itemize}
+ \item \lstinline$insert$ : Insère un élément avant la position de l'itérateur passé en argument
+ \item \lstinline$erase$  : Enlève l'élément pointé par un itérateur ou les éléments encadrés par deux itérateurs \lstinline$[first,last[$;
+ \item \lstinline$swap$   : \'Echange les éléments de deux conteneurs
+ \item \lstinline$clear$  : Enlève tous les éléments du conteneur;
+ \item \lstinline$emplace$: Construit un nouveau élément avant l'itérateur
+\end{itemize}
+\end{alertblock}
+\end{frame}
+
+
+\section{Les conteneurs}
+
+\begin{frame}[fragile]{std::array}
+\tiny
+ \begin{block}{Caractéristiques}
+  \begin{itemize}
+   \item Conteneur statique à accès direct;
+   \item Défini un tableau de taille fixe contigü en mémoire;
+   \item Fichier inclu : \lstinline$#include <array>$
+   \item Création tableau statique : \lstinline$std::array<T,N>$ où \verb@T@ type contenu et \verb@N@ nombre d'éléments;
+   \item Possibilité d'avoir tableau taille zéro mais éviter accès aux éléments;
+   \item itérateurs à accès aléatoires; itérateur inverse possible
+   \item \lstinline$fill$ : méthode permettant de remplir le tableau avec une valeur unique
+   \item Comparaisons de deux tableaux éléments par éléments, du premier vers le dernier
+  \end{itemize}
+ \end{block}
+ \includepartcode{array.cpp}{7}{19}
+\end{frame}
+
+\begin{frame}[fragile]{std::vector}
+\tiny
+\begin{block}{Caractéristiques}
+\begin{itemize}
+\item Conteneur dynamique à accès direct;
+\item Création tableau dynamique avec ou sans initialisation;
+\item itérateurs à accès aléatoires, itérateur inverse possible,
+\item Possibilité réservation mémoire supérieure à taille courante tableau;
+\item Gestion allocation mémoire très optimisée,
+\item Comparaison lexicographique, \lstinline$std::fill$, \dots
+\end{itemize}
+\end{block}
+\includepartcode{vector.cpp}{7}{19}
+\end{frame}
+
+\begin{frame}[fragile]{std::list}
+\tiny
+\begin{block}{Caractéristiques}
+\begin{itemize}
+\item Conteneur dynamique à accès séquentiel;
+\item Liste à double liens
+\item Création avec liste d'initialisation ou non;
+\item Itérateur uniquement séquentiel, possibilité reverse;
+\item Insertion au milieu de la liste efficace;
+\item Existe une version \lstinline$std::forward_list$ à lien unique, avec pas d'itérateur inverse.
+\end{itemize}
+\end{block}
+\includepartcode{list.cpp}{4}{20}
+\end{frame}
+
+\begin{frame}[fragile]{Ensembles}
+\tiny 
+\begin{exampleblock}{\texttt{std::set, std::unordered\_set} : Ensemble à valeurs uniques}
+\begin{itemize}
+\item Conteneur dynamique associatif garantissant exemplaire unique de chaque objet;
+\item Les objets doivent faire parti d'un ensemble ordonné;
+\item Possibilité définir opération comparaison $<$ permettant de trier éléments;
+\item Itérateur séquentiel avec possibilité itérateur inverse.
+\item Existe en version non ordonnée avec opérateur d'égalité à définir.
+\end{itemize}
+\end{exampleblock}
+\includepartcode{set.cpp}{7}{10}
+
+\begin{exampleblock}{std::multiset : Ensemble à valeurs multiples}
+\begin{itemize}
+\item Mêmes fonctionnalités que \lstinline$std::set$ mais ne garantit pas unicité;
+\item Une version non ordonnée existe également.
+\end{itemize}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Autres conteneurs}
+\tiny
+\begin{block}{Conteneur de pile}
+\begin{itemize}
+ \item Permet de gérer une pile LIFO ( Last in, First out );
+ \item Pas d'itérateurs, mais accès au dernier élément empilé;
+ \item On ne peut qu'empiler ou dépiler.
+\end{itemize}
+\end{block}
+\includepartcode{stack.cpp}{7}{12} 	
+
+\begin{block}{Conteneur queue et priority\_queue}
+\begin{itemize}
+ \item queue : Gère une queue FIFO ( First in First out );
+ \item priority\_queue : Gère une queue dont le premier élément est le plus grand élément de l'ensemble.
+\end{itemize}
+\end{block}
+\includepartcode{priority_queue.cpp}{6}{12}
+\end{frame}
+
+\begin{frame}[fragile]{Exercice : \'Echantillons sur la suite de Syracuse}
+\tiny
+ \begin{block}{Problème à résoudre}
+  \begin{itemize}
+   \item On considère la suite de Syracuse : 
+   \begin{equation}\left\{\begin{array}{lccr} x_{0} & & \mbox{donné} & \\
+                                                                     x_{n} & = & \frac{x_{n-1}}{2} & \mbox{ si } x_{n-1} \mbox{ est pair}\\
+                                                                           & = & 3x_{n-1}+1 & \mbox{ si } x_{n-1} \mbox{est impair.}
+                                                                    \end{array}\right. \end{equation}
+\item Il existe au moins un cycle pour cette suite  avec $u_{0} = 4$ : $u_{1} = 2; u_{2} = 1; u_{3} = 4;\ldots$ 
+\item Il semblerait ( mais ce n'est pas démontré ) que quelque soit $u_{0}$ choisit, on retombe tout le temps
+           sur le cycle 4, 2, 1, 4, \ldots
+\item On appelle \textbf{temps de vol} de la suite de syracuse le nombre d'itérations de la suite en fonction de $u_{0}$ pour atteindre la valeur 1;
+\item On appelle \textbf{hauteur de vol} de la suite la plus grande valeur atteinte par la suite ( avant de tomber sur le cycle 4,2,1,... );
+\item Pour $u_{0}$ prenant des valeurs de $1$ à $N$ ( à choisir ), calculer pour chaque hauteur de vol atteinte, le nombre de $u_{0}$ ayant permis d'atteindre cette
+valeur; trouver le plus petit $u_{0}$ ayant permis d'atteindre une hauteur de vol donnée, cela pour chaque hauteur de vol;
+\item Calculer la hauteur de vol en fonction de la longueur de vol;
+\item Afficher une seule fois la valeur de chaque longueur et hauteur de vol atteintes.
+ \end{itemize}
+ \end{block}
+\end{frame}
+
+\section{Utilitaires système}
+
+\begin{frame}[fragile]{Mesure du temps}
+ \tiny
+ \begin{block}{Présentation générale}
+  \begin{itemize}
+   \item Un seul header : \lstinline$chrono$;
+   \item Tous les éléments de ce header appartiennent à l'espace de nommage \lstinline$std::chrono$;
+   \item Repose sur trois concepts :
+   \begin{itemize}
+   \item \textbf{Durée} : Mesure temps écoulé. Représenté par la classe template \lstinline$duration$ ayant pour paramêtre {\color{DarkGreen} type
+   pour compter} et {\color{BrickRed} période de précision}. Exemple : {\color{DarkGreen}10} {\color{BrickRed}millisecondes}
+   \item \textbf{Localisation temporelle} : Une localisation précise dans le temps exprimé par la classe template \lstinline$time_point$ qui contient une durée
+   relative à une époque ( qui est un lieu du temps commun à tous les objets utilisant la même horloge );
+   \item \textbf{Les horloges} : Permet de relier une localisation temporelle à un temps physique réel. Trois types d'horloges proposés : 
+   \lstinline$system_clock, steady_clock$ et \lstinline$high_resolution_clock$.
+   \end{itemize}
+  \end{itemize}
+ \end{block}
+ 
+ \begin{block}{Les différentes horloges}
+ \begin{itemize}
+  \item \lstinline$system_clock$ : Horloge système temps réel permettant de le convertir en représentation calendrier
+  \item \lstinline$steady_clock$ : Horloge permettant de mesurer des intervalles de temps
+  \item \lstinline$high_resolution_clock$ : Horloge possédant la période d'horloge la plus petite possible.
+ \end{itemize}
+ \end{block}
+ 
+\end{frame}
+
+\begin{frame}[fragile]{Horloge système}
+\tiny
+\begin{block}{Propriétés}
+\begin{itemize}
+ \item Représente le temps réel;
+ \item Permet de faire de l'arithmétique signée; 
+\end{itemize}
+\end{block}
+\includepartcode{system_clock.cpp}{6}{17}
+\end{frame}
+
+\begin{frame}[fragile]{Autres horloges}
+\tiny
+\begin{block}{steady\_clock}
+\begin{itemize}
+ \item Permet de calcul un temps écoulé entre deux appels;
+\end{itemize}
+
+\end{block}
+\includepartcode{steady_clock.cpp}{30}{35}
+\begin{block}{Horloge haute précision}
+ \begin{itemize}
+  \item Horloge avec la plus grande précision
+  \item Souvent un synonyme de \lstinline$steady_clock$
+ \end{itemize}
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]{Tirages pseudo aléatoires}
+ \tiny
+ 
+ \begin{block}{Présentation}
+  \begin{itemize}
+   \item Dans \lstinline$random$, permet de produire des nombres alétoires en utilisant une combinaison de générateurs et de distributions
+   \item \textbf{Générateurs}   : Objets qui génèrent des nombres distribués uniformément;
+   \item \textbf{Distributions} : Objets qui transforment des suites de nombres générés par un générateur en suite de nombres qui suivent une
+   loi de distribution, tel que \lstinline$uniform, Normal$ ou \lstinline$Binomial$.
+   \item Les objets de distribution génère des nombres aléatoires à l'aide de l'opérateur \lstinline$()$ qui prend un générateur en argument
+\begin{lstlisting}
+std::default_random_engine generator;
+std::uniform_int_distribution<int> distribution(1,6);
+int dice_roll = distribution(generator);
+\end{lstlisting}
+  \item On peut utiliser \lstinline$std::bind$ pour lier la distribution au générateur :
+\begin{lstlisting}
+  auto dice = std::bind( distribution, generator );
+  int wisdom = dice() + dice() + dice();
+\end{lstlisting}
+\item Tous les générateurs ormi \lstinline$random_device$ utilisent une graine comme origine de l'aléatoire, 
+  \end{itemize}
+ \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]{Les générateurs}
+\tiny
+\begin{columns}
+ \begin{column}{0.5\textwidth}
+  \begin{block}{Générateur pseudo-aléatoire (classes templates)}
+  \begin{itemize}
+  \item \lstinline$linear_congruential_engine$ 
+  \item \lstinline$mersenne_twister_engine$ 
+  \item \lstinline$subtract_with_carry_engine$
+  \end{itemize}
+ \end{block}
+ \begin{block}{Adaptateurs ( modifie le comportement du générateur )}
+  \begin{itemize}
+   \item \lstinline$discard_block_engine$ : utilise $r$ nombre sur $p$ nombres;
+   \item \lstinline$independent_bits_engine$ : génère qu'avec un nombre de bits spécifiques;
+   \item \lstinline$shuffle_order_engine$ : stocke $r$ éléments de la suite et prend une valeurs au hasard.
+  \end{itemize}
+ \end{block}
+ \end{column}
+ \begin{column}{0.5\textwidth}
+ \begin{block}{Générateur non déterministe}
+ \lstinline$random_device$
+ \end{block}
+ \begin{block}{Instantiations de générateurs}
+ \begin{itemize}
+  \item \lstinline$default_random_engine$ : Générateur alétoire par défaut
+  \item \lstinline$minstd_rand$ : \lstinline$x = x * 48271 % 2147483647$	
+  \item \lstinline$minstd_rand0$ : \lstinline$x = x * 16807 % 2147483647$
+  \item \lstinline$mt19937$ : Mersenne Twister avec état sur 19937 bits
+  \item \lstinline$mt19937_64$ : idem en 64 bits
+  \item \lstinline$ranlux24_base$ : \lstinline$subtract_with_carry_engine$ sur 24 bits
+  \item \lstinline$ranlux48_base$ : \lstinline$subtract_with_carry_engine$ sur 48 bits
+  \item \lstinline$ranlux24$ : idem que \lstinline$ranlux24_base$ avec adaptateur \lstinline$discard_block_engine$
+  \item \lstinline$ranlux48$ : idem que \lstinline$ranlux48_base$ avec adaptateur \lstinline$discard_block_engine$
+  \item \lstinline$knuth_b$ : \lstinline$random_device$ + \lstinline$shuffle_order_engine$
+ \end{itemize}
+ \end{block}
+ \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Distributions aléatoires}
+\tiny
+\begin{columns}
+ \begin{column}{0.5\textwidth}
+ \begin{block}{Distribution uniforme}
+ \begin{itemize}
+  \item \lstinline$uniform_int_distribution$ : distribution sur un ensemble dénombrable
+  \item \lstinline$uniform_real_distribution$ : distribution sur un ensembe réel
+ \end{itemize}
+ \end{block}
+
+ \begin{block}{Bernouilli}
+ \begin{itemize}
+  \item \lstinline$bernoulli_distribution$
+  \item \lstinline$binomial_distribution$
+  \item \lstinline$geometric_distribution$
+  \item \lstinline$negative_binomial_distribution$
+ \end{itemize}
+ \end{block}
+ 
+ \begin{block}{Basé sur des proportions}
+   \begin{itemize}
+     \item \lstinline$poisson_distribution$
+     \item \lstinline$exponential_distribution$
+     \item \lstinline$gamma_distribution$
+     \item \lstinline$weibull_distribution$
+     \item \lstinline$extreme_value_distribution$
+   \end{itemize}
+ \end{block}
+ \end{column}
+ \begin{column}{0.5\textwidth}
+ \begin{block}{Loi normale}
+    \begin{itemize}
+     \item \lstinline$normal_distribution$
+     \item \lstinline$lognormal_distribution$
+     \item \lstinline$chi_squared_distribution$
+     \item \lstinline$cauchy_distribution$
+     \item \lstinline$fisher_f_distribution$
+     \item \lstinline$student_t_distribution$
+    \end{itemize}
+ \end{block}
+ \begin{block}{Par morceau}
+  \begin{itemize}
+   \item \lstinline$discrete_distribution$
+   \item \lstinline$piecewise_constant_distribution$
+   \item \lstinline$piecewise_linear_distribution$
+  \end{itemize}
+ \end{block}
+ \end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Exercice sur les nombres aléatoires et les chronomètres}
+\tiny
+\begin{exampleblock}{Ensemble de bhuddabrot}
+\begin{itemize}
+\item L'ensemble de bhuddabrot est basé sur la suite de Benoit Mandelbrot : 
+\[
+\left\{\begin{array}{lcr}
+z_{0} & = & 0 \\
+z_{n+1} = z_{n}^{2} + c \\
+\end{array}\right.
+\]
+pour un $c$  complexe choisi;
+\item Cette suite converge ou non selon la valeur de $c$. On sait de plus qu'elle diverge dès qu'une valeurs de la suite dépasse en norme la valeur 2;
+\item L'ensemble de bhudda consiste à choisir des valeurs de $c$ au hasard  à ne s'intéresser qu'aux suites divergentes ( dont on arrête les itérations dès que la norme de la suite dépasse 2 );
+\item On affiche l'orbite de chacune de ces suites à l'écran en allumant de façon incrémentale les pixels correspondant aux valeurs successives de la suite;
+\item Modifier le squelette du programme afin de créer une image de l'ensemble de bhuddabrot;
+\item Mesurer le temps pris pour calculer cet ensemble.
+\end{itemize}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Gestion de la mémoire}
+\tiny
+\begin{block}{Pointeur unique}
+\begin{itemize}
+ \item Permet de créer un objet dynamiquement pointé par un pointeur unique;
+ \item Ce pointeur peut changer par déplacement ( pas de copie possible );
+ \item Objet pointé détruit automatiquement quand plus de pointeur dessus.
+ \item Création de l'objet pointé à l'aide de \lstinline$std::make_unique$ (C++14)
+ \item Peut pointer sur le pointeur nul ( \lstinline$nullptr$ )
+ \item Respecte les méthodes virtuelles.
+\end{itemize}
+\begin{lstlisting}
+std::unique_ptr<SymmetricMatrix> f(std::unique_ptr<SquareMatrix> M) { ... }
+...
+auto sq_mat = std::make_unique<SquareMatrix>(3, { 1., 3., 5.,
+                                                  2., 4., 0.,
+                                                  3., 5., 1. });
+auto mat = std::move(sq_mat); // Déplacement, mat pointe sur la matrice, sq_mat sur nullptr
+auto sym_mat = f(mat); // après appel, mat = nullptr et la SquareMatrix est détruite
+                       // et sym_mat pointe sur la matrice symmétrique retournée                     
+int dim = sym_mat->dimension(); // Accès comme pour un pointeur classique
+double a = (*sym_mat)(0,0);// Avec l'opérateur () virtuel -> ok appel de la bonne méthode
+std::unique_ptr<SquareMatrix> sq_matsym(std::move(sym_mat)); // Convertit en pointeur sur matrice carrée
+\end{lstlisting}
+
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Gestion de la mémoire}
+\tiny
+\begin{block}{Pointeur partagé}
+\begin{itemize}
+ \item Permet de créer un objet pointé par un ou plusieurs pointeurs;
+ \item L'objet est détruit quand plus aucun pointeur pointe dessus;
+ \item \lstinline$use_count$ permet de savoir le nombre de pointeur
+ \item Création du pointeur et de l'objet pointé à l'aide de \lstinline$std::make_shared$ (C++11 et au delà)
+ \item Peut pointer sur l'objet null ( \lstinline$nullptr$ );
+ \item Plus lourd de gestion pour l'exécutable que \lstinline$unique_ptr$;
+ \item Convertions entre types possible à l'aide de \lstinline$static_pointer_cast, dynamic_pointer_cast,...$;
+ \item Respecte les méthodes virtuelles.
+\end{itemize}
+\begin{lstlisting}
+std::shared_ptr<SymmetricMatrix> f(std::shared_ptr<SquareMatrix> M) { ... }
+...
+auto sq_mat = std::make_shared<SquareMatrix>(3, { 1., 3., 5.,
+                                                  2., 4., 0.,
+                                                  3., 5., 1. });
+auto mat = sq_mat; // Copie, mat et sq_mat pointent sur la matrice
+std::cout << mat.use_count() << std::endl; // Affiche 2
+auto sym_mat = f(mat); // après appel, mat pointe sur  la SquareMatrix 
+                       // et sym_mat pointe sur la matrice symmétrique retournée
+int dim = sym_mat->dimension(); // Accès comme pour un pointeur classique
+double a = (*sym_mat)(0,0);// Avec l'opérateur () virtuel -> ok appel de la bonne méthode
+std::shared_ptr<SquareMatrix> sq_matsym = std::static_pointer_cast<SquareMatrix>(sym_mat); // Convertit en pointeur sur matrice carrée
+\end{lstlisting}
+
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Expressions régulières}
+\tiny
+ \begin{block}{Définition}
+  \begin{itemize}
+   \item Moyen standard d'exprimer des motifs de comparaison pour les chaînes de caractères;
+   \item Différent de la syntaxe shell
+   \item Très difficile à lire : \lstinline$"\s*(?P<header>[^:]+)\s*:(?P<value>.*?)\s*"$
+   \item Très puissant
+  \end{itemize}
+ \end{block}
+ \begin{block}{Syntaxe de base}
+  \begin{itemize}
+   \item Caractère hors caractères spéciaux : représente lui-même;
+   \item Caractère quelconque symbolisé par le point \lstinline$.$;
+   \item Répétitions caractère : symbole \lstinline$*$ (0-N), \lstinline$+$ (1-N), \lstinline$?$ : (0-1)
+  \end{itemize}
+ \end{block}
+ \begin{exampleblock}{Exemples}
+ \begin{center}
+ \begin{tabular}{|l|l|l|}\hline
+ reg & ok & pas ok \\ \hline
+ \multirow{3}{*}{a.a} & aaa & aa \\ 
+  & aba & a \\
+  & a a & baa \\ \hline
+ \multirow{2}{*}{a+} & a & \\
+ & aaaa & aaabaa \\ \hline
+ \multirow{3}{*}{ab?a+} & aba & acaaa \\ 
+ & abaaa & abba \\
+ & aaaa & \\ \hline
+ \multirow{3}{*}{a*b.c} & ab c & abc \\
+ & bxc & bc \\
+ & aaaaaaabdc & b \\ \hline
+ \end{tabular}
+ \end{center}
+ \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Expressions régulières}
+\tiny
+\begin{block}{Syntaxe ( suite )}
+ \begin{itemize}
+  \item Le début \lstinline$^$
+  \item La fin  \lstinline*$*
+  \item Les ensembles : encadré par \lstinline$[]$
+ \end{itemize}
+\end{block}
+ \begin{exampleblock}{Exemples}
+ \begin{center}
+ \begin{tabular}{|l|l|l|}\hline
+ reg & ok & pas ok \\ \hline
+ \multirow{3}{*}{\lstinline$[abc]+$} & a &  \\ 
+  & abac & za \\
+  & cab & + \\ \hline
+ \multirow{2}{*}{\lstinline$[0-9],[0-9]+$} & 0,1 & 0\\
+ & 2,345 & 23,4 \\ \hline
+ \multirow{2}{*}{\lstinline$[A-Z]_[^ =()]+$} & \lstinline$A_Data$ & \lstinline$AB_Data$ \\ 
+ & \lstinline$X_42$ & A \\ \hline
+ \multirow{2}{*}{\lstinline!^[^#]+#.*$!} & \lstinline$A = 4 # Commentaire shell$ & \lstinline$A=4$ \\
+ & \lstinline$function() # Fonction shell$  & \lstinline$# Commentaire ligne$ \\ \hline
+ \end{tabular}
+ \end{center}
+ \end{exampleblock}
+
+\end{frame}
+
+\begin{frame}[fragile]{Expressions régulières en C++}
+\tiny
+
+\begin{block}{Présentation}
+\begin{itemize}
+ \item Trouvé dans l'entête \lstinline$regex$
+ \item Les types de paramètres employés sont :
+ \begin{itemize}
+ \item \textbf{La suite ciblée} : la suite de caractères dans laquelle on recherche le motif
+ \item \textbf{l'expression régulière} : Le motif qu'on recherche dans la suite ciblée
+ \item \textbf{Tableaux de correspondance} : Plusieurs opérations permettent d'avoir des informations sur les correspondances. Ces informations sont stockées
+ dans des tableaux de type \lstinline$match_results$;
+ \item \textbf{Chaîne de remplacement} : Plusieurs opérations permettent de remplacer des motifs. 
+ \end{itemize} 
+\end{itemize}
+\end{block}
+
+\begin{block}{Opérations possibles}
+\begin{itemize}
+ \item \lstinline$regex_match$ : Recherche si la suite ciblée correspond au motif;
+ \item \lstinline$regex_search$: Recherche si un sous--ensemble de la suite ciblée correspond au motif;
+ \item \lstinline$regex_replace$ : Remplace tous les sous--ensemble de la suite ciblée correspondant au motif par une autre suite de caractères.
+\end{itemize}
+\begin{lstlisting}
+std::string s ("this subject has a submarine as a subsequence");
+std::smatch m;
+std::regex e ("\\b(sub)([^ ]*)");   // matches words beginning by "sub"
+std::cout << "The following matches and submatches were found:" << std::endl;
+while (std::regex_search (s,m,e)) {
+  for (auto x:m) std::cout << x << " ";
+  std::cout << std::endl;  s = m.suffix().str(); }
+std::cout << std::regex_replace (s,e,"sub-$2");
+std::string result;
+std::regex_replace (std::back_inserter(result), s.begin(), s.end(), e, "$2");
+std::cout << result;
+\end{lstlisting}
+
+\end{block}
+\end{frame}
+
+
+\section{algorithm}
+
+\begin{frame}[fragile]{Algorithmes}
+\tiny
+\begin{block}{Présentation}
+ \begin{itemize}
+  \item C++ propose un ensemble d'algorithmes pouvant traiter un ensemble de valeurs dans \lstinline$algorithm$
+  \item Ces algorithmes peuvent se classifier en plusieurs catégories :
+  \begin{itemize}
+  \item Les opérations sur les suites qui ne les modifient pas;
+  \item Celles qui les modifient;
+  \item Les algorithmes de partitionnement;
+  \item Les algorithmes de tri;
+  \item Les algorithmes de recherche;
+  \item Les algorithmes ensemblistes;
+  \item Les algorithmes de tas;
+  \item Les algorithmes de min/max;
+  \item Des algorithmes non classifiables...
+  \end{itemize}
+ \item Ces algorithmes opèrent sur les valeurs de la séquence, via les itérateurs;
+ \item Ils n'affectent en rien la structure même d'un conteneur, bien qu'ils puissent y permuter des éléments.
+ \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Algorithmes ne modifiant pas les séquences}
+\tiny
+\begin{block}{Algorithmes de parcours}
+Une seule fonction : \lstinline$for_each$ qui permet d'appliquer une fonction passée en paramêtre aux valeurs de la séquence.
+% REPRENDRE EXEMPLE SUR GROS ORDI
+%\includepartcode{for_each.cpp}{6}{7}
+\end{block}
+
+\begin{block}{Algorithmes de test}
+\begin{itemize}
+ \item Test sur les éléments d'une séquence : \lstinline$all_of, any_of, none_of$
+ \item Test de comparaison entre deux séquences : \lstinline$mismatch, equal, is_permutation$
+\end{itemize}
+% REPRENDRE EXEMPLE SUR GROS ORDI
+%\includepartcode{test_algorithms.cpp}{6}{15}
+\end{block}
+\end{frame}
+  
+\begin{frame}[fragile]{Algorithmes modifiant les séquences}
+\tiny
+\begin{block}{Copies, déplacements et suppressions}
+ \begin{itemize}
+  \item Algorithmes de copie : \lstinline$copy, copy_n, copy_if$ et \lstinline$copy_backward$
+  \item Algorithmes de déplacement : \lstinline$move, move_backward$
+  \item Algorithme d'échange : \lstinline$swap, swap_ranges, iter_swap$
+  \item Algorithme de remplacement : \lstinline$replace, replace_if, replace_copy, replace_copy_if$
+  \item Algorithme de suppression : \lstinline$remove, remove_if, remove_copy, remove_copy_if$
+  \item Algorithme unicité : \lstinline$unique, unique_copy$
+ \end{itemize}
+ \end{block}
+ \begin{block}{Algorithme de modifications}
+ \begin{itemize}
+  \item Transformation : \lstinline$transform$
+  \item Remplissage : \lstinline$fill, fill_n$
+  \item Génération  : \lstinline$generate, generate_n$
+  \item Inversion : \lstinline$reverse, reverse_copy$
+  \item Décalage : \lstinline$rotate, rotate_copy$
+  \item Mélange : \lstinline$random_shuffle, shuffle$
+ \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Autres algorithmes}
+ \tiny
+ \begin{block}{Partitionnement}
+  \begin{itemize}
+   \item \lstinline$is_partitioned, partition, stable_partition, partition_copy, partition_point$
+  \end{itemize}
+ \end{block}
+
+  \begin{block}{Tri}
+  \begin{itemize}
+   \item \lstinline$sort, stable_sort, partial_sort, partial_sort_copy, is_sorted,is_sorted_until, nth_element$   
+  \end{itemize}
+  \end{block}
+
+  \begin{block}{Recherche binaire}
+   \begin{itemize}
+    \item \lstinline$lower_bound, upper_bound, equal_range, binary_search$
+   \end{itemize}
+  \end{block}
+
+  \begin{block}{Opérations ensemblistes}
+   \begin{itemize}
+    \item \lstinline$merge, inplace_merge, includes, set_union, set_intersection, set_difference, set_symmetric_difference$
+   \end{itemize}
+  \end{block}
+
+  \begin{block}{Tas (heapsort)}
+   \begin{itemize}
+    \item \lstinline$push_heap, pop_heap, make_heap, sort_heap, is_heap, is_heap_until$
+   \end{itemize}
+  \end{block}
+
+  \begin{block}{Min/Max}
+   \begin{itemize}
+    \item \lstinline$min,max,minmax$ : pour deux variables ou une liste d'initialisation
+    \item \lstinline$min_element,max_element, minmax_element$ : pour un conteneur
+   \end{itemize}
+
+  \end{block}  
+\end{frame}
+
+\begin{frame}[fragile]{Exercices}
+ \begin{exampleblock}{Nuage de points ``distants''}
+ \begin{itemize}
+ \item Générer un nuage de points 2D;
+ \item Calculer sa boîte englobante;
+ \item Créer un nouveau conteneur permettant de parcourir ces points dans l'ordre croissant des ordonnées.
+ \item Pour créer un point aléatoirement, utiliser la bibliothèque \lstinline$random$ et \lstinline$chrono$ :
+\begin{lstlisting}
+  typedef std::chrono::high_resolution_clock myclock;    
+  myclock::duration d = myclock::now().time_since_epoch();
+  unsigned seed = d.count();
+  std::default_random_engine generator(seed);
+  std::uniform_real_distribution<double> distribution(-100.0,100.0);
+  double x1 = distribution(generator); 
+  double y1 = distribution(generator);
+  ...
+  double xn = distribution(generator); 
+  double yn = distribution(generator);
+\end{lstlisting}
+
+ \end{itemize}
+ \end{exampleblock}
+\end{frame}
+
+\section{Parallélisme à mémoire partagée}
+
+\begin{frame}[fragile]{Modèle multithreading}
+ \tiny
+ \begin{block}{Multithreading en C++}
+  \begin{itemize}
+   \item Permet une gestion multithread d'un programme indépendemment du système d'exploitation;
+   \item Accès à des utilitaires bas niveau pour une performance optimale des threads ( atomic, etc. )
+   \item Programmation simplifiée par rapport aux threads posix;
+   \item Peut appeler des objets avec la méthode d'évaluation \lstinline$()$;
+   \item Objet \lstinline$std::thread$ est un objet uniquement déplaçable, pas copiable;
+   \item \lstinline$std::thread::hardware_concurrency()$ peut donner le nombre de thread optimal à lancer pour une machine donnée;
+   \item Possibilité de programmer des fonctions asynchrones.
+  \end{itemize}
+ \end{block}
+
+ \begin{exampleblock}{Exemple basic de programmation multithread}
+\begin{lstlisting}
+#include <iostream>
+#include <thread>
+
+int main()
+{
+  std::thread t{[&std::cout] () { std::cout << "Hello World!" << std::endl; }};
+  std::cout << "Hello for main program ;-)" << std::endl;
+  t.join();// Attends que le thread ait fini de s'exécuter
+  return EXIT_SUCCESS;
+}
+\end{lstlisting}
+ \end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Passage d'arguments}
+\tiny
+\begin{block}{Modalité de passage par argument}
+\begin{lstlisting}
+void comp_boundary_condition( int boundary_id, Field& fld ) { ... } /* (1) */
+void wrong_code(Boundary& bnd) {
+  Field fld;
+  std::thread t(update_boundary_condition, bnd.id(), fld ); /* (2) */
+  comp_internal_nodes(...);
+  t.join();
+  update_boundary(bnd, fld); /*(3)*/
+}
+\end{lstlisting}
+\begin{itemize}
+ \item 	La fonction en {\color{red}(1)} attend une référence en deuxième paramètre;
+ \item Le constructeur du thread en {\color{red}(2)} ne peut pas le savoir et copie \lstinline$fld$ aveuglement;
+ \item On utilisera donc le mauvais \lstinline$fld$ lors de la mise à jour en {\color{red}(3)};
+ \item Il faut donc préciser qu'on veut passer une référence au thread :
+\begin{lstlisting}
+void comp_boundary_condition( int boundary_id, Field& fld ) { ... } /* (1) */
+void right_code(Boundary& bnd) {
+  Field fld;
+  std::thread t(update_boundary_condition, bnd.id(), std::ref(fld) ); /* (2) */
+  comp_internal_nodes(...);
+  t.join();
+  update_boundary(bnd, fld); /*(3)*/
+}
+\end{lstlisting} 
+\end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Appel méthode d'objet dans un thread et thread encapsulé}
+\tiny
+\begin{block}{Appel méthode objet dans un thread}
+ \begin{itemize}
+  \item Même mécanisme que \lstinline$std::bind$ ( qui a aussi même problème pour les références... );
+  \item On doit passer la méthode, un pointeur sur l'objet puis les arguments de la méthode.
+ \end{itemize}
+\begin{lstlisting}
+class X { ...
+   void method_of_x(int i, double x) { .... }
+};
+X objX; ...          std::thread(&X::method_of_X, &objX, 2, 3.5);
+\end{lstlisting}
+\end{block}
+
+\begin{block}{Thread encapsulé}
+ \begin{itemize}
+  \item Possibilité d'encapsuler un thread dans une classe
+ \end{itemize}
+\begin{lstlisting}
+class scoped_thread {
+  std::thread t;
+public:
+  explicit scoped_thread(std::thread t_) : t(std::move(t_)) 
+  { if(!t.joinable()) throw std::logic_error("No thread"); }
+  ~scoped_thread() { t.join(); }
+  scoped_thread(scoped_thread const&)=delete;
+  scoped_thread& operator=(scoped_thread const&)=delete; };
+void f() { ...
+  scoped_thread t(std::thread(func(...))); // func = "function"
+  do_something_in_current_thread(); }
+\end{lstlisting}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Gestion de plusieurs threads}
+\tiny
+
+\begin{block}{Gérer et synchroniser plusieurs threads}
+\begin{itemize}
+ \item \lstinline$std::thread$ est utilisable avec les conteneurs;
+\end{itemize}
+\includepartcode{hello_thread.cpp}{5}{11}
+\end{block}
+
+
+ \begin{block}{Identification des threads}
+  \begin{itemize}
+   \item Le type de l'identifiant est \lstinline$std::thread::id$;
+   \item Par défaut, il s'initialise avec une valeur ``not any thread''
+   \item Objet hashable pour être utilisé avec les conteneurs non triés associatifs...
+\begin{lstlisting}
+std::thread::id master_id;
+if ( std::this_thread::get_id() == master_id ) ...
+\end{lstlisting}
+\end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Gestion des conflits mémoires}
+\tiny
+\begin{block}{mutex}
+ \begin{itemize}
+  \item Comme pour les posix threads, on peut gèrer les conflits mémoires à l'aide de mutex;
+  \item Plusieurs classes utilitaires en facilite l'emploi
+\begin{lstlisting}
+class Heap {...
+    void push( const K& obj ) {
+        std::lock_guard<std::mutex> guard(m_serial_mutex); ...
+    }
+    K pop() {
+        std::lock_guard<std::mutex> guard(m_serial_mutex); ...
+    }    
+private:
+    std::mutex m_serial_mutex; ...
+};
+\end{lstlisting}
+ \item Possibilité de locker plusieurs mutex à la fois :
+\begin{lstlisting}
+ std::mutex rhs_m, lhs_m; ...
+ std::lock(rhs_m,lhs_m);
+ std::lock_guard<std::mutex> lock_a(lhs_m, std::adopt_lock);
+ std::lock_guard<std::mutex> lock_b(rhs_m, std::adopt_lock); 
+\end{lstlisting}
+\item \lstinline$std::unique_lock$ permet quant à lui de transférer un mutex d'un scope à un autre et de relâcher ou remettre le lock à volonté
+ \end{itemize}
+\end{block}
+ 
+\end{frame}
+
+\begin{frame}[fragile]{Autres possibilités de synchronisation}
+\tiny
+\begin{block}{Appeler une fonction qu'une fois}
+\begin{itemize}
+ \item \lstinline$st::call_once$ permet de n'appeler une fonction qu'une fois parmis les threads;
+\begin{lstlisting}
+std::shared_ptr<SomeObj> ptr_obj;
+std::once_flag rsc_flg;
+...
+std::call_once(rsc_flg, init_ptr_obj,ptr_obj);
+\end{lstlisting}
+\end{itemize}
+\end{block}
+
+\begin{block}{Mutex récursif}
+ \begin{itemize}
+  \item Mutex pouvant être locker plusieurs fois par le même thread sans blocage;
+  \item Utile pour des fonctions récursives ou pour un chaînage d'appels de méthodes d'une classe;
+  \item \lstinline$std::recursive_mutex$ permet d'utiliser ce mutex récursif;
+  \item Préférable de l'utiliser conjointement avec \lstinline$std::lock_guard$ ou \lstinline$std::unique_lock$;
+  \item À utiliser le plus rarement possible, car en général, devoir l'utiliser montre une mauvaise conception
+  du logiciel...
+  \item Par exemple, dans le cas d'un appel chaîné de méthodes de classe, meilleurs de définir une fonction privée
+  appelée par les deux méthodes et qui ne fait pas de lock...
+ \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Exercice}
+\tiny
+\begin{exampleblock}{Parallélisation du bhudda}
+\begin{itemize}
+\item Paralléliser le calcul de l'ensemble de bhudda tout en veillant à éviter des conflits mémoires.
+\end{itemize}
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{Variables de conditions}
+\tiny
+ \begin{block}{Synchronisation avec une variable de condition}
+  \begin{itemize}
+   \item Permet à un thread d'attendre qu'une condition soit vérifiée tout en ne bloquant pas de mutex;
+   \item Thread en état de sommeil en attendant, besoin de notifier le thread pour le ``réveiller'';
+   \item Deux types de condition en C++ : \lstinline$std::condition_variable$ et \lstinline$std::condition_variable_any$ ( plus général et peut utiliser des classes
+   se comportant comme des mutex );
+  \end{itemize}
+\begin{lstlisting}
+ std::mutex_mut; std::queue<data_chunk> data_queue;
+ std::condition_variable data_cond;
+ void prepare_data() {
+   while (more_data_to_prepare()) {
+     data_chunk data = prepare_datum();
+     std::lock_guard<std::mutex> lk(mut); data_queue.push(data); 
+     data_cond.notify_one();// notify_one pour 1 thread en attente, notify_all pour tous en attentes
+   }
+ }
+ void data_process() {
+   while(true) {
+     // std::unique_lock nécessaire pour que thread relâche le lock quand en sommeil
+     std::unique_lock<std::mutex> lk(mut);
+     // Retourne si cond vérifiée, sinon en sommeil jusqu'à notification, et reteste...
+     data_cond.wait(lk,[]{return !data_queue.empty();});
+     data_chunk data = data_queue.front();
+     lk.unlock();
+     ...
+   }
+}
+\end{lstlisting}
+
+ \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]{Queue multithreadable}
+\tiny
+ \begin{block}{Queue dans contexte multithreadée}
+  \begin{itemize}
+   \item Mettre au point une queue utilisable dans un contexte multithreadé;
+   \item Rajouter une méthode \lstinline$try_pop$ qui tente de dépiler une donnée et renvoie une erreur si la queue est vide;
+   \item Rajouter une méthode \lstinline$wait_and_pop$ qui attend que la queue ne soit plus vide pour dépiler une donnée.   
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Tâches asynchrones}
+ \tiny
+ \begin{block}{Retour de valeurs de tâches en arrière plan}
+ \begin{itemize}
+  \item \lstinline$std::thread$ ne fournit pas de mécanisme pour retourner la valeur d'une fonction;
+  \item \lstinline$std::async$ permet de commencer une tâche asynchrone et retourne la valeur dans un \lstinline$std::future$
+  \item Passage d'arguments identique au passage arguments pour \lstinline$std::thread$;
+  \item La méthode \lstinline$get$ de \lstinline$std::future$ attend jusqu'à ce que la valeur de retour soit prête
+\begin{lstlisting}
+# include <future>
+# include <iostream>
+double very_long_computation();
+void other_funny_computation();
+int main() {
+  std::future<double> answer = std::async(very_long_computation);
+  other_funny_computation();
+  std::cout << "Result of long computation : " << answer.get() << std::endl;
+  return EXIT_SUCCESS;
+}
+\end{lstlisting}
+\item Possibilité de modifier comportement de \lstinline$std::async$ en rajoutant un paramètre en premier argument :
+\begin{itemize}
+\item \lstinline$std::launch::async$ ( par défaut ) pour lancer la fonction dans un nouveau thread;
+\item \lstinline$std::launch::deferred$ pour exécuter la tâche que lorsqu'on fait appel à la méthode \lstinline$get$ ou \lstinline$wait$
+de la classe \lstinline$std::future$.
+\end{itemize}
+ \end{itemize}
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Autres utilitaires pour fonctions asynchrones}
+ \tiny
+ \begin{block}{Associer une tâche avec un futur}
+  \begin{itemize}
+   \item \lstinline$std::packaged_task<(signature fonction)>$ permet d'associer une fonction avec un \lstinline$st::future$
+   \item Le \lstinline$std::future$ est construit à partir de la signature de la fonction;
+   \item On peut l'invoquer à l'aide de la méthode \lstinline$get_future()$ de \lstinline$std::packaged_task$.
+   \item Un \lstinline$std::packaged_task$ peut être wrappé dans un \lstinline$std::function$ ou passé à un thread.
+  \end{itemize}
+ \end{block}
+ \begin{block}{Stocker une valeur lue plus tard par un \lstinline$std::future$}
+  \begin{itemize}
+   \item \lstinline$std::promise$ permet de stocker un résultat récupérable dans un $std::future$;
+   \item Un thread peut y stocker une valeur qui sera récupérer par un autre thread à l'aide d'un \lstinline$get$ du \lstinline$std::future$ récupéré
+   à l'aide de la méthode \lstinline$get_future$ de \lstinline$std::promise$
+  \end{itemize}
+ \end{block}
+ \begin{block}{Lire la valeur d'un future par plusieurs threads}
+  \begin{itemize}
+   \item \lstinline$std::future$ ne permet qu'à un seul thread de lire la valeur retournée par une fonction asynchrone ( \lstinline$std::future$ n'est pas copiable );
+   \item \lstinline$std::shared_future$ permet à plusieurs threads de lire cette valeur;
+   \item Néanmoins, il faudra synchroniser l'accès à la lecture ou passer une copie du \lstinline$std::shared_future$ aux autres threads.
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{Opérations atomiques}
+ \tiny
+ \begin{block}{Modèle C++ des atomiques}
+  \begin{itemize}
+   \item \lstinline$std::atomic<T>$  permet de synchroniser des variables de façon atomique;
+   \item Propose des méthodes \lstinline$load, store$ et \lstinline$exchange$;
+   \item Opérations addition, soustraction, et, ou et ou exclusif permis;
+   \item Méthode \lstinline$is_lock_free$ permet de tester si notre variable atomique est vraiment libre de verrous !
+   \item Seul, \lstinline$std::atomic_flag$ est garantit sans verrous, mais en général, \lstinline$std::atomic<integral>$ sans verrous aussi ( mais pas imposé par la norme... );
+   \item \lstinline$std::atomic_flag$ très basique. Opérations permises : le détruire, le mettre à faux, le mettre à vrai en demandant sa valeur précédente 
+\begin{lstlisting}
+std::atomic_flag lock = ATOMIC_FLAG_INIT; 
+void f(int n) {
+    for(int cnt = 0; cnt < 100; ++cnt) {
+        while(lock.test_and_set(std::memory_order_acquire))  // acquire lock
+             ; // spin
+        std::cout << "Output from thread " << n << '\n';
+        lock.clear(std::memory_order_release);               // release lock
+    }
+}
+int main() {
+    std::vector<std::thread> v;
+    for (int n = 0; n < 10; ++n) { v.emplace_back(f, n); }
+    for (auto& t : v) { t.join(); }
+} \end{lstlisting}
+
+  \end{itemize}
+ \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{The last but not the least}
+\tiny
+\begin{exampleblock}{Parallélisation mandelbrot et bhuddabrot}
+\begin{itemize}
+\item Reprendre les programmes bhuddabrot et mandelbrot et les paralléliser à l'aide du multithreading;
+\item Attention au conflit mémoire pour bhuddabrot !
+\end{itemize}
+
+\end{exampleblock}
+\end{frame}
+
+\begin{frame}[fragile]{En conclusion}
+\tiny
+ \begin{block}{Librairie standard}
+  \begin{itemize}
+  \item Bibliothèque très riche en fonctionnalités;
+  \item Beaucoup d'autres fonctionnalités omis dans cette présentation :
+  \begin{itemize}
+  \item les complexes;
+  \item La bibliothèque mathématiques ( fonctions et \lstinline$valarray$ );
+  \item les dictionnaires non triés avec hachage;
+  \item etc.
+  \end{itemize}
+ \end{itemize}
+ \end{block}
+
+ \begin{block}{Maitrise du C++}
+ \begin{itemize}
+  \item Un débutant connaît 10\% du langage;
+  \item Un développeur avec un peu d'expérience : 40\%
+  \item Un expert dans le langage : 70\%
+  \item Bjarne Stroutup, le créateur du langage prétend en connaître 75\% !
+ \end{itemize}
+ \end{block}
+
+\end{frame}
+
+
+\end{document}

@@ -16,11 +16,9 @@ int main()
 
 ### Utilisation de la bibliothèque standard
 
-Le langage C est considéré comme un langage de bas niveau, c'est à dire un langage minimaliste dont la conception avait initialement pour but de pouvoir programmer un
-système d'exploitation. Sans l'utilisation de bibliothèque (standard ou autre), il est par exemple impossible d'afficher un message sur une console ou dans une fenêtre. Pour afficher par exemple, il faut utiliser une "bibliothèque", c'est à dire une collection de nouvelles fonctions et de nouveaux types qui pourront être utilisés dans votre programme. 
+Le langage C est considéré comme un langage de bas niveau, c'est à dire un langage minimaliste dont la conception avait initialement pour but de pouvoir programmer un système d'exploitation. Sans l'utilisation de bibliothèque (standard ou autre), il est par exemple impossible d'afficher un message sur une console ou dans une fenêtre. Pour afficher par exemple, il faut utiliser une "bibliothèque", c'est à dire une collection de nouvelles fonctions et de nouveaux types qui pourront être utilisés dans votre programme.
 
-Le langage C++ permettant des mécanismes facilitant la programmation, il est considéré comme un langage intermédiaire. Néanmoins, rien n'est prévu dans le langage lui-même pour par exemple afficher un message sur un console. Comme pour le langage C, il faut
-également utiliser une bibliothèque pour afficher un message sur une console.
+Le langage C++ permettant des mécanismes facilitant la programmation, il est considéré comme un langage intermédiaire. Néanmoins, rien n'est prévu dans le langage lui-même pour par exemple afficher un message sur un console. Comme pour le langage C, il faut également utiliser une bibliothèque pour afficher un message sur une console.
 
 Les bibliothèques :
 
@@ -41,21 +39,25 @@ Lors de la phase de compilation qui permet de former le binaire définitif de l'
 Par exemple, supposons que nous voulons utiliser une bibliothèque nommée SDL2 qui comprend un fichier d'entête *SDL.h* et un fichier binaire *libSDL.so* :
 
 - Dans le code source, il faut rajouter au début du (ou des) fichier(s) utilisant la bibliothèque SDL2 :
+
 ```cpp
 #include <SDL.h>
 ```
+
 - Lors de la création binaire de notre exécutable (ou de notre bibliothèque), on lie nos fichiers objets (ou sources) avec la bibliothèque SDL :
+
 ```shell
 g++ -o monexecutable fich1.o fich2.o fich3.cpp -lSDL
 ```
 
-Il existe une bibliothèque particulière, la *bibliothèque standard* qui est livrée avec tous les compilateurs C++ existant, disponible *de facto* sur tous les systèmes
-d'exploitation et donc le binaire est automatiquement rajouter à votre binaire lors de l'édition des liens. Cette bibliothèque propose un très grand nombre de nouvelles fonctionnalités dont la plupart des algorithmes classiques comme le tri, la recherche d'une valeur, etc.
+Il existe une bibliothèque particulière, la *bibliothèque standard* qui est livrée avec tous les compilateurs C++ existant, disponible *de facto* sur tous les systèmes d'exploitation et donc le binaire est automatiquement rajouter à votre binaire lors de l'édition des liens. Cette bibliothèque propose un très grand nombre de nouvelles fonctionnalités dont la plupart des algorithmes classiques comme le tri, la recherche d'une valeur, etc.
 
-Ainsi 
+Ainsi
+
 ```cpp 
 #include <iostream>
 ```
+
 permet de rajouter le fichier d'entête *iostream* de la bibliothèque standard qui offre parmis ses nouvelles fonctionnalités la possibilité d'afficher des messages sur des consoles.
 
 ### La fonction main
@@ -65,29 +67,37 @@ Il existe en C/C++ une fonction portant le nom particulier *main*. Il ne peut ex
 La fonction *main* ne peut prendre que deux formes différentes :
 
 - Une forme sans arguments :
+
   ```cpp
   int main()
   {
     ...    
   }
   ```
+
   qui permet de lancer un simple exécutable sans passage d'arguments;
+
 - Une forme avec gestion d'éventuels arguments passés à l'exécution :
+
   ```cpp
   int main(int nargs, char* argv[])
   {
       ...
   }
   ```
-  permettant de passer une liste d'arguments à l'exécutable. 
-    - *nargs* donne le nombre d'arguments passés à la fonction, **exécutable compris**. 
-    - *argv* donne sous forme d'un tableau de chaîne de caractères les arguments passés, le premier élément de ce tableau contenant le nom de l'exécutable (*note* : les indices pour les tableaux commencent à zéro !)
+
+  permettant de passer une liste d'arguments à l'exécutable.
+  - *nargs* donne le nombre d'arguments passés à la fonction, **exécutable compris**.
+  - *argv* donne sous forme d'un tableau de chaîne de caractères les arguments passés, le premier élément de ce tableau contenant le nom de l'exécutable (*note* : les indices pour les tableaux commencent à zéro !)
 
   **Par exemple** :
+
   ```sh
   ls -l -a -t
   ```
+
   lance l'exécutable *ls* avec les trois arguments. On aura donc :
+
    ```python
    nargs = 4
    argv  = [ "ls", "-l", "-a", "-t" ]
@@ -113,8 +123,10 @@ L'affichage se fait à l'aide de la notion de *flot*. On utilise pour cela le sy
 La *valeur* prédéfinie *std::endl* provoque un retour à la ligne au niveau de la console (*endl* = End Line)
 
 Ainsi
+
 ```cpp
 std::cout << "Hello world !" << std::endl; 
 ```
+
 affiche le message *Hello world !*, puis retourne à la ligne, à l'exécution de cette ligne de programme.
 
