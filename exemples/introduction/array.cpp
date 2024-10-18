@@ -27,5 +27,8 @@ int main()
         std::cout << std::endl;
     }
 
+    using Point = std::array<double,3>;
+    Point p{1.,2.,3.};
+
     return EXIT_SUCCESS;
 }
